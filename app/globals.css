@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* ─── ELTON OS Design Tokens ─── */
+:root {
+  --fond: #0A0806;
+  --fond-surface: #110F0C;
+  --fond-eleve: #1A1714;
+  --bordure: #2A2622;
+  --bordure-douce: #1F1C19;
+
+  --or: #C8A64E;
+  --or-clair: #D4B96A;
+  --or-pale: rgba(200, 166, 78, 0.25);
+  --or-faible: rgba(200, 166, 78, 0.1);
+
+  --texte: #F4EFE7;
+  --texte-secondaire: rgba(239, 232, 220, 0.64);
+  --texte-tertiaire: rgba(239, 232, 220, 0.38);
+
+  --succes: #4ADE80;
+  --avertissement: #F59E0B;
+  --erreur: #EF4444;
+  --info: #60A5FA;
+
+  --rayon: 8px;
+  --rayon-lg: 14px;
+}
+
+@theme inline {
+  --color-fond: var(--fond);
+  --color-fond-surface: var(--fond-surface);
+  --color-fond-eleve: var(--fond-eleve);
+  --color-bordure: var(--bordure);
+  --color-or: var(--or);
+  --color-or-clair: var(--or-clair);
+  --color-or-pale: var(--or-pale);
+  --color-texte: var(--texte);
+  --color-texte-secondaire: var(--texte-secondaire);
+  --color-texte-tertiaire: var(--texte-tertiaire);
+  --color-succes: var(--succes);
+  --color-avertissement: var(--avertissement);
+  --color-erreur: var(--erreur);
+  --color-info: var(--info);
+  --radius-elton: var(--rayon);
+  --radius-elton-lg: var(--rayon-lg);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar style ELTON OS */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--fond); }
+::-webkit-scrollbar-thumb { background: var(--bordure); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bordure-douce); }
+
+/* Focus ring doré */
+*:focus-visible {
+  outline: 2px solid var(--or);
+  outline-offset: 2px;
+}
