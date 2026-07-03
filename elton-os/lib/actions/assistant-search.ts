@@ -33,7 +33,7 @@ async function firecrawlScrape(url: string): Promise<string | null> {
     const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
       method: "POST",
       headers: {
-        "Authorization": "Bearer fc-2ede1712d78e40ff9e0feb7cf6024c84",
+        "Authorization": `Bearer ${process.env.FIRECRAWL_API_KEY || ""}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ url, formats: ["markdown"] }),

@@ -33,7 +33,7 @@ PRSTO (anciennement "Elton OS") est un **copilote carrière IA premium pour cadr
 - Next.js 16.2.9 (Turbopack), Tailwind CSS v4
 - Prisma + SQLite (`prisma/dev.db`)
 - DeepSeek API (configuré dans settings)
-- Firecrawl API (clé : `fc-2ede1712d78e40ff9e0feb7cf6024c84`, configurée dans `.env.local`)
+- Firecrawl API (clé : `[FIRECRAWL_API_KEY - voir .env.local]`, configurée dans `.env.local`)
 - Base de données : opportunités, candidatures, pipeline, profil, etc.
 - Design tokens : `--prsto-forest #103826`, `--prsto-gold #E4B118`, `--prsto-ivory #FAF6EF`
 
@@ -112,7 +112,7 @@ lib/ai/deepseek.ts                     ← connecteur IA (DeepSeek/OpenRouter)
 lib/jobs/connectors/                   ← tous les connecteurs (Michael Page, France Travail, etc.)
 lib/jobs/browser-agent/               ← Playwright pour navigation automatisée
 lib/actions/opportunity.ts             ← CRUD offres d'emploi
-.env.local                             ← Firecrawl API key (fc-2ede1712d78e40ff9e0feb7cf6024c84)
+.env.local                             ← Firecrawl API key ([FIRECRAWL_API_KEY - voir .env.local])
 app/(app)/layout.tsx                   ← navigation sidebar
 app/layout.tsx                         ← root layout + metadata
 ```
