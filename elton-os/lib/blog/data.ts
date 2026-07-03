@@ -1,4 +1,5 @@
 import { newArticles } from "./new-articles";
+import { articles15supplement } from "./articles-15-supplement";
 export type ArticleCategory =
   | "Marché & Tendances"
   | "CV & Personal Branding"
@@ -46,26 +47,26 @@ export interface BlogArticle {
 
 const authors = {
   paul: {
-    name: "Paul Elton",
-    role: "Fondateur & CEO, PRSTO",
+    name: "Thiago",
+    role: "Fondateur & CEO",
     avatar: "/branding/portraits/ceo-paul/1.png",
-    bio: "Ancien DRH d'un groupe du CAC 40 et chasseur de têtes pendant 15 ans, Paul a accompagné plus de 200 cadres dirigeants dans leur recherche d'emploi. Il a fondé PRSTO pour démocratiser l'accès au conseil carrière premium grâce à l'IA.",
+    bio: "Ancien DRH d'un groupe du CAC 40 et chasseur de têtes pendant 15 ans, Paul a accompagné plus de 200 cadres dirigeants dans leur recherche d'emploi. Il a fondé pour démocratiser l'accès au conseil carrière premium grâce à l'IA.",
   },
   sabrina: {
-    name: "Sabrina Moreau",
-    role: "Directrice Marketing & Branding, PRSTO",
+    name: "Yuki",
+    role: "Directrice Marketing & Branding",
     avatar: "/branding/portraits/dirmarketing-sabrina/1.png",
     bio: "Spécialiste du personal branding pour cadres dirigeants, Sabrina a piloté la stratégie de marque de 40+ dirigeants du CAC 40 et licornes françaises.",
   },
   john: {
-    name: "John Devaux",
-    role: "CTO & Data Scientist, PRSTO",
+    name: "Kwame",
+    role: "CTO & Data Scientist",
     avatar: "/branding/portraits/cto-john/1.png",
-    bio: "Ancien lead data scientist chez une licorne française, John a conçu l'algorithme de scoring PRSTO qui analyse 50 000+ offres cadre par mois.",
+    bio: "Ancien lead data scientist chez une licorne française, John a conçu l'algorithme de scoring qui analyse 50 000+ offres cadre par mois.",
   },
   ingrid: {
-    name: "Ingrid Vasseur",
-    role: "DRH & Conseil en organisation, PRSTO",
+    name: "Priya",
+    role: "DRH & Conseil en organisation",
     avatar: "/branding/portraits/drh-ingrid/1.png",
     bio: "DRH pendant 12 ans dans des groupes internationaux, Ingrid a négocié plus de 300 packages de direction. Elle connaît chaque rouage de la négociation salariale.",
   },
@@ -87,6 +88,7 @@ export function getCategoryGradient(category: ArticleCategory): string {
 
 export const articles: BlogArticle[] = [
   ...newArticles,
+  ...articles15supplement,
   {
     slug: "marche-cache-cadres-dirigeants-2026",
     title: "2026 : Le marché caché des cadres dirigeants",
@@ -111,7 +113,7 @@ export const articles: BlogArticle[] = [
         stat: {
           value: "78 %",
           label: "Postes non publiés",
-          description: "des postes de direction (N+1, Comex, Codir) sont pourvus sans annonce publique, selon une étude menée par PRSTO auprès de 240 décideurs RH.",
+          description: "des postes de direction (N+1, Comex, Codir) sont pourvus sans annonce publique, selon une étude menée par auprès de 240 décideurs RH.",
         },
       },
       {
@@ -218,7 +220,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Notre analyse PRSTO des données de recrutement 2025-2026 montre une tendance claire : la part des postes de direction pourvus via le marché caché est passée de 68 % en 2022 à 78 % en 2026. Si la tendance se poursuit, 85 % des postes de direction seront pourvus sans annonce publique d'ici 2028.",
+        text: "Notre analyse des données de recrutement 2025-2026 montre une tendance claire : la part des postes de direction pourvus via le marché caché est passée de 68 % en 2022 à 78 % en 2026. Si la tendance se poursuit, 85 % des postes de direction seront pourvus sans annonce publique d'ici 2028.",
       },
       {
         type: "stat",
@@ -353,7 +355,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Chez PRSTO, nous avons développé une approche que nous appelons le CV adaptatif. Plutôt que d'avoir un CV unique que vous espérez universel, chaque candidature génère une version optimisée de votre CV pour l'ATS cible, sans jamais mentir ni inventer.",
+        text: "Chez, nous avons développé une approche que nous appelons le CV adaptatif. Plutôt que d'avoir un CV unique que vous espérez universel, chaque candidature génère une version optimisée de votre CV pour l'ATS cible, sans jamais mentir ni inventer.",
       },
       {
         type: "p",
@@ -361,7 +363,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Notre outil de scoring intégré vous permet de savoir, avant d'envoyer votre CV, quel score il obtiendra sur l'offre visée. Si le score est inférieur à 75, l'IA vous suggère des ajustements ciblés. Résultat : les utilisateurs PRSTO obtiennent 3,4 fois plus d'entretiens que la moyenne des candidats cadre.",
+        text: "Notre outil de scoring intégré vous permet de savoir, avant d'envoyer votre CV, quel score il obtiendra sur l'offre visée. Si le score est inférieur à 75, l'IA vous suggère des ajustements ciblés. Résultat : les utilisateurs obtiennent 3,4 fois plus d'entretiens que la moyenne des candidats cadre.",
       },
     ],
   },
@@ -664,12 +666,12 @@ export const articles: BlogArticle[] = [
 
 export const categories: { name: ArticleCategory; count: number }[] = [
   { name: "Marché & Tendances", count: 2 },
-  { name: "CV & Personal Branding", count: 2 },
-  { name: "Négociation & Package", count: 3 },
-  { name: "Réseau & Chasseurs", count: 1 },
-  { name: "Entretien", count: 2 },
-  { name: "Stratégie", count: 3 },
-  { name: "Transition", count: 2 },
+  { name: "CV & Personal Branding", count: 3 },
+  { name: "Négociation & Package", count: 5 },
+  { name: "Réseau & Chasseurs", count: 2 },
+  { name: "Entretien", count: 3 },
+  { name: "Stratégie", count: 8 },
+  { name: "Transition", count: 6 },
 ];
 
 export const allTags = Array.from(new Set(articles.flatMap((a) => a.tags)));
