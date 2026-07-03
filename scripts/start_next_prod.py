@@ -27,6 +27,7 @@ os.close(devnull)
 env = os.environ.copy()
 env["PORT"] = "3000"
 env["NODE_ENV"] = "production"
+env["DATABASE_URL"] = "postgresql://neondb_owner:npg_eD81irYCovjb@ep-dawn-star-ab2wpk8t.eu-west-2.aws.neon.tech/neondb?sslmode=require"
 env["PATH"] = os.path.join(CWD, "node_modules", ".bin") + ":" + env.get("PATH", "")
 os.chdir(CWD)
 
