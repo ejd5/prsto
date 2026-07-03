@@ -149,7 +149,7 @@ Que puis-je faire pour vous aujourd'hui ? 👔`,
     if (upcomingInterviews.length > 0) {
       memLines.push(`\n## 3 prochains entretiens à venir`);
       upcomingInterviews.forEach((it, i) => {
-        const when = new Date(it.date).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
+        const when = it.date ? new Date(it.date).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "date inconnue";
         memLines.push(`${i + 1}. **${it.type}** — ${when}${it.notes ? ` | notes: ${it.notes.slice(0, 80)}` : ""}`);
       });
     }

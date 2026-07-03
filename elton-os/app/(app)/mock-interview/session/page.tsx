@@ -172,6 +172,7 @@ export default function MockInterviewSessionPage() {
       const totalAnswers = engine.history.filter(h => h.answer && h.answer.trim().length > 5).length;
       const totalWords = engine.history.reduce((acc, h) => acc + (h.answer?.split(/\s+/).length || 0), 0);
       const totalFillerWords = engine.history.reduce((acc, h) => acc + h.fillerCount, 0);
+      const skippedAnswers = engine.history.length - totalAnswers;
       const participationScore = Math.round((totalAnswers / engine.history.length) * 100);
 
       setAuditReport({
