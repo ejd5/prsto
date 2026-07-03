@@ -81,6 +81,83 @@ export interface TTSResult {
 }
 
 const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech";
+const GOOGLE_TTS_URL = "https://translate.google.com/translate_tts";
+
+/**
+ * Génère un audio via Google Translate TTS (gratuit, non officiel).
+ * Qualité correcte (bien meilleure que Web Speech), ~200ms par requête.
+ * Limite : ~200 chars par requête (on découpe si besoin).
+ */
+export async function generateSpeechGoogle(
+  text: string,
+  language: string = "fr",
+): Promise<TTSResult> {
+  const startTime = Date.now();
+
+  if (!text || text.trim().length === 0) {
+    return { success: false, provider: "elevenlabs", error: "Texte vide" };
+  }
+
+  try {
+    // Google TTS limite à ~200 chars — on découpe en chunks
+    const chunks: string[] = [];
+    let remaining = text;
+    while (remaining.length > 0) {
+      if (remaining.length <= 200) {
+        chunks.push(remaining);
+        break;
+      }
+      // Couper au dernier espace avant 200 chars
+      let cut = remaining.lastIndexOf(" ", 200);
+      if (cut < 100) cut = 200;
+      chunks.push(remaining.slice(0, cut));
+      remaining = remaining.slice(cut).trim();
+    }
+
+    // Générer chaque chunk et concaténer les buffers audio
+    const audioBuffers: Buffer[] = [];
+    for (const chunk of chunks) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const url = `${GOOGLE_TTS_URL}?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=${language}&client=tw-ob`;
+      const response = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0" },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        return {
+          success: false,
+          provider: "elevenlabs",
+          error: `Google TTS HTTP ${response.status}`,
+        };
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      audioBuffers.push(buffer);
+    }
+
+    // Concaténer tous les buffers MP3
+    const combined = Buffer.concat(audioBuffers);
+    const audioBase64 = combined.toString("base64");
+
+    return {
+      success: true,
+      audioBase64,
+      provider: "elevenlabs", // On garde le même format pour le client
+      responseTimeMs: Date.now() - startTime,
+    };
+  } catch (err) {
+    const aborted = err instanceof Error && err.name === "AbortError";
+    return {
+      success: false,
+      provider: "elevenlabs",
+      error: aborted ? "Timeout" : err instanceof Error ? err.message : "Erreur",
+    };
+  }
+}
 
 function getElevenLabsApiKey(): string | null {
   return process.env.ELEVENLABS_API_KEY || null;
@@ -189,19 +266,22 @@ export async function generateSpeech(
     return { success: false, provider: "web-speech", error: "Rôle inconnu" };
   }
 
-  // 1. Essayer ElevenLabs si configuré
+  // 1. Essayer ElevenLabs si configuré (premium, voix 100% humaine)
   if (voice.provider === "elevenlabs" && getElevenLabsApiKey()) {
     const result = await generateSpeechElevenLabs(text, voice.voiceId || "Antoni");
     if (result.success) return result;
-    // Si ElevenLabs échoue, fallback Web Speech
-    console.log("[tts] ElevenLabs échec, fallback Web Speech:", result.error);
+    console.log("[tts] ElevenLabs échec, fallback Google TTS:", result.error);
   }
 
-  // 2. Fallback Web Speech (côté client — on retourne juste le texte + config)
+  // 2. Google Translate TTS (gratuit, bien meilleur que Web Speech)
+  const googleResult = await generateSpeechGoogle(text, voice.language || "fr");
+  if (googleResult.success) return googleResult;
+  console.log("[tts] Google TTS échec, fallback Web Speech:", googleResult.error);
+
+  // 3. Fallback Web Speech (côté client)
   return {
     success: true,
     provider: "web-speech",
-    // Le client utilisera window.speechSynthesis avec la voix correspondante
   };
 }
 

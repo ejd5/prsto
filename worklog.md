@@ -606,3 +606,42 @@ Stage Summary:
 - ✅ Toutes routes en HTTP 200 via preview publique
 - ✅ Architecture TTS swappable : Web Speech (fallback) → ElevenLabs (premium, dès clé fournie)
 - En attente : clé ELEVENLABS_API_KEY pour activer les voix 100% humaines
+
+---
+Task ID: 17
+Agent: main (Super Z)
+Task: Mock Interview Panel transformé en interface Visio avec webcam + Google TTS + micro
+
+Work Log:
+- Ajout Google Translate TTS comme provider gratuit dans lib/ai/tts.ts
+  * generateSpeechGoogle() — découpe en chunks de 200 chars, concatène les MP3
+  * Qualité bien supérieure à Web Speech (voix Google Translate)
+  * Gratuit, ~200-300ms par requête
+  * Cascade : ElevenLabs (si clé) → Google TTS (gratuit) → Web Speech (fallback)
+- Réécriture complète de /mock-interview/panel en interface Visio
+  * SETUP : page sombre avec choix poste + preview 5 rôles
+  * CALL : interface type Zoom/Teams plein écran
+    - Gauche (65%) : portrait du recruteur avec animation "talking" (CSS scale + brightness)
+    - Droite (35%) : webcam utilisateur via getUserMedia (vidéo miroir)
+    - Barre top : timer "EN DIRECT" + progress + bouton "Quitter"
+    - Barre bottom : transcript micro + contrôles (caméra on/off, micro on/off, question suivante)
+    - Question affichée en overlay pendant que le recruteur parle
+    - Animation "wave" (barres verticales) pendant la parole
+    - Indicateur "réfléchit..." pendant 2s entre questions
+  * DEBRIEF : score global + 5 dimensions avec barres de progression
+- Réponse vocale via SpeechRecognition API (Chrome)
+  * L'utilisateur parle sa réponse au lieu de la taper
+  * Transcript en temps réel (interim + final)
+  * Auto-démarre après que le recruteur finit de parler
+  * Bouton micro on/off pour contrôler
+- TTS automatique : la question suivante est parlée automatiquement 2s après la réponse
+- Test : Google TTS génère audio en 268ms (55KB), page compile en 174ms
+
+Stage Summary:
+- ✅ Interface Visio type Zoom avec webcam + portrait animé
+- ✅ Voix Google Translate TTS (gratuit, bien meilleur que Web Speech)
+- ✅ Réponse vocale via micro (SpeechRecognition)
+- ✅ Portrait animé pendant la parole (CSS talking animation)
+- ✅ Timer "EN DIRECT" + progress bar + contrôles caméra/micro
+- ✅ Test via preview publique : 200 OK
+- Architecture TTS en cascade : ElevenLabs → Google TTS → Web Speech
