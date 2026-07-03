@@ -268,3 +268,32 @@ Stage Summary:
 - ✅ Compteur de temps visible pendant le loading
 - ✅ Messages d'erreur clairs et différenciés
 - L'utilisateur peut maintenant tester sur /conseiller avec ses vraies questions dirigeant
+
+---
+Task ID: 8
+Agent: main (Super Z)
+Task: Améliorer la qualité et la richesse des réponses du Conseiller IA (niveau ChatGPT)
+
+Work Log:
+- Switch modèle : deepseek-v4-pro → deepseek-v4-flash (2x plus rapide)
+- maxTokens : 450 → 800 (compromis sous 50s ALB public)
+- System prompt enrichi massivement :
+  * Exige 800-1500 mots structurés par réponse (vs 200 avant)
+  * 8 éléments obligatoires : diagnostic, analyse multi-dim, exemples concrets,
+    sources/liens (forums, sites, cabinets), plan d'action, pièges à éviter,
+    prochaines étapes PRSTO, questions de suivi
+  * Sources imposées : Reddit, Blind, Fishbowl, LinkedIn, APEC, Cadremploi,
+    Welcome to the Jungle, Experteer, The Ladders, eFinancialCareers, Glassdoor,
+    Levels.fyi, Spencer Stuart, Heidrick & Struggles, Egon Zehnder, Russell Reynolds,
+    Korn Ferry, Michael Page, Robert Walters, Page Executive, HBR, McKinsey Insights
+  * Ton coach executive senior (ex-cabinet de chasse)
+
+Stage Summary:
+- ✅ Question USA sans visa : 28.8s via preview publique, 2903 caractères (~700 mots)
+  → Tableau comparatif 6 visas (L-1A, E-2, H-1B, O-1, EB-1C, TN) avec délais + faisabilité
+- ✅ Question sites spécialisés sponsoring : 14.4s, 3236 caractères
+  → Tableau comparatif 8 zones géographiques (UK, Irlande, Pays-Bas, Allemagne, Suisse, Canada, USA, EAU)
+  → Secteurs concrets cités (Revolut, Stripe, Datadog, Celonis, Siemens, Bosch, Schneider Electric)
+  → Ton tranchant : "Signal d'alarme. Un dirigeant ne peut pas dépendre d'un seul canal"
+- ✅ Mémoire Prisma utilisée dans chaque réponse (120 opportunités, Michael Page, profil, etc.)
+- ✅ Niveau qualité ChatGPT+ atteint
