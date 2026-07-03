@@ -85,6 +85,7 @@ export default function MockInterviewPanelPage() {
 
   // ─── Camera ───
   const startCamera = useCallback(async () => {
+    console.log("[visio] startCamera appelé, videoRef:", !!videoRef.current);
     try {
       // Demander vidéo + audio en même temps (permissions navigateur combinées)
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -92,19 +93,35 @@ export default function MockInterviewPanelPage() {
         audio: true,
       });
       streamRef.current = stream;
+      console.log("[visio] Stream obtenu:", stream.getVideoTracks().length, "vidéo,", stream.getAudioTracks().length, "audio");
+
+      // Attendre que videoRef soit disponible (au cas où)
+      let attempts = 0;
+      while (!videoRef.current && attempts < 20) {
+        await new Promise(r => setTimeout(r, 100));
+        attempts++;
+      }
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
+        console.log("[visio] Vidéo en cours de lecture");
+      } else {
+        console.error("[visio] videoRef non disponible après attente");
       }
       setCameraOn(true);
       setMicOn(true);
-      console.log("[visio] Caméra + micro activés");
     } catch (err) {
       console.error("[visio] Camera/mic error:", err);
-      // Si l'erreur vient du micro, essayer juste la vidéo
+      // Fallback : essayer juste la vidéo
       try {
         const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         streamRef.current = videoStream;
+        let attempts = 0;
+        while (!videoRef.current && attempts < 20) {
+          await new Promise(r => setTimeout(r, 100));
+          attempts++;
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = videoStream;
           await videoRef.current.play();
@@ -258,13 +275,37 @@ export default function MockInterviewPanelPage() {
         setQuestions(data.questions);
         setPhase("call");
         setCallDuration(0);
-        await startCamera();
-        await initMediaPipe();
-        setTimeout(() => speakQuestion(data.questions[0]), 2000);
+        // Camera + TTS seront démarrés par le useEffect ci-dessous
+        // quand le DOM sera rendu (videoRef disponible)
       } else { setError(data.error || "Erreur"); }
     } catch { setError("Erreur réseau"); }
     finally { setLoading(false); }
   };
+
+  // ─── Démarrer caméra + première question quand la phase "call" est rendue ───
+  // Ce useEffect se déclenche APRÈS que React a rendu le DOM de la phase "call",
+  // donc videoRef.current est disponible.
+  const cameraStartedRef = useRef(false);
+  useEffect(() => {
+    if (phase === "call" && !cameraStartedRef.current && questions.length > 0) {
+      cameraStartedRef.current = true;
+      console.log("[visio] Phase call rendue, démarrage caméra...");
+
+      (async () => {
+        // 1. Démarrer la caméra (videoRef est maintenant disponible)
+        await startCamera();
+
+        // 2. Démarrer MediaPipe (non bloquant — si échec, on continue)
+        initMediaPipe().catch(err => console.log("[mediapipe] Non bloquant:", err));
+
+        // 3. Attendre 1.5s que la caméra soit visible, puis parler la 1ère question
+        setTimeout(() => {
+          console.log("[visio] Démarrage TTS première question");
+          speakQuestion(questions[0]);
+        }, 1500);
+      })();
+    }
+  }, [phase, questions, startCamera, initMediaPipe]);
 
   // ─── TTS ───
   const speakQuestion = async (question: any) => {
@@ -416,6 +457,7 @@ export default function MockInterviewPanelPage() {
 
   const endCall = () => {
     stopCamera(); stopListening(); setIsSpeaking(false);
+    cameraStartedRef.current = false;
     setPhase("setup"); setQuestions([]); setDebrief([]); setCurrentIdx(0); setTranscript(""); setCallDuration(0); setError(null);
   };
 
