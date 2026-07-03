@@ -1,0 +1,16 @@
+export { default as LandingHeader } from "./LandingHeader";
+export { default as HeroSection } from "./HeroSection";
+export { default as TrustBand } from "./TrustBand";
+export { default as LogoCloud } from "./LogoCloud";
+export { default as StatsSection } from "./StatsSection";
+export { default as FeatureGrid } from "./FeatureGrid";
+export { default as ProductMockup } from "./ProductMockup";
+export { default as HowItWorks } from "./HowItWorks";
+export { default as ComparatifSection } from "./ComparatifSection";
+export { default as TestimonialsSection } from "./TestimonialsSection";
+export { default as PricingSection } from "./PricingSection";
+export { default as FaqSection } from "./FaqSection";
+export { default as FinalCta } from "./FinalCta";
+export { default as LandingFooter } from "./LandingFooter";
+export { default as ScrollProgress } from "./ScrollProgress";
+export { PrstoLogo } from "./PrstoLogo";

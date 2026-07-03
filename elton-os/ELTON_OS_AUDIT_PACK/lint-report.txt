@@ -1,0 +1,853 @@
+
+> elton-os@0.1.0 lint
+> eslint
+
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/analyse/page.tsx
+  64:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/analyse/page.tsx:64:21
+  62 |   }, []);
+  63 |
+> 64 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  65 |
+  66 |   const handleAnalyze = async (opportunityId: string) => {
+  67 |     setAnalyzing(opportunityId);  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/cv-maitre/page.tsx
+  47:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/cv-maitre/page.tsx:47:21
+  45 |   }, []);
+  46 |
+> 47 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  48 |
+  49 |   const handlePasteImport = async () => {
+  50 |     if (!profile || !pasteText.trim()) return;  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/analytics/page.tsx
+  31:7   warning  'PIPELINE_LABELS' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  53:3   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  56:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/analytics/page.tsx:56:21
+  54 |   }, [demoQuery]);
+  55 |
+> 56 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  57 |
+  58 |   const formatDate = (d: string | null) => {
+  59 |     if (!d) return "—";  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/applications/[id]/page.tsx
+    5:130  warning  'X' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   94:55   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/applications/[id]/page.tsx:94:55
+  92 |
+  93 |   // Charger InterviewPrep quand l'onglet "entretien" est sélectionné
+> 94 |   useEffect(() => { if (tab === "entretien" && draft) loadPrep(); }, [tab, draft]);
+     |                                                       ^^^^^^^^ Avoid calling setState() directly within an effect
+  95 |
+  96 |   const act = async (action: string, target?: string) => {
+  97 |     if (!draft) return;  react-hooks/set-state-in-effect
+   94:70   warning  React Hook useEffect has a missing dependency: 'loadPrep'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  204:99   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+  204:105  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+  204:108  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+  667:116  warning  'copied' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/applications/[id]/print/page.tsx
+   8:10  warning  'title' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  19:13  warning  'co' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/autofill/page.tsx
+  20:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/autofill/page.tsx:20:21
+  18 |
+  19 |   useEffect(() => {
+> 20 |     if (!draftId) { setLoading(false); setError("Aucun draftId fourni."); return; }
+     |                     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  21 |     fetch(`/api/application-drafts/${draftId}/autofill`)
+  22 |       .then((r) => r.json())
+  23 |       .then((d) => {  react-hooks/set-state-in-effect
+  40:9   warning  'iconFor' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/crm/contacts/[id]/page.tsx
+  4:61   warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
+  4:76   warning  'Briefcase' is defined but never used      @typescript-eslint/no-unused-vars
+  4:87   warning  'Calendar' is defined but never used       @typescript-eslint/no-unused-vars
+  4:104  warning  'UserPlus' is defined but never used       @typescript-eslint/no-unused-vars
+  4:114  warning  'Pencil' is defined but never used         @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/crm/page.tsx
+  4:37   warning  'Building2' is defined but never used      @typescript-eslint/no-unused-vars
+  4:48   warning  'Calendar' is defined but never used       @typescript-eslint/no-unused-vars
+  4:58   warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
+  4:73   warning  'Briefcase' is defined but never used      @typescript-eslint/no-unused-vars
+  4:84   warning  'Phone' is defined but never used          @typescript-eslint/no-unused-vars
+  4:91   warning  'Mail' is defined but never used           @typescript-eslint/no-unused-vars
+  4:97   warning  'Link2' is defined but never used          @typescript-eslint/no-unused-vars
+  4:104  warning  'Clock' is defined but never used          @typescript-eslint/no-unused-vars
+  4:111  warning  'ChevronRight' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/importer/capture/page.tsx
+   5:43  warning  'Briefcase' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  45:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/importer/capture/page.tsx:45:7
+  43 |         .finally(() => setLoading(false));
+  44 |     } else {
+> 45 |       setLoading(false);
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |     }
+  47 |   }, [jobId]);
+  48 |  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/interview-prep/[id]/page.tsx
+   4:50   warning  'Briefcase' is defined but never used                        @typescript-eslint/no-unused-vars
+   4:131  warning  'FileText' is defined but never used                         @typescript-eslint/no-unused-vars
+  27:13   warning  Unused eslint-disable directive (no problems were reported)
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/interview-prep/page.tsx
+  4:30  warning  'Building2' is defined but never used     @typescript-eslint/no-unused-vars
+  4:41  warning  'Calendar' is defined but never used      @typescript-eslint/no-unused-vars
+  4:51  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+  4:72  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+  4:86  warning  'Archive' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/page.tsx
+  161:9  warning  'actionColor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/reports/page.tsx
+  4:59  warning  'Building2' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/settings/page.tsx
+  54:10  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/sources/page.tsx
+  210:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/sources/page.tsx:210:5
+  208 |
+  209 |   useEffect(() => {
+> 210 |     loadSources();
+      |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  211 |     loadStatus();
+  212 |   }, []);
+  213 |                                                                                          react-hooks/set-state-in-effect
+  215:44  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/dashboard/jobs/sources/page.tsx:215:44
+  213 |
+  214 |   useEffect(() => {
+> 215 |     if (activeTab === "report" && !report) loadReport();
+      |                                            ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  216 |   }, [activeTab]);
+  217 |
+  218 |   // Derived counts  react-hooks/set-state-in-effect
+  216:6   warning  React Hook useEffect has a missing dependency: 'report'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/demarrage/page.tsx
+  333:6  warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/documents/[id]/page.tsx
+  94:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/documents/[id]/page.tsx:94:21
+  92 |   }, [id]);
+  93 |
+> 94 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  95 |
+  96 |   const handleSave = async () => {
+  97 |     setSaving(true);  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/documents/[id]/print-cv/page.tsx
+   5:28  warning  'Download' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  16:10  warning  'jobTitle' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  21:14  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/documents/[id]/print-cv/page.tsx:21:14
+  19 |   useEffect(() => {
+  20 |     const tpl = resolveTemplate(searchParams.get("template"));
+> 21 |     if (tpl) setTemplateOverride(tpl);
+     |              ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |
+  23 |     params.then(async ({ id }) => {
+  24 |       try {  react-hooks/set-state-in-effect
+  86:9   warning  'fileName' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/documents/page.tsx
+  76:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/documents/page.tsx:76:21
+  74 |   }, [filterType]);
+  75 |
+> 76 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  77 |
+  78 |   const handleGenerate = async () => {
+  79 |     if (!selOpp || !selType) return;  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/entretiens/[id]/page.tsx
+  65:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/entretiens/[id]/page.tsx:65:21
+  63 |   }, [id]);
+  64 |
+> 65 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  66 |
+  67 |   const handleSave = async () => {
+  68 |     await updateInterviewPreparation(id, preparation);  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/entretiens/page.tsx
+  42:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/entretiens/page.tsx:42:21
+  40 |   }, []);
+  41 |
+> 42 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  43 |
+  44 |   const handleGenerate = async () => {
+  45 |     if (!selOpp) return;  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/market-radar/page.tsx
+   5:18  warning  'Sparkles' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   6:66  warning  'Download' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  33:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/market-radar/page.tsx:33:21
+  31 |   }, []);
+  32 |
+> 33 |   useEffect(() => { loadCandidates(); }, [loadCandidates]);
+     |                     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |
+  35 |   const handleAnalyze = async () => {
+  36 |     if (!text.trim()) return;  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/opportunites/[id]/page.tsx
+  64:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/opportunites/[id]/page.tsx:64:21
+  62 |   }, [id]);
+  63 |
+> 64 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  65 |
+  66 |   const triggerBase64Download = (filename: string, base64: string, mimeType: string) => {
+  67 |     const byteChars = atob(base64);  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/opportunites/page.tsx
+  127:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/opportunites/page.tsx:127:21
+  125 |   }, [fStatus, fCountry, fSource, fPriority, fRemote, fSearch, fDuplicate]);
+  126 |
+> 127 |   useEffect(() => { load(); }, [load]);
+      |                     ^^^^ Avoid calling setState() directly within an effect
+  128 |
+  129 |   useEffect(() => {
+  130 |     if (viewMode === "priorites") {  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/page.tsx
+  94:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/page.tsx:94:21
+  92 |   };
+  93 |
+> 94 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  95 |
+  96 |   return (
+  97 |     <div className="p-6 max-w-7xl mx-auto space-y-8">  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/parametres/page.tsx
+  101:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/parametres/page.tsx:101:21
+   99 |   }, []);
+  100 |
+> 101 |   useEffect(() => { load(); }, [load]);
+      |                     ^^^^ Avoid calling setState() directly within an effect
+  102 |
+  103 |   const handleSave = async (data: Record<string, unknown>) => {
+  104 |     setSaving(true);  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/pipeline/page.tsx
+  75:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/pipeline/page.tsx:75:21
+  73 |   }, [filters]);
+  74 |
+> 75 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  76 |
+  77 |   const handleColumnChange = async (taskId: string, newColumn: string) => {
+  78 |     setMoving(taskId);  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx
+  30:19  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:30:19
+  28 |     try {
+  29 |       const stored = localStorage.getItem(STORAGE_KEY);
+> 30 |       if (stored) setPrefs({ ...DEFAULT_PREFS, ...JSON.parse(stored) });
+     |                   ^^^^^^^^ Avoid calling setState() directly within an effect
+  31 |     } catch { /* ignore */ }
+  32 |   }, []);
+  33 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/set-state-in-effect
+  75:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:75:12
+  73 |       <div className="rounded-lg border mb-6" style={{ borderColor: "var(--bordure)", background: "var(--fond-surface)" }}>
+  74 |         <div className="p-4">
+> 75 |           <ToggleRow label="Nom complet" description="Prénom, nom, nom complet" prefKey="autoFillName" />
+     |            ^^^^^^^^^ This component is created during render
+  76 |           <ToggleRow label="Email" description="Adresse email du profil" prefKey="autoFillEmail" />
+  77 |           <ToggleRow label="Téléphone" description="Numéro de téléphone" prefKey="autoFillPhone" />
+  78 |           <ToggleRow label="LinkedIn" description="URL LinkedIn (respecte cvIncludeLinkedIn)" prefKey="autoFillLinkedIn" />
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                                                                                                                                                 react-hooks/static-components
+  76:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:76:12
+  74 |         <div className="p-4">
+  75 |           <ToggleRow label="Nom complet" description="Prénom, nom, nom complet" prefKey="autoFillName" />
+> 76 |           <ToggleRow label="Email" description="Adresse email du profil" prefKey="autoFillEmail" />
+     |            ^^^^^^^^^ This component is created during render
+  77 |           <ToggleRow label="Téléphone" description="Numéro de téléphone" prefKey="autoFillPhone" />
+  78 |           <ToggleRow label="LinkedIn" description="URL LinkedIn (respecte cvIncludeLinkedIn)" prefKey="autoFillLinkedIn" />
+  79 |           <ToggleRow label="Localisation" description="Ville / région du profil" prefKey="autoFillLocation" />
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                                                                                                                                                              react-hooks/static-components
+  77:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:77:12
+  75 |           <ToggleRow label="Nom complet" description="Prénom, nom, nom complet" prefKey="autoFillName" />
+  76 |           <ToggleRow label="Email" description="Adresse email du profil" prefKey="autoFillEmail" />
+> 77 |           <ToggleRow label="Téléphone" description="Numéro de téléphone" prefKey="autoFillPhone" />
+     |            ^^^^^^^^^ This component is created during render
+  78 |           <ToggleRow label="LinkedIn" description="URL LinkedIn (respecte cvIncludeLinkedIn)" prefKey="autoFillLinkedIn" />
+  79 |           <ToggleRow label="Localisation" description="Ville / région du profil" prefKey="autoFillLocation" />
+  80 |           <ToggleRow label="Rémunération" description="Fourchette de rémunération cible" prefKey="autoFillSalary" />
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                                                                       react-hooks/static-components
+  78:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:78:12
+  76 |           <ToggleRow label="Email" description="Adresse email du profil" prefKey="autoFillEmail" />
+  77 |           <ToggleRow label="Téléphone" description="Numéro de téléphone" prefKey="autoFillPhone" />
+> 78 |           <ToggleRow label="LinkedIn" description="URL LinkedIn (respecte cvIncludeLinkedIn)" prefKey="autoFillLinkedIn" />
+     |            ^^^^^^^^^ This component is created during render
+  79 |           <ToggleRow label="Localisation" description="Ville / région du profil" prefKey="autoFillLocation" />
+  80 |           <ToggleRow label="Rémunération" description="Fourchette de rémunération cible" prefKey="autoFillSalary" />
+  81 |           <ToggleRow label="Avertissement upload CV" description="Message d'avertissement pour l'upload manuel" prefKey="autoFillResumeUploadWarning" />
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                        react-hooks/static-components
+  79:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:79:12
+  77 |           <ToggleRow label="Téléphone" description="Numéro de téléphone" prefKey="autoFillPhone" />
+  78 |           <ToggleRow label="LinkedIn" description="URL LinkedIn (respecte cvIncludeLinkedIn)" prefKey="autoFillLinkedIn" />
+> 79 |           <ToggleRow label="Localisation" description="Ville / région du profil" prefKey="autoFillLocation" />
+     |            ^^^^^^^^^ This component is created during render
+  80 |           <ToggleRow label="Rémunération" description="Fourchette de rémunération cible" prefKey="autoFillSalary" />
+  81 |           <ToggleRow label="Avertissement upload CV" description="Message d'avertissement pour l'upload manuel" prefKey="autoFillResumeUploadWarning" />
+  82 |           <ToggleRow label="Lettre de motivation" description="Lettre générée pour ce dossier" prefKey="autoFillCoverLetter" />
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>            react-hooks/static-components
+  80:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:80:12
+  78 |           <ToggleRow label="LinkedIn" description="URL LinkedIn (respecte cvIncludeLinkedIn)" prefKey="autoFillLinkedIn" />
+  79 |           <ToggleRow label="Localisation" description="Ville / région du profil" prefKey="autoFillLocation" />
+> 80 |           <ToggleRow label="Rémunération" description="Fourchette de rémunération cible" prefKey="autoFillSalary" />
+     |            ^^^^^^^^^ This component is created during render
+  81 |           <ToggleRow label="Avertissement upload CV" description="Message d'avertissement pour l'upload manuel" prefKey="autoFillResumeUploadWarning" />
+  82 |           <ToggleRow label="Lettre de motivation" description="Lettre générée pour ce dossier" prefKey="autoFillCoverLetter" />
+  83 |           <ToggleRow label="Réponses ATS" description="Réponses ATS générées" prefKey="autoFillAtsAnswers" />
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>  react-hooks/static-components
+  81:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:81:12
+  79 |           <ToggleRow label="Localisation" description="Ville / région du profil" prefKey="autoFillLocation" />
+  80 |           <ToggleRow label="Rémunération" description="Fourchette de rémunération cible" prefKey="autoFillSalary" />
+> 81 |           <ToggleRow label="Avertissement upload CV" description="Message d'avertissement pour l'upload manuel" prefKey="autoFillResumeUploadWarning" />
+     |            ^^^^^^^^^ This component is created during render
+  82 |           <ToggleRow label="Lettre de motivation" description="Lettre générée pour ce dossier" prefKey="autoFillCoverLetter" />
+  83 |           <ToggleRow label="Réponses ATS" description="Réponses ATS générées" prefKey="autoFillAtsAnswers" />
+  84 |         </div>
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                                                                                               react-hooks/static-components
+  82:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:82:12
+  80 |           <ToggleRow label="Rémunération" description="Fourchette de rémunération cible" prefKey="autoFillSalary" />
+  81 |           <ToggleRow label="Avertissement upload CV" description="Message d'avertissement pour l'upload manuel" prefKey="autoFillResumeUploadWarning" />
+> 82 |           <ToggleRow label="Lettre de motivation" description="Lettre générée pour ce dossier" prefKey="autoFillCoverLetter" />
+     |            ^^^^^^^^^ This component is created during render
+  83 |           <ToggleRow label="Réponses ATS" description="Réponses ATS générées" prefKey="autoFillAtsAnswers" />
+  84 |         </div>
+  85 |       </div>
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                                                                                                                                                                                                 react-hooks/static-components
+  83:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:83:12
+  81 |           <ToggleRow label="Avertissement upload CV" description="Message d'avertissement pour l'upload manuel" prefKey="autoFillResumeUploadWarning" />
+  82 |           <ToggleRow label="Lettre de motivation" description="Lettre générée pour ce dossier" prefKey="autoFillCoverLetter" />
+> 83 |           <ToggleRow label="Réponses ATS" description="Réponses ATS générées" prefKey="autoFillAtsAnswers" />
+     |            ^^^^^^^^^ This component is created during render
+  84 |         </div>
+  85 |       </div>
+  86 |
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/autofill-preferences/page.tsx:44:21
+  42 |   };
+  43 |
+> 44 |   const ToggleRow = ({ label, description, prefKey }: { label: string; description: string; prefKey: string }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     <div className="flex items-center justify-between py-2 border-b" style={{ borderColor: "var(--bordure-douce)" }}>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |       <div>
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |     </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |   );
+     | ^^^^ The component is created during render here
+  61 |
+  62 |   return (
+  63 |     <div style={{ maxWidth: 650, margin: "0 auto" }}>                                                                                                                                                                                                                                                                                                                                      react-hooks/static-components
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/page.tsx
+  124:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/profil/page.tsx:124:21
+  122 |   }, []);
+  123 |
+> 124 |   useEffect(() => { load(); }, [load]);
+      |                     ^^^^ Avoid calling setState() directly within an effect
+  125 |
+  126 |   const saveProfile = async () => {
+  127 |     try {  react-hooks/set-state-in-effect
+  283:40  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/proof-vault/page.tsx
+  68:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/proof-vault/page.tsx:68:21
+  66 |   }, []);
+  67 |
+> 68 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  69 |
+  70 |   const openNew = () => { setForm(EMPTY_PROOF); setEditingId(null); setShowForm(true); };
+  71 |   const openEdit = (entry: ProofEntryItem) => {  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/sources/page.tsx
+  87:21  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(app)/sources/page.tsx:87:21
+  85 |   }, [selCountry, selRole]);
+  86 |
+> 87 |   useEffect(() => { load(); }, [load]);
+     |                     ^^^^ Avoid calling setState() directly within an effect
+  88 |
+  89 |   const save = async () => {
+  90 |     if (!form.name.trim() || !form.url.trim()) return;  react-hooks/set-state-in-effect
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/(public)/elton-os/page.tsx
+  6:50  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/api/application-drafts/[id]/documents/cv/route.ts
+  79:14  warning  'premiumErr' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/app/api/jobs/source-scanner/import-source/route.ts
+   9:7  warning  'USER_AGENT' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  10:7  warning  'TIMEOUT' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/browser-extension/elton-os-importer/popup.js
+    22:5   warning  'importMode' is assigned a value but never used      @typescript-eslint/no-unused-vars
+    24:5   warning  'backendChecked' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   152:10  warning  'setNativeValueFn' is defined but never used         @typescript-eslint/no-unused-vars
+   324:7   warning  'isSearchPage' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  1167:38  warning  '_url' is defined but never used                     @typescript-eslint/no-unused-vars
+  1320:21  warning  'err' is defined but never used                      @typescript-eslint/no-unused-vars
+  1793:37  warning  'suggestions' is defined but never used              @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/components/cv-templates/AtsClassicTemplate.tsx
+  17:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/components/cv-templates/ExecutiveBordeauxTemplate.tsx
+  21:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/components/cv-templates/MinimalLuxeTemplate.tsx
+  21:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/components/cv-templates/ModernExecutiveTemplate.tsx
+  18:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/components/cv-templates/PremiumLeadershipTemplate.tsx
+  17:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/components/cv-templates/StrategicBlueTemplate.tsx
+  22:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/actions/autofill-utils.ts
+  5:30  warning  'AutofillFormData' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/actions/market-radar.ts
+  10:15  warning  'NormalizedJobPosting' is defined but never used  @typescript-eslint/no-unused-vars
+  10:37  warning  'RadarScore' is defined but never used            @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/application-postprocess.ts
+  44:9  warning  'lowerText' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/application-preparer.ts
+  54:9  warning  'sixMonthsAgo' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/connectors/browser-agent-connector.ts
+  13:16  warning  '_query' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/connectors/generic-jsonld.ts
+  38:16  warning  '_query' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/profile-filter.ts
+  317:9  warning  't' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  318:9  warning  'd' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  319:9  warning  'loc' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/quick-score.ts
+  231:9  warning  'location' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/jobs/semantic-matcher.ts
+  260:40  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  471:43  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  504:53  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  524:37  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  624:43  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  656:48  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  768:56  warning  '_job' is defined but never used      @typescript-eslint/no-unused-vars
+  768:72  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+  827:76  warning  '_profile' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/market-radar/bulk-scanner.ts
+   5:10  warning  'classifySource' is defined but never used        @typescript-eslint/no-unused-vars
+   6:10  warning  'createRadarCandidate' is defined but never used  @typescript-eslint/no-unused-vars
+  23:28  warning  'q' is defined but never used                     @typescript-eslint/no-unused-vars
+  24:21  warning  'q' is defined but never used                     @typescript-eslint/no-unused-vars
+  25:32  warning  'q' is defined but never used                     @typescript-eslint/no-unused-vars
+  26:24  warning  'q' is defined but never used                     @typescript-eslint/no-unused-vars
+  27:26  warning  'q' is defined but never used                     @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/market-radar/normalizer.ts
+  18:7  error  'cleaned' is never reassigned. Use 'const' instead  prefer-const
+  61:7  error  'loc' is never reassigned. Use 'const' instead      prefer-const
+
+/Users/duarteelton/Desktop/JOB PROJECT/lib/market-radar/query-builder.ts
+  24:3  warning  'cvMasterText' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/tests/crm-cockpit.test.ts
+  312:11  warning  'isLocal' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/tests/cv-templates.test.ts
+  3:25  warning  'formatDateRange' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/duarteelton/Desktop/JOB PROJECT/tests/market-radar-actions.test.ts
+  3:31  warning  'sanitizeJobDescription' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 127 problems (37 errors, 90 warnings)
+  2 errors and 2 warnings potentially fixable with the `--fix` option.
+

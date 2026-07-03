@@ -1,0 +1,201 @@
+
+> elton-os@0.1.0 build
+> next build
+
+▲ Next.js 16.2.9 (Turbopack)
+- Environments: .env.local, .env
+
+  Creating an optimized production build ...
+Turbopack build encountered 2 warnings:
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Import traces:
+  App Route:
+    ./next.config.ts
+    ./lib/jobs/browser-agent/session-store.ts
+    ./app/api/jobs/browser-agent/status/route.ts
+
+  Server Component:
+    ./next.config.ts
+    ./app/generated/prisma/index.js
+    ./lib/prisma.ts
+    ./lib/actions/market-radar.ts
+
+
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Output asset trace:
+  [output]/.next/server/app/api/health/route.js
+  [output]/.next/server/chunks/[root-of-the-server]__0d2flu3._.js
+
+Import traces:
+  App Route:
+    ./next.config.ts
+    ./lib/jobs/browser-agent/session-store.ts
+    ./app/api/jobs/browser-agent/status/route.ts
+
+  Server Component:
+    ./next.config.ts
+    ./app/generated/prisma/index.js
+    ./lib/prisma.ts
+    ./lib/actions/market-radar.ts
+
+
+✓ Compiled successfully in 39.0s
+  Running TypeScript ...
+  Finished TypeScript in 2.2min ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/92) ...
+  Generating static pages using 7 workers (23/92) 
+  Generating static pages using 7 workers (46/92) 
+  Generating static pages using 7 workers (69/92) 
+✓ Generating static pages using 7 workers (92/92) in 1634ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /analyse
+├ ƒ /api/application-drafts/[id]
+├ ƒ /api/application-drafts/[id]/assisted-apply/mark-sent
+├ ƒ /api/application-drafts/[id]/assisted-apply/start
+├ ƒ /api/application-drafts/[id]/autofill
+├ ƒ /api/application-drafts/[id]/crm
+├ ƒ /api/application-drafts/[id]/documents
+├ ƒ /api/application-drafts/[id]/documents/cover-letter
+├ ƒ /api/application-drafts/[id]/documents/cover-letter-text
+├ ƒ /api/application-drafts/[id]/documents/cv
+├ ƒ /api/application-drafts/[id]/documents/zip
+├ ƒ /api/application-drafts/[id]/follow-up/generate
+├ ƒ /api/application-drafts/[id]/interview-prep
+├ ƒ /api/application-drafts/[id]/pipeline-action
+├ ƒ /api/crm/contacts
+├ ƒ /api/crm/contacts/[id]
+├ ƒ /api/crm/interactions
+├ ƒ /api/crm/summary
+├ ƒ /api/cron/report-evening
+├ ƒ /api/cron/report-morning
+├ ƒ /api/cron/sourcing
+├ ƒ /api/demo
+├ ƒ /api/elton-os/lead
+├ ƒ /api/experiences
+├ ƒ /api/health
+├ ƒ /api/interview-prep
+├ ƒ /api/interview-prep/[id]
+├ ƒ /api/jobs
+├ ƒ /api/jobs/[id]
+├ ƒ /api/jobs/[id]/draft
+├ ƒ /api/jobs/[id]/prepare-application
+├ ƒ /api/jobs/[id]/score
+├ ƒ /api/jobs/[id]/status
+├ ƒ /api/jobs/application-analytics
+├ ƒ /api/jobs/application-pipeline
+├ ƒ /api/jobs/assisted-import/import
+├ ƒ /api/jobs/assisted-import/match-draft
+├ ƒ /api/jobs/assisted-import/preview
+├ ƒ /api/jobs/browser-agent/configs
+├ ƒ /api/jobs/browser-agent/configs/[id]
+├ ƒ /api/jobs/browser-agent/login
+├ ƒ /api/jobs/browser-agent/run
+├ ƒ /api/jobs/browser-agent/status
+├ ƒ /api/jobs/cron/evening
+├ ƒ /api/jobs/cron/morning
+├ ƒ /api/jobs/cron/sourcing
+├ ƒ /api/jobs/cron/sourcing/dashboard
+├ ƒ /api/jobs/cron/sourcing/latest
+├ ƒ /api/jobs/firecrawl-safe/import
+├ ƒ /api/jobs/firecrawl-safe/preview
+├ ƒ /api/jobs/firecrawl-safe/status
+├ ƒ /api/jobs/import/run
+├ ƒ /api/jobs/importer/capture
+├ ƒ /api/jobs/importer/extension
+├ ƒ /api/jobs/purge-archived
+├ ƒ /api/jobs/quick-score
+├ ƒ /api/jobs/reports
+├ ƒ /api/jobs/reports/latest
+├ ƒ /api/jobs/reports/test-notification
+├ ƒ /api/jobs/safe-sources
+├ ƒ /api/jobs/safe-sources/[id]
+├ ƒ /api/jobs/safe-sources/[id]/run
+├ ƒ /api/jobs/safe-sources/cron
+├ ƒ /api/jobs/safe-sources/report
+├ ƒ /api/jobs/safe-sources/run
+├ ƒ /api/jobs/safe-sources/status
+├ ƒ /api/jobs/source-scanner/import-source
+├ ƒ /api/jobs/source-scanner/list
+├ ƒ /api/jobs/source-scanner/scan
+├ ƒ /api/market-radar/action
+├ ƒ /api/market-radar/candidates
+├ ƒ /api/market-radar/create-candidate
+├ ƒ /api/market-radar/ft-urls
+├ ƒ /api/market-radar/preview
+├ ƒ /api/market-radar/scan
+├ ƒ /api/market-radar/wttj-urls
+├ ƒ /api/profile
+├ ƒ /api/skills
+├ ○ /cv-maitre
+├ ○ /dashboard/jobs
+├ ○ /dashboard/jobs/analytics
+├ ƒ /dashboard/jobs/applications/[id]
+├ ƒ /dashboard/jobs/applications/[id]/assisted-apply
+├ ƒ /dashboard/jobs/applications/[id]/cv-print
+├ ƒ /dashboard/jobs/applications/[id]/print
+├ ○ /dashboard/jobs/autofill
+├ ○ /dashboard/jobs/crm
+├ ƒ /dashboard/jobs/crm/contacts/[id]
+├ ○ /dashboard/jobs/importer
+├ ○ /dashboard/jobs/importer/capture
+├ ○ /dashboard/jobs/importer/extension
+├ ○ /dashboard/jobs/importer/firecrawl-safe
+├ ○ /dashboard/jobs/interview-prep
+├ ƒ /dashboard/jobs/interview-prep/[id]
+├ ○ /dashboard/jobs/pipeline
+├ ○ /dashboard/jobs/reports
+├ ○ /dashboard/jobs/settings
+├ ○ /dashboard/jobs/source-scanner
+├ ○ /dashboard/jobs/sources
+├ ○ /demarrage
+├ ○ /documents
+├ ƒ /documents/[id]
+├ ƒ /documents/[id]/print-cv
+├ ○ /documents/templates
+├ ○ /elton-os
+├ ○ /entretiens
+├ ƒ /entretiens/[id]
+├ ○ /first-run
+├ ○ /guide
+├ ○ /market-radar
+├ ○ /opportunites
+├ ƒ /opportunites/[id]
+├ ○ /parametres
+├ ○ /performance
+├ ○ /pipeline
+├ ○ /profil
+├ ○ /profil/autofill-preferences
+├ ○ /proof-vault
+├ ○ /quality-check
+├ ○ /sources
+└ ○ /test-flow
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

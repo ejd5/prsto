@@ -1,0 +1,50 @@
+# ELTON OS — E2E Test Report
+
+## Status: MVP COMPLETE ✓
+
+### Summary
+- 5 critical user journey tests: 23 tests ✓
+- Smoke route tests: 19 tests ✓
+- Safety tests: 4 tests ✓
+- **Total: 27 E2E tests — all passing**
+
+### Critical Journeys (e2e/critical/)
+
+| Journey | Tests | File | Status |
+|---------|-------|------|--------|
+| 1. Dashboard lisible | 5 | `01-dashboard.spec.ts` | ✓ |
+| 2. Import assisté mock | 5 | `02-assisted-import.spec.ts` | ✓ |
+| 3. Génération candidature | 5 | `03-application-generation.spec.ts` | ✓ |
+| 4. CV premium PDF | 3 | `04-premium-cv-pdf.spec.ts` | ✓ |
+| 5. Pipeline + sécurité | 5 | `05-pipeline.spec.ts` | ✓ |
+
+### Route Smoke (e2e/routes-smoke.spec.ts)
+- 18 routes principales testées (200 OK + rendu) ✓
+- Sidebar navigation testée ✓
+
+### Safety (e2e/safety.spec.ts)
+- Pipeline : instructions manuelles visibles ✓
+- Paramètres : clé API masquée ✓
+- Documents : statuts visibles ✓
+- Guide : "ne postule jamais" ✓
+
+### How to Run
+
+```bash
+npm run test:e2e              # All E2E tests
+npm run test:e2e:critical     # Only 5 critical journeys
+npm run test:e2e:headed       # Visible browser mode
+npm run test:e2e:report       # Show HTML report
+```
+
+### Prerequisites
+- Playwright: `npx playwright install chromium`
+- Dev server (auto-started via playwright.config.ts `webServer`)
+- Database seeded: `npm run db:seed`
+
+### Limitations
+- No real LinkedIn/Indeed/APEC testing
+- No real Chrome extension testing
+- Extension simulation via `/test-flow/extension-fixture`
+- Demo data via `/test-flow` (API-based, no external calls)
+- No real AI provider calls

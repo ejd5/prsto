@@ -1,0 +1,16 @@
+export { RecruitersHero } from "./RecruitersHero";
+export { ProblemSolution } from "./ProblemSolution";
+export { ComparatifTable } from "./ComparatifTable";
+export { RecruitersFeatures } from "./RecruitersFeatures";
+export { RecruitersStats } from "./RecruitersStats";
+export { WorkflowSection } from "./WorkflowSection";
+export { RecruitersTestimonials } from "./RecruitersTestimonials";
+export { RecruitersPricing } from "./RecruitersPricing";
+export { RecruitersFaq } from "./RecruitersFaq";
+export { RecruitersCta } from "./RecruitersCta";
+export { AboutVisionRecruiter } from "./AboutVisionRecruiter";
+export { ConstatMarcheRecruiter } from "./ConstatMarcheRecruiter";
+export { ComparatifModelesRecruiter } from "./ComparatifModelesRecruiter";
+export { AccompagnementRecruiter } from "./AccompagnementRecruiter";
+export { RecruitersBrandModel } from "./RecruitersBrandModel";
+export { AucunFraisBanner } from "./AucunFraisBanner";

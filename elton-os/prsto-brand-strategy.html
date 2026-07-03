@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRSTO — Stratégie de Marque & Modèle Économique</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#FAF6EF;--surface:#FFFDF8;--text:#0B1F18;--muted:#50625A;--gold:#E4B118;--gold-dark:#A38010;--green:#103826;--sage:#6A8F6D;--border:rgba(16,56,38,0.08);--radius:16px;--red:#b91c1c;--blue:#2563eb;--radius-sm:10px}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:15px}
+  .doc-hero{background:linear-gradient(145deg,#103826,#082E1E);color:#FFFDF8;padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden}
+  .doc-hero::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(228,177,24,0.10) 0%,transparent 70%);pointer-events:none}
+  .doc-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:12px;line-height:1.05}
+  .doc-hero h1 span{color:var(--gold)}
+  .doc-hero p{font-size:1rem;color:rgba(250,246,239,0.55);max-width:680px;margin:0 auto;line-height:1.5}
+  .doc-hero .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(228,177,24,0.1);border:1px solid rgba(228,177,24,0.2);border-radius:100px;padding:5px 14px;font-size:0.7rem;font-weight:700;color:var(--gold);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.06em}
+  .doc-hero .meta{margin-top:18px;font-size:0.78rem;color:rgba(250,246,239,0.4)}
+  .container{max-width:1080px;margin:0 auto;padding:0 24px}
+  section{padding:56px 0}
+  section+section{border-top:1px solid var(--border)}
+  .section-label{display:inline-flex;align-items:center;gap:6px;background:rgba(16,56,38,0.06);border:1px solid var(--border);border-radius:100px;padding:4px 14px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+  h2{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.6vw,2.1rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:8px;color:var(--text)}
+  h3{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px}
+  h4{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--gold-dark);margin-bottom:6px}
+  .subtitle{color:var(--muted);font-size:0.88rem;max-width:640px;margin-bottom:30px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.02);transition:transform 0.2s,box-shadow 0.2s}
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+  .card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .card-header .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .card ul{list-style:none;padding:0}
+  .card ul li{padding:5px 0;font-size:0.85rem;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+  .card ul li::before{content:'→';color:var(--gold);font-weight:700;font-size:0.78rem;flex-shrink:0;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:0.82rem;border-radius:12px;overflow:hidden;margin:16px 0}
+  thead th{background:rgba(16,56,38,0.04);padding:12px 14px;text-align:left;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-bottom:2px solid var(--border);color:var(--text)}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;font-size:0.8rem}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(16,56,38,0.015)}
+  tbody td:first-child{font-weight:600;white-space:nowrap;color:var(--text)}
+  .pill{display:inline-block;padding:2px 10px;border-radius:100px;font-size:0.66rem;font-weight:600;letter-spacing:0.02em}
+  .pill-green{background:rgba(16,56,38,0.1);color:var(--green)}
+  .pill-gold{background:rgba(228,177,24,0.12);color:var(--gold-dark)}
+  .pill-red{background:rgba(220,38,38,0.08);color:var(--red)}
+  .pill-blue{background:rgba(37,99,235,0.08);color:var(--blue)}
+  .pill-gray{background:rgba(80,98,90,0.1);color:var(--muted)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+  .highlight{border-color:rgba(228,177,24,0.25);background:rgba(228,177,24,0.025)}
+  .red-card{border-color:rgba(220,38,38,0.2);background:rgba(220,38,38,0.02)}
+  .green-card{border-color:rgba(22,163,74,0.2);background:rgba(22,163,74,0.02)}
+  .toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 26px;margin:28px 0}
+  .toc h3{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;color:var(--muted)}
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .toc a{color:var(--green);text-decoration:none;font-size:0.82rem;font-weight:500;padding:2px 0}
+  .toc a:hover{color:var(--gold-dark)}
+  @media(max-width:640px){.toc-grid{grid-template-columns:1fr}}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+  .stat-card .num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold)}
+  .stat-card .label{font-size:0.78rem;color:var(--muted);margin-top:4px}
+  .checklist{list-style:none}
+  .checklist li{padding:7px 0;font-size:0.84rem;color:var(--muted);display:flex;align-items:flex-start;gap:10px}
+  .checklist li .check,.checklist li .cross,.checklist li .neutral{flex-shrink:0;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;margin-top:2px}
+  .checklist li .check{background:rgba(16,56,38,0.1);color:var(--green)}
+  .checklist li .cross{background:rgba(220,38,38,0.08);color:var(--red)}
+  .checklist li .neutral{background:rgba(80,98,90,0.1);color:var(--muted)}
+  .quote{border-left:3px solid var(--gold);padding:14px 18px;background:rgba(228,177,24,0.04);border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:18px 0;font-style:italic;font-size:0.88rem;color:var(--muted)}
+  .quote strong{color:var(--text);font-style:normal}
+  .scenario{padding:18px 22px;background:linear-gradient(145deg,rgba(16,56,38,0.04),rgba(228,177,24,0.04));border:1px solid var(--border);border-radius:var(--radius);margin:16px 0}
+  .scenario h4{color:var(--text);font-family:'Inter',sans-serif;font-size:0.95rem;margin-bottom:8px}
+  .scenario p{font-size:0.85rem;color:var(--muted);margin-bottom:6px}
+  .scenario .price{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--gold);margin-top:8px}
+  .alert{padding:18px 22px;border-radius:var(--radius);margin:16px 0;font-size:0.86rem}
+  .alert-warn{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);color:#92400e}
+  .alert-info{background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.2);color:#1e40af}
+  .alert-success{background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.2);color:#15803d}
+  .alert h4{margin-bottom:6px;font-size:0.92rem}
+  .timeline{display:flex;gap:0;margin:20px 0;overflow-x:auto;padding-bottom:6px}
+  .timeline-step{flex:1;min-width:120px;padding:14px 10px;background:var(--surface);border:1px solid var(--border);border-radius:0;position:relative;text-align:center}
+  .timeline-step:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm)}
+  .timeline-step:last-child{border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+  .timeline-step .step-num{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:4px}
+  .timeline-step .step-label{font-size:0.72rem;font-weight:600;color:var(--text)}
+  .timeline-step .step-sub{font-size:0.68rem;color:var(--muted);margin-top:2px}
+  .timeline-step + .timeline-step{border-left:none}
+  .timeline-step.active{background:rgba(228,177,24,0.08);border-color:rgba(228,177,24,0.3)}
+  .arrow{text-align:center;font-size:1.2rem;color:rgba(228,177,24,0.4);padding:2px 0}
+  .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:40px 0}
+  .legal-clause{background:rgba(80,98,90,0.04);border-left:3px solid var(--muted);padding:14px 18px;margin:10px 0;border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+  .legal-clause h4{color:var(--text);font-family:'Inter',sans-serif;font-size:0.88rem;margin-bottom:6px}
+  .legal-clause p{font-size:0.8rem;color:var(--muted);line-height:1.5}
+  footer{text-align:center;padding:40px 24px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="doc-hero">
+  <div class="badge">✦ Étude stratégique complète</div>
+  <h1>PRSTO : de la Franchise<br>au <span>Modèle de Marque</span></h1>
+  <p>Diagnostic complet, modèle économique, contrat de marque, feuille de route commerciale, et plan de mise à jour du site.</p>
+  <div class="meta">Document confidentiel · Juin 2026 · 0 vente, 0 client, on part de zéro</div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>Sommaire</h3>
+  <div class="toc-grid">
+    <a href="#diagnostic">1. Diagnostic site actuel</a>
+    <a href="#modeles">2. Franchise vs Marque vs SaaS pur</a>
+    <a href="#positionnement">3. Positionnement PRSTO recommandé</a>
+    <a href="#offres">4. Nouvelles offres & grille tarifaire</a>
+    <a href="#contrat">5. Contrat de licence de marque</a>
+    <a href="#manque">6. Ce qui manque sur le site</a>
+    <a href="#pitch">7. Pitch commercial recruteur</a>
+    <a href="#roadmap">8. Roadmap de mise à jour</a>
+    <a href="#conclusion">9. Conclusion & prochaines actions</a>
+  </div>
+</div>
+
+<!-- 1. DIAGNOSTIC -->
+<section id="diagnostic">
+  <div class="section-label">✦ Diagnostic</div>
+  <h2>1. Diagnostic de l'état actuel</h2>
+  <p class="subtitle">On part d'une feuille blanche commerciale : aucune vente, aucun client signé, aucun revenu, aucune promotion publique. Le site est prêt techniquement mais le modèle économique n'est pas formalisé.</p>
+
+  <h3>1.1 Ce qui existe</h3>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#16a34a;"></div><h3>Site web</h3></div>
+      <ul>
+        <li>Landing page <code>/prsto</code> complète et design</li>
+        <li>21 sections (hero, stats, vision, comparatif, pricing, FAQ, CTA)</li>
+        <li>21 images générées par IA en place</li>
+        <li>Toutes les sections orientées recruteur</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#16a34a;"></div><h3>App authentifiée</h3></div>
+      <ul>
+        <li>Dashboard cockpit recruteur fonctionnel</li>
+        <li>14 pages outils repositionnées (CV, ATS, etc.)</li>
+        <li>Sidebar avec 6 sections recruteur</li>
+        <li>Base de données Prisma/SQLite</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#16a34a;"></div><h3>Extension Chrome</h3></div>
+      <ul>
+        <li>Manifest v3.0.0 rebranded PRSTO Recruteur</li>
+        <li>5 extracteurs profil candidat</li>
+        <li>Popup 6 onglets recruteur</li>
+        <li>8 API routes serveur créées</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;">1.2 Ce qui manque — état des lieux critique</h3>
+  <table>
+    <thead><tr><th>Élément</th><th>État</th><th>Priorité</th></tr></thead>
+    <tbody>
+      <tr><td>Page Tarifs publique détaillée</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>Formulaire d'inscription self-service</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>Page « Devenir Partenaire PRSTO »</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>Contrat de licence de marque</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>Explication des frais / royalties</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>FAQ sur la licence de marque</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>Page « Marque blanche » ou « Co-branding »</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>Comparatif Franchise vs Licence de marque</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-green">Moyenne</span></td></tr>
+      <tr><td>Conditions Générales d'Utilisation (CGU)</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>Mentions légales RGPD</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>Système de paiement Stripe</td><td><span class="pill pill-gray">Inconnu</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>Témoignages clients vérifiés</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-green">Moyenne</span></td></tr>
+      <tr><td>Page « À propos / Notre histoire »</td><td><span class="pill pill-gray">Minimal</span></td><td><span class="pill pill-green">Moyenne</span></td></tr>
+      <tr><td>Page contact commerciale</td><td><span class="pill pill-red">Manquant</span></td><td><span class="pill pill-gold">Haute</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 2. MODÈLES -->
+<section id="modeles">
+  <div class="section-label">✦ Modèles économiques</div>
+  <h2>2. Franchise vs Licence de marque vs SaaS pur</h2>
+  <p class="subtitle">Trois modèles, trois positionnements. Le choix du modèle conditionne toute la stratégie commerciale et juridique.</p>
+
+  <div class="grid-3">
+    <div class="card red-card">
+      <div class="card-header"><div class="dot" style="background:#b91c1c;"></div><h3 style="color:#b91c1c;">A. Franchise</h3></div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Le modèle le plus lourd</p>
+      <ul>
+        <li>Droit d'entrée : 10-50k€</li>
+        <li>Royalties : 5-10% du CA</li>
+        <li>Formation obligatoire</li>
+        <li>Territoire exclusif attribué</li>
+        <li>Manuel opératoire contraignant</li>
+        <li>Engagement 3-5 ans</li>
+        <li>Audit annuel de conformité</li>
+      </ul>
+      <p style="font-size:0.75rem;margin-top:10px;color:#b91c1c;font-weight:600;">❌ Trop lourd pour PRSTO à ce stade</p>
+    </div>
+
+    <div class="card highlight">
+      <div class="card-header"><div class="dot" style="background:var(--gold);"></div><h3 style="color:var(--gold-dark);">B. Licence de marque ★</h3></div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Le modèle recommandé pour PRSTO</p>
+      <ul>
+        <li>Pas de droit d'entrée</li>
+        <li>Royalties : 0% ou très faibles</li>
+        <li>Abonnement SaaS = droit d'usage de la marque</li>
+        <li>Charte graphique simple à respecter</li>
+        <li>Pas de territoire exclusif</li>
+        <li>Engagement mensuel, sans engagement long</li>
+        <li>Pas d'audit physique</li>
+      </ul>
+      <p style="font-size:0.75rem;margin-top:10px;color:var(--gold-dark);font-weight:600;">✅ Modèle qui correspond à PRSTO</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#6A8F6D;"></div><h3>C. SaaS pur</h3></div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">Le modèle sans marque</p>
+      <ul>
+        <li>Aucun droit de marque</li>
+        <li>Pas de co-branding</li>
+        <li>Outils seulement, recruteur travaille sous SON nom</li>
+        <li>Pas de sentiment d'appartenance</li>
+        <li>Marketing limité à PRSTO</li>
+      </ul>
+      <p style="font-size:0.75rem;margin-top:10px;color:var(--muted);font-weight:600;">Trop minimal — laisse de la valeur sur la table</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:32px;font-size:1.1rem;">Pourquoi PRSTO doit choisir la Licence de marque (B)</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Avantages pour PRSTO</h4>
+      <ul>
+        <li>Revenu récurrent prévisible (abonnement)</li>
+        <li>Effet réseau : plus il y a de partenaires, plus PRSTO est visible</li>
+        <li>Coût d'acquisition client partagé avec les partenaires</li>
+        <li>Notoriété de marque construite organiquement</li>
+        <li>Lock-in naturel : le partenaire ne veut pas perdre son statut</li>
+        <li>Scaling rapide : pas de contraintes opérationnelles</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Avantages pour le partenaire</h4>
+      <ul>
+        <li>Pas de droit d'entrée (vs 10-50k€ en franchise)</li>
+        <li>Pas de royalties sur le CA placement (vs 5-10% en franchise)</li>
+        <li>Marque forte derrière soi pour crédibiliser auprès des clients</li>
+        <li>Logo et badge "Partenaire PRSTO" sur tous les supports</li>
+        <li>Référencement possible sur le site PRSTO</li>
+        <li>Liberté totale de gestion et de tarification</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. POSITIONNEMENT -->
+<section id="positionnement">
+  <div class="section-label">✦ Positionnement</div>
+  <h2>3. Positionnement PRSTO recommandé</h2>
+  <p class="subtitle">Une marque, deux dimensions, zéro friction à l'entrée.</p>
+
+  <div class="quote">
+    <strong>PRSTO est une marque d'outils et de méthode</strong> que les cabinets de recrutement et recruteurs indépendants peuvent adopter pour professionnaliser leur approche candidat, sans droits d'entrée, sans royalties, sans contraintes géographiques.
+  </div>
+
+  <h3>3.1 Les deux statuts possibles</h3>
+  <table>
+    <thead><tr><th>Statut</th><th>Pour qui</th><th>Avantages</th><th>Engagement</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill pill-blue">Utilisateur PRSTO</span></td>
+        <td>Recruteur qui veut juste les outils</td>
+        <li>Outils de préparation</li>
+        <li>Extension Chrome</li>
+        <li>Dashboard personnel</li>
+        <li>Support standard</td>
+        <td>Aucun (juste l'abonnement)</td>
+      </tr>
+      <tr>
+        <td><span class="pill pill-gold">Partenaire PRSTO ★</span></td>
+        <td>Cabinet qui veut la marque + outils</td>
+        <li>Tout ce qu'a l'utilisateur</li>
+        <li>Droit d'usage du logo PRSTO</li>
+        <li>Badge "Partenaire PRSTO Pro"</li>
+        <li>Page dédiée sur le site PRSTO</li>
+        <li>Co-branding autorisé</li>
+        <li>Support prioritaire</li>
+        <li>Accès anticipé aux nouvelles features</li>
+        <td>Charte de marque à respecter + abonnement actif</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:24px;">3.2 Critères pour devenir Partenaire</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Prérequis</h4>
+      <ul>
+        <li>Abonnement Pro ou Elite actif</li>
+        <li>Avoir préparé au moins 10 dossiers candidats</li>
+        <li>Signer la charte de marque PRSTO</li>
+        <li>Avoir un profil LinkedIn vérifié</li>
+        <li>Accepter de figurer sur le site PRSTO</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Interdits</h4>
+      <ul>
+        <li>Modifier le logo PRSTO</li>
+        <li>Utiliser la marque sur des produits non liés au recrutement</li>
+        <li>Revendre l'accès aux outils PRSTO</li>
+        <li>Communiquer en utilisant la marque comme sienne</li>
+        <li>Tenir des propos trompeurs sur la marque</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4. OFFRES -->
+<section id="offres">
+  <div class="section-label">✦ Grille tarifaire</div>
+  <h2>4. Nouvelles offres & grille tarifaire mise à jour</h2>
+  <p class="subtitle">La grille actuelle (99/199/349$) reste valide. On y ajoute une lecture claire des droits inclus et un upgrade pour le statut Partenaire.</p>
+
+  <table>
+    <thead><tr><th>Plan</th><th>Prix</th><th>Candidats</th><th>Utilisateur</th><th>Partenaire ★</th><th>Support</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill pill-gray">Solo</span></td>
+        <td>99$/mois</td>
+        <td>5</td>
+        <td>✓</td>
+        <td><span class="pill pill-red">Non</span></td>
+        <td>Email</td>
+      </tr>
+      <tr>
+        <td><span class="pill pill-blue">Pro</span></td>
+        <td>199$/mois</td>
+        <td>25</td>
+        <td>✓</td>
+        <td><span class="pill pill-gold">Éligible</span></td>
+        <td>Chat 24/7</td>
+      </tr>
+      <tr>
+        <td><span class="pill pill-gold">Elite</span></td>
+        <td>349$/mois</td>
+        <td>100</td>
+        <td>✓</td>
+        <td><span class="pill pill-gold">Inclus</span></td>
+        <td>Prioritaire + Slack</td>
+      </tr>
+      <tr>
+        <td><span class="pill pill-green">Sur-mesure</span></td>
+        <td>Sur devis</td>
+        <td>Illimité</td>
+        <td>✓</td>
+        <td><span class="pill pill-gold">Inclus + sur-mesure</span></td>
+        <td>Account manager dédié</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-info">
+    <h4>💡 Positionnement tarifaire vs marché</h4>
+    <p><strong>Lusha</strong> : 49-199$/mois · <strong>Apollo</strong> : 59-99$/mois · <strong>SeekOut</strong> : 99-499$/mois · <strong>HireEZ</strong> : 169-299$/mois. <strong>PRSTO</strong> : 99-349$/mois. Positionnement premium mais accessible. La licence de marque (gratuite pour Elite) est un différenciateur majeur face à la concurrence.</p>
+  </div>
+
+  <h3 style="margin-top:24px;">4.1 Comparatif des 3 modèles de revente</h3>
+  <div class="grid-3">
+    <div class="card">
+      <h4>Mode Utilisateur Simple</h4>
+      <p style="font-size:0.78rem;color:var(--muted);margin:6px 0;">Le recruteur utilise PRSTO sous sa propre marque</p>
+      <p class="price" style="color:var(--green);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;">99-349$/mois</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Recommandé pour les indépendants qui débutent</p>
+    </div>
+    <div class="card highlight">
+      <h4>Mode Partenaire PRSTO ★</h4>
+      <p style="font-size:0.78rem;color:var(--muted);margin:6px 0;">Le cabinet utilise PRSTO + la marque PRSTO en co-branding</p>
+      <p class="price" style="color:var(--gold-dark);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;">199-349$/mois</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Recommandé pour les cabinets établis qui veulent capitaliser sur la marque</p>
+    </div>
+    <div class="card">
+      <h4>Mode Marque Blanche</h4>
+      <p style="font-size:0.78rem;color:var(--muted);margin:6px 0;">Le cabinet utilise PRSTO entièrement sous SA marque</p>
+      <p class="price" style="color:var(--green);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;">Sur devis</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">Recommandé pour les grands cabinets qui veulent internaliser</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. CONTRAT -->
+<section id="contrat">
+  <div class="section-label">✦ Juridique</div>
+  <h2>5. Contrat de licence de marque — clauses clés</h2>
+  <p class="subtitle">Un contrat simple, lisible, sans les lourdeurs d'un contrat de franchise. Le partenaire signe un accord de licence d'usage de la marque PRSTO.</p>
+
+  <div class="alert alert-warn">
+    <h4>⚠ Avant de signer un contrat avec qui que ce soit</h4>
+    <p>Faire valider ce contrat par un avocat spécialisé en propriété intellectuelle. Le modèle ci-dessous est une base de travail, pas un document juridiquement opposable.</p>
+  </div>
+
+  <h3 style="margin-top:24px;">5.1 Structure du contrat (8 articles)</h3>
+  
+  <div class="legal-clause">
+    <h4>Article 1 — Objet</h4>
+    <p>Le présent contrat accorde au Partenaire une licence non-exclusive d'utilisation de la marque PRSTO (logo, nom commercial, identité visuelle) dans le cadre exclusif de son activité de recrutement, pour la durée de l'abonnement actif.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 2 — Conditions d'éligibilité</h4>
+    <p>Le Partenaire doit : (a) être abonné actif à un plan Pro, Elite ou Sur-mesure, (b) avoir préparé au minimum 10 dossiers via PRSTO, (c) avoir un profil vérifié, (d) accepter la charte graphique PRSTO.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 3 — Droits accordés</h4>
+    <p>Le Partenaire peut : utiliser le logo PRSTO sur ses supports (site, CV envoyés, emails, LinkedIn), afficher la mention "Partenaire PRSTO Pro", figurer sur la page partenaires du site PRSTO, bénéficier du co-branding sur les documents générés.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 4 — Interdictions</h4>
+    <p>Le Partenaire s'interdit de : modifier le logo PRSTO, utiliser la marque sur des produits non liés au recrutement, revendre l'accès aux outils, communiquer de manière trompeuse, déposer une marque similaire.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 5 — Royalties et frais</h4>
+    <p>Aucun droit d'entrée. Aucune royalty sur le chiffre d'affaires de placement. Le seul coût est l'abonnement SaaS mensuel (Pro/Elite). Le statut Partenaire est inclus dans l'abonnement Elite.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 6 — Durée et résiliation</h4>
+    <p>Le contrat est valable tant que l'abonnement est actif. Il prend fin automatiquement à la résiliation de l'abonnement. Le Partenaire dispose d'un délai de 30 jours pour retirer la marque de ses supports.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 7 — Protection de la marque</h4>
+    <p>PRSTO reste propriétaire exclusif de sa marque. Le Partenaire reconnaît que l'usage de la marque ne lui transfère aucun droit de propriété intellectuelle. Toute utilisation non autorisée est constitutive de contrefaçon.</p>
+  </div>
+
+  <div class="legal-clause">
+    <h4>Article 8 — Responsabilité</h4>
+    <p>Le Partenaire est seul responsable des contenus qu'il publie sous la marque PRSTO. PRSTO se réserve le droit de retirer le statut Partenaire en cas de manquement à la charte ou de comportement nuisible à la marque.</p>
+  </div>
+</section>
+
+<!-- 6. CE QUI MANQUE -->
+<section id="manque">
+  <div class="section-label">✦ Mise à jour site</div>
+  <h2>6. Ce qui manque sur le site pour pouvoir vendre</h2>
+  <p class="subtitle">Le site est techniquement prêt mais commercialement incomplet. Voici la liste exhaustive des manques à combler avant la première vente.</p>
+
+  <table>
+    <thead><tr><th>Élément manquant</th><th>Importance</th><th>Délai estimé</th><th>Difficulté</th></tr></thead>
+    <tbody>
+      <tr><td>Page "Devenir Partenaire PRSTO"</td><td><span class="pill pill-gold">Critique</span></td><td>2 jours</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Explication des frais (zéro droit, zéro royalty)</td><td><span class="pill pill-gold">Critique</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Page Tarifs publique avec grille détaillée</td><td><span class="pill pill-gold">Critique</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Page "Comment ça marche" (parcours partenaire)</td><td><span class="pill pill-gold">Haute</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>FAQ "Partenaire / Licence de marque"</td><td><span class="pill pill-gold">Haute</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Formulaire de candidature Partenaire</td><td><span class="pill pill-gold">Haute</span></td><td>2 jours</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Mentions légales RGPD</td><td><span class="pill pill-gold">Critique</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>CGU / CGV</td><td><span class="pill pill-gold">Critique</span></td><td>2 jours</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Page contact commerciale</td><td><span class="pill pill-gold">Haute</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Intégration Stripe pour paiement</td><td><span class="pill pill-gold">Haute</span></td><td>3-5 jours</td><td><span class="pill pill-gold">Moyenne</span></td></tr>
+      <tr><td>Tableau comparatif Franchise / Licence / SaaS pur</td><td><span class="pill pill-green">Moyenne</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>Page "Nos partenaires" (vitrine vide au lancement)</td><td><span class="pill pill-green">Moyenne</span></td><td>1 jour</td><td><span class="pill pill-green">Facile</span></td></tr>
+      <tr><td>3 témoignages beta-testeurs (à interviewer)</td><td><span class="pill pill-green">Moyenne</span></td><td>5 jours</td><td><span class="pill pill-gold">Moyenne</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 7. PITCH -->
+<section id="pitch">
+  <div class="section-label">✦ Pitch commercial</div>
+  <h2>7. Comment présenter PRSTO aux clients</h2>
+  <p class="subtitle">Le pitch en 30 secondes, 2 minutes, et 10 minutes pour tous les contextes.</p>
+
+  <h3>7.1 Pitch 30 secondes (LinkedIn, email, networking)</h3>
+  <div class="quote">
+    "Vous êtes recruteur indépendant ou cabinet et vous passez 3h par candidat à formater des CV, écrire des lettres, vérifier des ATS ? On a créé PRSTO pour faire tout ça en 8 minutes. Vous gardez votre marque, vous gagnez un temps fou, et vous pouvez même afficher le badge Partenaire PRSTO si vous voulez. Pas de droit d'entrée, pas de royalties, juste un abonnement."
+  </div>
+
+  <h3 style="margin-top:24px;">7.2 Pitch 2 minutes (appel de découverte)</h3>
+  <div class="quote">
+    "PRSTO est un réseau d'outils de préparation de candidats. Concrètement, vous importez le CV de votre candidat, vous collez l'offre de votre client, et en 8 minutes vous avez un dossier complet : CV adapté, lettre, scan ATS, brief d'entretien, le tout aux couleurs de votre cabinet. C'est utilisé aujourd'hui par des recruteurs qui ont divisé leur temps de préparation par 20. On propose trois plans : Solo à 99$ pour les indépendants, Pro à 199$ pour les cabinets avec accès au statut Partenaire, et Elite à 349$ avec le statut Partenaire inclus et le support prioritaire. Pas de droit d'entrée, pas de royalties. Vous testez 14 jours gratuitement."
+  </div>
+
+  <h3 style="margin-top:24px;">7.3 Pitch 10 minutes (démo + objection handling)</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Structure de la démo</h4>
+      <ol style="font-size:0.82rem;color:var(--muted);padding-left:18px;line-height:1.8">
+        <li>Présentation 1 min : qui on est, le problème qu'on résout</li>
+        <li>Live demo 5 min : import candidat + offre → dossier en 8 min</li>
+        <li>Walkthrough extension Chrome 2 min</li>
+        <li>Pricing et statut Partenaire 1 min</li>
+        <li>Q&A objections 1 min</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4>Top 5 objections & réponses</h4>
+      <ol style="font-size:0.82rem;color:var(--muted);padding-left:18px;line-height:1.8">
+        <li><strong>"Ça ressemble à mon ATS"</strong> → Non, votre ATS fait le suivi, PRSTO fait la préparation. Complémentaire.</li>
+        <li><strong>"99$/mois c'est cher"</strong> → 1 placement couvre 30 ans d'abonnement. Le ROI est immédiat.</li>
+        <li><strong>"Ça va dénaturer mon image"</strong> → Pas de marque blanche imposée. Vous restez 100% vous-même.</li>
+        <li><strong>"J'ai déjà un assistant"</strong> → 8 min vs 3h. Votre assistant devient chef de projet, pas opérateur.</li>
+        <li><strong>"Et si je veux arrêter ?"</strong> → Sans engagement, vous arrêtez quand vous voulez.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 8. ROADMAP -->
+<section id="roadmap">
+  <div class="section-label">✦ Roadmap</div>
+  <h2>8. Roadmap de mise à jour du site (4 semaines)</h2>
+  <p class="subtitle">Pour passer de 0 vente à un site commercialement complet et prêt à accueillir les premiers partenaires.</p>
+
+  <div class="timeline">
+    <div class="timeline-step active">
+      <div class="step-num">S1</div>
+      <div class="step-label">Pages commerciales</div>
+      <div class="step-sub">Tarifs · Partenaire · FAQ</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="timeline-step">
+      <div class="step-num">S2</div>
+      <div class="step-label">Juridique</div>
+      <div class="step-sub">CGU · RGPD · Mentions</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="timeline-step">
+      <div class="step-num">S3</div>
+      <div class="step-label">Paiement</div>
+      <div class="step-sub">Stripe · Tunnel · Essai</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="timeline-step">
+      <div class="step-num">S4</div>
+      <div class="step-label">Lancement</div>
+      <div class="step-sub">Annonce · 1ers partenaires</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;">Détail des 4 semaines</h3>
+  <table>
+    <thead><tr><th>Semaine</th><th>Livrables</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>S1</strong></td>
+        <td>Page Tarifs publique · Page "Devenir Partenaire" · Page "Comment ça marche" · FAQ Partenaire · Comparatif Franchise/Licence/SaaS</td>
+      </tr>
+      <tr>
+        <td><strong>S2</strong></td>
+        <td>CGU / CGV · Mentions légales RGPD · Page contact commerciale · Formulaire de candidature partenaire · Charte de marque</td>
+      </tr>
+      <tr>
+        <td><strong>S3</strong></td>
+        <td>Intégration Stripe Checkout · Tunnel d'inscription 14 jours gratuits · Email de bienvenue · Page "Nos partenaires" (vide au lancement)</td>
+      </tr>
+      <tr>
+        <td><strong>S4</strong></td>
+        <td>Annonce LinkedIn · Outreach 10 cabinets cibles · Témoignages beta-testeurs · Lancement officiel</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 9. CONCLUSION -->
+<section id="conclusion">
+  <div class="section-label">✦ Conclusion</div>
+  <h2>9. Synthèse & prochaines actions</h2>
+  <p class="subtitle">Trois décisions à prendre, trois actions à lancer.</p>
+
+  <h3>9.1 Décisions à prendre maintenant</h3>
+  <ol style="font-size:0.88rem;color:var(--muted);padding-left:24px;line-height:2">
+    <li><strong>Valider le modèle de licence de marque</strong> (pas de droit d'entrée, pas de royalties, juste l'abonnement)</li>
+    <li><strong>Choisir les seuils d'éligibilité Partenaire</strong> (proposition : 10 dossiers + abonnement Pro minimum)</li>
+    <li><strong>Fixer le prix de la marque blanche</strong> (proposition : sur devis à partir de 500$/mois)</li>
+  </ol>
+
+  <h3 style="margin-top:24px;">9.2 Actions prioritaires cette semaine</h3>
+  <ol style="font-size:0.88rem;color:var(--muted);padding-left:24px;line-height:2">
+    <li>Faire valider le contrat de licence par un avocat PI</li>
+    <li>Créer la page "Devenir Partenaire" sur le site</li>
+    <li>Mettre à jour la page Tarifs avec la grille détaillée et le statut Partenaire</li>
+    <li>Publier les CGU et mentions légales</li>
+    <li>Identifier 10 cabinets de recrutement à contacter pour le lancement</li>
+  </ol>
+
+  <h3 style="margin-top:24px;">9.3 Le mot de la fin</h3>
+  <div class="quote">
+    <strong>PRSTO n'est pas une franchise.</strong> C'est une marque d'outils et de méthode que les recruteurs adoptent librement, sans droit d'entrée, sans royalties, avec un abonnement simple qui leur donne accès à toute la stack. Le statut Partenaire est un bonus, pas une obligation. C'est ce positionnement qui rend PRSTO unique sur le marché : ni ATS, ni franchise, ni SaaS pur. Une marque de réseau.
+  </div>
+
+  <div class="alert alert-success" style="margin-top:24px">
+    <h4>✅ Recommandation finale</h4>
+    <p>Lancer la page "Devenir Partenaire" cette semaine, signer un contrat simple de licence de marque, ouvrir les inscriptions Pro/Elite, et commencer l'outreach dès que le tunnel Stripe est en place. Objectif : 3 partenaires signés d'ici fin de mois.</p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  PRSTO — Stratégie de marque & modèle économique · Juin 2026 · Document confidentiel
+</footer>
+
+</body>
+</html>
