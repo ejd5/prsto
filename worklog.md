@@ -388,3 +388,38 @@ Stage Summary:
   → Tableau 4 visas (L-1A, E-2, O-1A, H-1B) avec délais et conditions
 - ✅ Configuration stable : Z.AI SDK + GLM-5.2 fallback
 - ✅ Réponses niveau ChatGPT+ garanties
+
+---
+Task ID: 12
+Agent: main (Super Z)
+Task: Fix commande "continue" qui recommençait les 6 blocs au lieu d'approfondir
+
+Work Log:
+- Problème identifié : quand l'utilisateur tape "continue", l'IA recommençait
+  BLOC 1 → BLOC 6 (répétition quasi-identique de la 1ère réponse)
+- Cause : le system prompt disait "structure ta réponse en 6 blocs" pour TOUTES
+  les questions, y compris "continue"
+- Solution : détection de "continue" via regex + system prompt alternatif
+  * Regex : /^\s*(continue|suite|détails|details|approfondis|précise)\s*$/i
+  * Si détecté → MODE CONTINUE avec 5 sections :
+    1. Sources détaillées (10-15 liens cliquables)
+    2. Exemples concrets (3-5 cas réels chiffrés)
+    3. Plan 30/60/90 jours ÉTENDU (Jour 1-7, 8-30, 31-60, 61-90)
+    4. Pièges détaillés (5 erreurs avec description + conséquence + solution)
+    5. Questions de suivi (3-5)
+  * Si non détecté → MODE NORMAL framework 6-blocs
+- Injection de l'historique de conversation (4 derniers messages, 500 chars chacun)
+  dans le system prompt MODE CONTINUE pour que l'IA sache de quoi on parlait
+- Réorganisation du code : baseSystemPrompt commun + 2 branches if/else
+
+Stage Summary:
+- ✅ Test 1 : "continue" sur sujet USA → 25.9s, 4713 caractères
+  → 15 sources USCIS/DOL/MyVisaJobs/Travel.state.gov cliquables
+  → 5 exemples chiffrés (Schneider 12 L-1A, L'Oréal 15 H-1B $145k, TotalEnergies 92% succès, Airbus $500k, Sanofi 88%)
+  → Plan 30/60/90 avec outils PRSTO (/cv-maitre, /mock-interview, /linkedin-optimizer)
+  → 5 pièges détaillés + 4 questions de suivi
+- ✅ Test 2 : "continue" sur sujet package dirigeant → 23.0s, 4121 caractères
+  → Sources spécifiques rémunération (SEC EDGAR, Harvard Law, Robert Half Exec, McKinsey, INSEAD, OECD, WEF)
+  → 5 exemples chiffrés (Schneider 2.8M€, L'Oréal 450k€+120% bonus, Airbus 50/30/20, Palantir, LVMH)
+  → L'IA a BIEN adapté au sujet de l'historique (package, pas USA)
+- ✅ Plus de répétition du BLOC 1 — l'IA approfondit vraiment
