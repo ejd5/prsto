@@ -108,52 +108,90 @@ export default function MockInterviewSessionPage() {
     const gen = async () => {
       try {
         if (config) {
-          // Calculate averages from our enhanced engine history
+          // Calculate averages from real engine history
           const avgWpm = Math.round(
             engine.history.reduce((acc, h) => acc + h.wpm, 0) / engine.history.length
-          ) || 135;
+          ) || 0;
 
           const totalFillerWords = engine.history.reduce((acc, h) => acc + h.fillerCount, 0);
+          const totalWords = engine.history.reduce((acc, h) => acc + (h.answer?.split(/\s+/).length || 0), 0);
+          const totalAnswers = engine.history.filter(h => h.answer && h.answer.trim().length > 5).length;
+          const skippedAnswers = engine.history.length - totalAnswers;
+
+          // Construire les vraies Q/R pour l'IA
+          const sessionHistory = engine.history.map(h => ({
+            question: h.question,
+            answer: h.answer || "(non répondue)",
+          }));
 
           const prompt = getAuditPrompt({
             language: config.language,
-            sessionHistory: engine.history.map(h => ({ question: h.question, answer: h.answer })),
+            sessionHistory,
             metrics: {
               avgWpm,
-              avgSilenceRatio: totalFillerWords, // We pass total fillers here so LLM knows how many we used
-              avgPostureScore: 90,
-              avgGazeScore: 90,
+              avgSilenceRatio: totalFillerWords,
+              avgPostureScore: 0, // Pas de caméra → 0 (honnête)
+              avgGazeScore: 0,    // Pas de caméra → 0 (honnête)
             },
             company: config.company,
             jobTitle: config.jobTitle,
           });
 
-          // Inject user-specific live parameters in a system override to deepseek
-          prompt.systemPrompt += `\nCRITICAL CONTEXT FOR THIS SPECIFIC USER PERFORMANCE:\n- Average speech speed: ${avgWpm} WPM.\n- Total filler words used: ${totalFillerWords} occurrences.\nUse these actual data points in your audit report. Be extremely precise and coach-like. Mention exact filler words if relevant.`;
+          // Injecter les VRAIES données dans le prompt
+          prompt.systemPrompt += `\n\n# DONNÉES RÉELLES DE LA SESSION (utilisez-les obligatoirement)\n
+- Vitesse moyenne: ${avgWpm} mots/min
+- Mots de remplissage totaux: ${totalFillerWords}
+- Mots totaux parlés: ${totalWords}
+- Questions répondues: ${totalAnswers}/${engine.history.length}
+- Questions sans réponse: ${skippedAnswers}
+- Caméra: NON disponible (ne notez pas la posture ni le regard — mettez 0 et expliquez)
+
+# RÈGLES CRITIQUES
+1. Analysez EXPLICITEMENT le CONTENU de chaque réponse. Citez des passages si pertinent.
+2. Si une réponse est "(non répondue)" → score 0 pour cette dimension avec feedback explicite.
+3. Si le contenu est faible ou générique → dites-le honnêtement.
+4. Si le contenu est solide → donnez des exemples précis de ce qui était bien.
+5. Ne générez JAMAIS de scores aléatoires — basez-vous sur le contenu réel.
+6. Posture et regard = 0 (pas de caméra). Expliquez que l'analyse vidéo nécessite une caméra.`;
 
           const result = await generateWithLLM(prompt);
           if (result) {
-            const parsed = JSON.parse(result) as AuditOutput;
-            setAuditReport(parsed);
-            setIsGeneratingAudit(false);
-            return;
+            try {
+              const parsed = JSON.parse(result) as AuditOutput;
+              setAuditReport(parsed);
+              setIsGeneratingAudit(false);
+              return;
+            } catch {
+              // JSON parse failed — fallback avec vraies données
+            }
           }
         }
       } catch (_) {}
 
-      // Fallback
+      // Fallback HONNÊE basé sur les vraies données
+      const totalAnswers = engine.history.filter(h => h.answer && h.answer.trim().length > 5).length;
+      const totalWords = engine.history.reduce((acc, h) => acc + (h.answer?.split(/\s+/).length || 0), 0);
+      const totalFillerWords = engine.history.reduce((acc, h) => acc + h.fillerCount, 0);
+      const participationScore = Math.round((totalAnswers / engine.history.length) * 100);
+
       setAuditReport({
-        global_score: 72,
+        global_score: participationScore > 0 ? Math.round(participationScore * 0.6) : 0,
         dimensions: {
-          structure: { score: 14, evidence: "La méthode STAR a été partiellement adoptée mais mériterait d'être renforcée." },
-          concision: { score: 12, evidence: "Certaines réponses présentaient de nombreux mots parasites." },
-          impact: { score: 15, evidence: "De bons points marquants mais trop dilués." },
-          posture: { score: 15, evidence: "Bonne réactivité." },
-          aisance_orale: { score: 14, evidence: "Débit un peu irrégulier." },
+          structure: { score: totalAnswers > 0 ? Math.round(participationScore * 0.15) : 0,
+            evidence: totalAnswers > 0 ? `${totalAnswers} réponses fournies sur ${engine.history.length}. Analyse de structure basée sur le contenu disponible.` : "Aucune réponse fournie — impossible d'analyser la structure." },
+          concision: { score: totalFillerWords === 0 && totalAnswers > 0 ? 15 : totalFillerWords < 5 ? 12 : 8,
+            evidence: `${totalFillerWords} mots de remplissage détectés sur ${totalWords} mots totaux.` },
+          impact: { score: totalWords > 100 ? 14 : totalWords > 50 ? 10 : 5,
+            evidence: totalWords > 100 ? `Bon volume de réponse (${totalWords} mots).` : `Volume faible (${totalWords} mots). Développez vos réponses.` },
+          posture: { score: 0, evidence: "Caméra non disponible — analyse posture impossible. Activez votre caméra pour bénéficier de cette dimension." },
+          aisance_orale: { score: totalAnswers > 0 ? 12 : 0,
+            evidence: totalAnswers > 0 ? `${totalAnswers} réponses orales analysées.` : "Aucune réponse orale." },
         },
-        synthesis: "Une performance honorable mais manquant d'impact exécutif. Travaillez la structure et réduisez les mots parasites.",
-        strengths: ["Exemples pertinents", "Clarté du parcours"],
-        improvements: ["Réduire les tics de langage", "Quantifier systématiquement les résultats"],
+        synthesis: totalAnswers > 0
+          ? `Vous avez répondu à ${totalAnswers} question(s) sur ${engine.history.length}. ${totalWords} mots au total, ${totalFillerWords} mots de remplissage. ${skippedAnswers > 0 ? `${skippedAnswers} question(s) sans réponse.` : ""} Analyse complète du contenu disponible dans les dimensions ci-dessus.`
+          : "Aucune réponse n'a été fournie durant la session. Le débrief ne peut pas être pertinent sans contenu à analyser.",
+        strengths: totalAnswers > 0 ? ["Participation à la session"] : [],
+        improvements: totalAnswers < engine.history.length ? ["Répondre à toutes les questions"] : ["Approfondir les réponses", "Quantifier les résultats"],
       });
       setIsGeneratingAudit(false);
     };
