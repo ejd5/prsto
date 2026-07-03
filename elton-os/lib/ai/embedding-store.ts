@@ -186,6 +186,76 @@ export async function indexAllOpportunities(): Promise<{
 }
 
 /**
+ * Indexe tous les entretiens passés (notes, questions, forces/faiblesses).
+ * Permet au Conseiller de citer ce que l'utilisateur a dit/done
+ * dans un entretien précédent.
+ */
+export async function indexAllInterviews(): Promise<{
+  success: boolean;
+  indexed: number;
+  errors: string[];
+}> {
+  const interviews = await prisma.interview.findMany({
+    where: {
+      OR: [
+        { notes: { not: null } },
+        { questions: { not: null } },
+        { strengths: { not: null } },
+        { weaknesses: { not: null } },
+      ],
+    },
+    select: {
+      id: true,
+      type: true,
+      date: true,
+      interviewer: true,
+      notes: true,
+      questions: true,
+      strengths: true,
+      weaknesses: true,
+      nextSteps: true,
+      opportunity: { select: { title: true, company: true } },
+    },
+  });
+
+  const errors: string[] = [];
+  let indexed = 0;
+
+  for (const it of interviews) {
+    const parts: string[] = [];
+    const oppTitle = it.opportunity ? `${it.opportunity.title} @ ${it.opportunity.company}` : "Opportunité inconnue";
+    parts.push(`Entretien: ${it.type} — ${oppTitle}`);
+    if (it.date) parts.push(`Date: ${new Date(it.date).toLocaleDateString("fr-FR")}`);
+    if (it.interviewer) parts.push(`Interlocuteur: ${it.interviewer}`);
+
+    if (it.notes) parts.push(`\nNotes: ${it.notes}`);
+    if (it.questions) {
+      try {
+        const qs = JSON.parse(it.questions);
+        if (Array.isArray(qs) && qs.length > 0) {
+          parts.push(`\nQuestions posées: ${qs.slice(0, 5).join(" | ")}`);
+        }
+      } catch {}
+    }
+    if (it.strengths) parts.push(`\nPoints forts: ${it.strengths}`);
+    if (it.weaknesses) parts.push(`\nPoints faibles: ${it.weaknesses}`);
+    if (it.nextSteps) parts.push(`\nProchaines étapes: ${it.nextSteps}`);
+
+    const content = parts.join("\n").slice(0, 8000);
+    if (content.trim().length < 20) continue;
+
+    const result = await indexEntity("interview", it.id, content);
+    if (result.success) {
+      indexed++;
+    } else {
+      errors.push(`Entretien ${it.id}: ${result.error}`);
+    }
+  }
+
+  return { success: true, indexed, errors };
+}
+
+/**
  * Statistiques sur l'index des embeddings.
  */
 export async function getEmbeddingStats(): Promise<{

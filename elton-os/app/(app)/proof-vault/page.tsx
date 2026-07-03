@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { RefreshCw } from "lucide-react";
 import { Shield, Plus, Trash2, Edit3, Lock, EyeOff, FileText, MessageSquare, Bot, Link } from "lucide-react";
 import { getProfile } from "@/lib/actions/profile";
 import { getExperiences } from "@/lib/actions/experience";
@@ -48,10 +49,42 @@ export default function ProofVaultPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterCat, setFilterCat] = useState<string>("");
   const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [reindexing, setReindexing] = useState(false);
+  const [embedStats, setEmbedStats] = useState<{ total: number; byType: Record<string, number> } | null>(null);
 
   const notify = (type: "ok" | "err", text: string) => {
     setMsg({ type, text });
     setTimeout(() => setMsg(null), 3000);
+  };
+
+  const loadStats = async () => {
+    try {
+      const r = await fetch("/api/embeddings/index");
+      const d = await r.json();
+      if (d.success) setEmbedStats({ total: d.total, byType: d.byType });
+    } catch {}
+  };
+
+  const reindex = async () => {
+    setReindexing(true);
+    try {
+      const r = await fetch("/api/embeddings/index", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "index_proofs" }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        notify("ok", d.message || "Indexation réussie");
+        loadStats();
+      } else {
+        notify("err", d.error || "Erreur d'indexation");
+      }
+    } catch (e) {
+      notify("err", "Erreur réseau");
+    } finally {
+      setReindexing(false);
+    }
   };
 
   const load = useCallback(async () => {
@@ -65,7 +98,7 @@ export default function ProofVaultPage() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); loadStats(); }, [load]);
 
   const openNew = () => { setForm(EMPTY_PROOF); setEditingId(null); setShowForm(true); };
   const openEdit = (entry: ProofEntryItem) => {
@@ -141,11 +174,27 @@ export default function ProofVaultPage() {
           </p>
         </div>
         {profile && (
-          <button onClick={openNew}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md border transition-colors"
-            style={{ background: "var(--or)", color: "var(--fond)", borderColor: "var(--or)" }}>
-            <Plus size={14} /> Ajouter une preuve
-          </button>
+          <div className="flex items-center gap-2">
+            {embedStats && embedStats.byType.proof_entry > 0 && (
+              <span className="text-[10px] font-mono px-2 py-1 rounded-md border"
+                style={{ borderColor: "var(--bordure)", color: "var(--texte-tertiaire)" }}
+                title={`${embedStats.total} embeddings au total`}>
+                IA: {embedStats.byType.proof_entry || 0} preuve(s) indexée(s)
+              </span>
+            )}
+            <button onClick={reindex} disabled={reindexing}
+              className="flex items-center gap-2 px-3 py-2 text-xs font-mono rounded-md border transition-colors"
+              style={{ borderColor: "var(--bordure)", color: "var(--texte-secondaire)", opacity: reindexing ? 0.5 : 1 }}
+              onMouseEnter={e => { if (!reindexing) { e.currentTarget.style.borderColor = "var(--or)"; e.currentTarget.style.color = "var(--or)"; } }}
+              onMouseLeave={e => { if (!reindexing) { e.currentTarget.style.borderColor = "var(--bordure)"; e.currentTarget.style.color = "var(--texte-secondaire)"; } }}>
+              <RefreshCw size={12} className={reindexing ? "animate-spin" : ""} /> {reindexing ? "Indexation..." : "Réindexer IA"}
+            </button>
+            <button onClick={openNew}
+              className="flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md border transition-colors"
+              style={{ background: "var(--or)", color: "var(--fond)", borderColor: "var(--or)" }}>
+              <Plus size={14} /> Ajouter une preuve
+            </button>
+          </div>
         )}
       </div>
 

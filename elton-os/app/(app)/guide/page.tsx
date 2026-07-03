@@ -1390,7 +1390,7 @@ export default function GuidePage() {
             { num: "3", title: "Vérifier le résultat", desc: "Indeed peut mélanger titre/entreprise/lieu. Vérifiez et corrigez si nécessaire avant d'envoyer." },
             { num: "4", title: "Import manuel", desc: "Si l'extraction automatique échoue, copiez-collez le texte dans Import Express.", path: "/dashboard/jobs/importer" },
           ]} />
-          <Card color="#f59e0b">Indeed peut afficher "Bienvenue, ELTON" comme titre parasite si l'extraction rate le panneau latéral. Vérifiez toujours l'aperçu.</Card>
+          <Card color="#f59e0b">Indeed peut afficher "Bienvenue" comme titre parasite si l'extraction rate le panneau latéral. Vérifiez toujours l'aperçu.</Card>
         </Section>
 
         {/* 25. Importer une offre APEC */}
@@ -1405,7 +1405,7 @@ export default function GuidePage() {
         {/* 26. Utiliser l'extension Chrome */}
         <Section id="extension" icon={Sparkles} title="26. Utiliser l'extension Chrome">
           <StepList steps={[
-            { num: "1", title: "Installer l'extension", desc: "Ouvrez chrome://extensions → Mode développeur → Charger l'extension non empaquetée → sélectionnez browser-extension/elton-os-importer", path: "/dashboard/jobs/importer/extension" },
+            { num: "1", title: "Installer l'extension", desc: "Ouvrez chrome://extensions → Mode développeur → Charger l'extension non empaquetée → sélectionnez browser-extension/prsto-v4", path: "/dashboard/jobs/importer/extension" },
             { num: "2", title: "Aller sur une offre", desc: "Ouvrez une annonce sur LinkedIn, Indeed ou APEC." },
             { num: "3", title: "Cliquer sur l'icône PRSTO", desc: "En haut à droite de Chrome (icône PRSTO)." },
             { num: "4", title: "Onglet Import Pro", desc: "Cliquez sur Analyser l'offre visible → vérifiez → Envoyer vers PRSTO." },

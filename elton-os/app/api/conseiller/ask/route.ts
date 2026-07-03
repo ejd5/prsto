@@ -236,13 +236,31 @@ Que puis-je faire pour vous aujourd'hui ? 👔`,
             // Ne pas faire de RAG sur "continue" (la question est déjà contextuelle)
             const isContinueCmd = /^\s*(continue|suite)\s*$/i.test(message);
             if (!isContinueCmd && message.length > 10) {
-              const ragResults = await vectorSearch(message, "proof_entry", 3, 0.25);
-              if (ragResults.length > 0) {
-                ragBlock = "\n\n## Preuves pertinentes (RAG sémantique) — citez-les explicitement\n";
-                ragResults.forEach((r, i) => {
-                  ragBlock += `${i + 1}. [Score: ${r.score.toFixed(2)}] ${r.content.slice(0, 200)}\n`;
-                });
-                ragBlock += "\n→ Utilisez EXPLICITEMENT ces preuves dans votre réponse quand pertinent.";
+              // RAG parallèle sur preuves ET entretiens passés
+              const [proofResults, interviewResults] = await Promise.all([
+                vectorSearch(message, "proof_entry", 3, 0.25),
+                vectorSearch(message, "interview", 2, 0.30),
+              ]);
+
+              if (proofResults.length > 0 || interviewResults.length > 0) {
+                ragBlock = "\n\n## Contexte RAG (recherche sémantique) — citez ces éléments\n";
+
+                if (proofResults.length > 0) {
+                  ragBlock += "\n### Preuves pertinentes du Proof Vault\n";
+                  proofResults.forEach((r, i) => {
+                    ragBlock += `${i + 1}. [Score: ${r.score.toFixed(2)}] ${r.content.slice(0, 200)}\n`;
+                  });
+                }
+
+                if (interviewResults.length > 0) {
+                  ragBlock += "\n### Entretiens passés pertinents\n";
+                  interviewResults.forEach((r, i) => {
+                    ragBlock += `${i + 1}. [Score: ${r.score.toFixed(2)}] ${r.content.slice(0, 250)}\n`;
+                  });
+                  ragBlock += "\n→ Si pertinent, citez ce que l'utilisateur a dit/done dans ces entretiens.";
+                }
+
+                ragBlock += "\n→ Utilisez EXPLICITEMENT ces éléments dans votre réponse quand pertinent.";
               }
             }
           } catch (ragErr) {

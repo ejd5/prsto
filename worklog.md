@@ -521,3 +521,49 @@ Stage Summary:
   * NV-EmbedQA-E5-V5 → embeddings 1024 dims pour RAG
   * Z.AI SDK → fallback Conseiller si NVIDIA 429
   * Fake stream + heartbeat → anti-timeout ALB public
+
+---
+Task ID: 15
+Agent: main (Super Z)
+Task: Options E à J — Index opportunities + Reindex UI + Interviews RAG + TTS investigation + Rename + i18n plan
+
+Work Log:
+- Option F : Indexer les opportunités
+  * 4 opportunités indexées (rawText vectorisé)
+  * Recherche "Directeur Commercial scale-up SaaS B2B" → 3 offres similaires (score 0.41-0.48)
+- Option H : Bouton "Réindexer IA" dans /proof-vault
+  * Ajout states reindexing + embedStats
+  * Fonctions reindex() + loadStats()
+  * Bouton avec icône RefreshCw + spinner pendant indexation
+  * Badge "IA: X preuve(s) indexée(s)" affiché
+- Option G : Indexer les entretiens passés
+  * Ajout indexAllInterviews() dans embedding-store.ts
+  * Ajout action "index_interviews" dans route /api/embeddings/index
+  * Mise à jour "index_all" pour inclure interviews
+  * Conseiller modifié : RAG parallèle sur proof_entry + interview
+  * Test : 0 entretien indexé (aucun n'a de notes dans la base, mais infrastructure prête)
+- Option E : Investigation Chatterbox TTS
+  * Chatterbox utilise gRPC via Riva Python Client (pas d'API HTTP simple)
+  * Alternative : API Web Speech du navigateur (gratuit, multilingue, intégré)
+  * Conclusion : Chatterbox nécessite backend Python séparé, trop complexe pour l'instant
+  * Recommandation : utiliser Web Speech API pour Mock Interview vocal (V2)
+- Option I : Renommer /elton-os → /prsto
+  * Page /elton-os redirige déjà vers /prsto (déjà en place)
+  * Mise à jour des libellés UI dans /guide (browser-extension/elton-os-importer → prsto-v4)
+  * Routes /api/elton-os/* conservées (utilisées par extension Chrome)
+  * Code interne (lib/actions, lib/ux-mode) laissé tel quel (variables internes)
+- Option J : Plan migration next-intl FR/EN/ES
+  * Document de 5KB sauvegardé dans /home/z/my-project/download/PRSTO_i18n_migration_plan.md
+  * 5 phases sur 10 jours : setup, extraction, traduction auto, review humaine, tests
+  * Budget : ~10 jours dev + 1000€ traduction humaine
+  * Recommandation : commencer par landing uniquement (3-4 jours)
+
+Stage Summary:
+- ✅ F : 4 opportunités indexées + recherche similaire fonctionnelle
+- ✅ H : Bouton "Réindexer IA" + stats dans /proof-vault
+- ✅ G : Infrastructure entretiens prête (0 entretien en base mais code en place)
+- ✅ E : Chatterbox TTS reporté (gRPC complexe), Web Speech API recommandée pour V2
+- ✅ I : Libellés UI mis à jour, routes /api/elton-os conservées pour compat extension
+- ✅ J : Plan i18n détaillé sauvegardé (5KB, 5 phases, 10 jours)
+- Total embeddings : 7 (3 preuves + 4 opportunités)
+- Toutes routes en HTTP 200 via preview publique
