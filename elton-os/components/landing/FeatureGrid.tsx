@@ -97,11 +97,11 @@ function FeatureCard({ f, index }: { f: (typeof FEATURES)[number]; index: number
             }}>
               <div className="flex flex-col items-center mb-3">
                 <div className="relative w-20 h-20 rounded-full flex items-center justify-center mb-3 transition-transform duration-500 group-hover:scale-105" style={{
-                  background: "conic-gradient(#103826 0% 87%, rgba(16,56,38,0.06) 87%)",
+                  background: "conic-gradient(#103826 0% 92%, rgba(16,56,38,0.06) 92%)",
                   boxShadow: "0 0 30px rgba(16,56,38,0.15)",
                 }}>
                   <div className="absolute w-16 h-16 rounded-full" style={{ background: "#FFFDF8" }} />
-                  <span className="relative text-lg font-extrabold z-10" style={{ color: "#103826" }}>87</span>
+                  <span className="relative text-lg font-extrabold z-10" style={{ color: "#103826" }}>92</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5 justify-center">
                   {ATS_KEYWORDS.map((kw) => (

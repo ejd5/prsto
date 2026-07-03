@@ -10,7 +10,7 @@ const SCREENS = [
     color: "#103826",
     title: "Analyse de compatibilité",
     lines: [
-      { label: "Score global", value: "87%", color: "#103826" },
+      { label: "Score global", value: "92%", color: "#103826" },
       { label: "Mots-clés manquants", value: "3", color: "#E4B118" },
       { label: "Impact sémantique", value: "Élevé", color: "#6A8F6D" },
     ],
@@ -29,7 +29,7 @@ const SCREENS = [
     lines: [
       { label: "Bullet points", value: "12", color: "#E4B118" },
       { label: "Impact moyen", value: "8.4/10", color: "#6A8F6D" },
-      { label: "Temps de génération", value: "8s", color: "#103826" },
+      { label: "Temps de génération", value: "15s", color: "#103826" },
     ],
     chips: [
       { t: "Director", ok: true },

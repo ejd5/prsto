@@ -11,10 +11,10 @@ type Stat = {
 };
 
 const STATS: Stat[] = [
-  { value: 87, suffix: "%", label: "Taux de succès moyen après optimisation", color: "#103826" },
-  { value: 17, suffix: "", label: "Systèmes ATS supportés en natif", color: "#E4B118" },
-  { value: 300, suffix: "+", label: "Cadres dirigeants accompagnés", color: "#6A8F6D" },
-  { value: 8, suffix: "s", label: "Temps moyen de génération CV adapté", color: "#1F4A34" },
+  { value: 18, suffix: "", label: "Outils intégrés dans un seul cockpit", color: "#103826" },
+  { value: 6, suffix: "", label: "Sources d'offres scannées en continu", color: "#E4B118" },
+  { value: 1024, suffix: "", label: "Dimensions d'embeddings pour le RAG sémantique", color: "#6A8F6D" },
+  { value: 15, suffix: "s", label: "Temps de réponse du Conseiller IA contextualisé", color: "#1F4A34" },
 ];
 
 function useCountUp(target: number, start: boolean, duration = 1600) {

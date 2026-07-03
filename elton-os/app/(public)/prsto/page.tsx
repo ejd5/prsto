@@ -13,6 +13,7 @@ import {
   LandingFooter,
   ScrollProgress,
 } from "@/components/landing";
+import ExtensionSection from "@/components/landing/ExtensionSection";
 
 export const metadata = {
   title: "PRSTO — La carrière d'exception mérite une recherche d'exception",
@@ -35,6 +36,7 @@ export default function PrstoLandingPage() {
         <TrustBand />
         <StatsSection />
         <FeatureGrid />
+        <ExtensionSection />
         <ProductMockup />
         <HowItWorks />
         <TestimonialsSection />
