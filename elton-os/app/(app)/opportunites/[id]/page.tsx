@@ -13,6 +13,7 @@ import { getOpportunity, updateOpportunity, deleteOpportunity } from "@/lib/acti
 import { getScoreColor, getScoreBg } from "@/lib/score-colors";
 import { analyzeJobOffer } from "@/lib/actions/analysis";
 import { generateDocument } from "@/lib/actions/document";
+import TranslateButton from "@/components/ui/TranslateButton";
 import type { DocumentType } from "@/lib/generation/templates";
 import { addToPipeline } from "@/lib/actions/pipeline";
 import { exportCandidatureDossier } from "@/lib/actions/export-documents";
@@ -376,13 +377,16 @@ export default function OpportunityDetailPage() {
                     Description de l&apos;offre
                   </h3>
                 </div>
-                <button onClick={() => copyText(opp.rawText)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded border transition-colors"
-                  style={{ borderColor: "var(--bordure)", color: "var(--texte-secondaire)" }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--or)"; e.currentTarget.style.color = "var(--or)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--bordure)"; e.currentTarget.style.color = "var(--texte-secondaire)"; }}>
-                  <Copy size={11} /> Copier
-                </button>
+                <div className="flex items-center gap-2">
+                  <TranslateButton text={opp.rawText.slice(0, 8000)} defaultTarget="fr" label="Traduire" />
+                  <button onClick={() => copyText(opp.rawText)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded border transition-colors"
+                    style={{ borderColor: "var(--bordure)", color: "var(--texte-secondaire)" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--or)"; e.currentTarget.style.color = "var(--or)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--bordure)"; e.currentTarget.style.color = "var(--texte-secondaire)"; }}>
+                    <Copy size={11} /> Copier
+                  </button>
+                </div>
               </div>
               <div className="text-xs leading-relaxed whitespace-pre-wrap font-sans p-4 rounded-md"
                 style={{ color: "var(--texte-secondaire)", background: "var(--fond)", maxHeight: 480, overflowY: "auto", border: "1px solid var(--bordure-douce)" }}>

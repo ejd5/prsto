@@ -3,6 +3,7 @@ import { isTopicAllowed } from "@/lib/conseiller/conseiller-filter";
 import { getLocalAnswer } from "@/lib/conseiller/conseiller-knowledge";
 import { generateWithDeepSeek, getDeepSeekConfig } from "@/lib/ai/deepseek";
 import { generateWithZai } from "@/lib/ai/zai-client";
+import { vectorSearch } from "@/lib/ai/embedding-store";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -226,7 +227,30 @@ Que puis-je faire pour vous aujourd'hui ? 👔`,
             memLines.push(`\n## CV Maître: ⚠ non créé — suggérer à l'utilisateur d'aller dans /cv-maitre`);
           }
 
-          const memoryBlock = memLines.join("\n");
+          // ── ÉTAPE 3.5 : Recherche sémantique RAG sur le Proof Vault ──
+          // On cherche les preuves les plus pertinentes par rapport à la question
+          // du dirigeant. Ça permet au Conseiller de citer des preuves spécifiques
+          // plutôt que de lister juste les 5 dernières.
+          let ragBlock = "";
+          try {
+            // Ne pas faire de RAG sur "continue" (la question est déjà contextuelle)
+            const isContinueCmd = /^\s*(continue|suite)\s*$/i.test(message);
+            if (!isContinueCmd && message.length > 10) {
+              const ragResults = await vectorSearch(message, "proof_entry", 3, 0.25);
+              if (ragResults.length > 0) {
+                ragBlock = "\n\n## Preuves pertinentes (RAG sémantique) — citez-les explicitement\n";
+                ragResults.forEach((r, i) => {
+                  ragBlock += `${i + 1}. [Score: ${r.score.toFixed(2)}] ${r.content.slice(0, 200)}\n`;
+                });
+                ragBlock += "\n→ Utilisez EXPLICITEMENT ces preuves dans votre réponse quand pertinent.";
+              }
+            }
+          } catch (ragErr) {
+            // Le RAG échoue silencieusement — ne pas bloquer la réponse IA
+            console.log("[conseiller] RAG search échec (non bloquant):", ragErr);
+          }
+
+          const memoryBlock = memLines.join("\n") + ragBlock;
 
           // ── Détection commande "continue" ──
           // Si l'utilisateur tape "continue", on utilise un prompt différent

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { FileText, Upload, Check, AlertTriangle, Trash2, Save } from "lucide-react";
+import TranslateButton from "@/components/ui/TranslateButton";
 import { getProfile } from "@/lib/actions/profile";
 import {
   getCVMaster, upsertCVMaster, updateCVMasterStatus, deleteCVMaster,
@@ -227,7 +228,10 @@ export default function CVMaitrePage() {
 
           {/* Contenu */}
           <div className="p-5 rounded-lg border space-y-3" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
-            <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Aperçu du CV</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Aperçu du CV</h3>
+              <TranslateButton text={cv.originalText} defaultTarget="en" sourceLang="fr" label="Traduire EN" />
+            </div>
             <pre className="text-sm whitespace-pre-wrap leading-relaxed p-4 rounded-md border font-sans"
               style={{ background: "var(--fond)", borderColor: "var(--bordure-douce)", color: "var(--texte-secondaire)", maxHeight: "60vh", overflow: "auto" }}>
               {cv.originalText}

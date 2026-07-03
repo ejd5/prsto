@@ -1056,3 +1056,22 @@ model ExecutiveBriefOrder {
   createdAt DateTime @default(now())
 }
 
+
+// ─── Embeddings (Second Brain RAG) ─────────────────────────
+// Vectorisation des preuves, opportunités, entretiens pour
+// recherche sémantique et mémoire longue du Conseiller IA.
+model Embedding {
+  id            String   @id @default(uuid())
+  entityType    String   // "proof_entry", "opportunity", "interview", "document"
+  entityId      String   // ID de l'entité liée
+  content       String   // texte vectorisé (max 8000 chars)
+  embedding     String   // JSON array de 1024 floats (sérialisé)
+  model         String   @default("nvidia/nv-embedqa-e5-v5")
+  dimensions    Int      @default(1024)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([entityType])
+  @@index([entityId])
+}

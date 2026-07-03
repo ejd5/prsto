@@ -478,3 +478,46 @@ Prochaines étapes possibles :
 3. Créer table Prisma Embedding + vectoriser le Proof Vault
 4. Brancher le Conseiller sur la recherche sémantique (RAG sur preuves)
 5. Sprint 2 : Chatterbox TTS via gRPC pour Mock Interview vocal
+
+---
+Task ID: 14
+Agent: main (Super Z)
+Task: Options A→D — TranslateButton UI + Embeddings + RAG Conseiller
+
+Work Log:
+- Option A : TranslateButton intégré dans /cv-maitre
+  * Bouton "Traduire EN" à côté de l'aperçu du CV
+  * Import TranslateButton en haut du fichier
+- Option B : TranslateButton intégré dans /opportunites/[id]
+  * Bouton "Traduire" à côté du bouton "Copier" de la description de l'offre
+  * defaultTarget="fr" (traduire offres EN vers FR pour analyse)
+- Option C : Table Prisma Embedding + vectorisation Proof Vault
+  * Ajout model Embedding dans prisma/schema.prisma (entityType, entityId, content, embedding, dimensions)
+  * npx prisma generate + db push
+  * Création lib/ai/embedding-store.ts (indexEntity, vectorSearch, indexAllProofs, indexAllOpportunities, getEmbeddingStats)
+  * Routes API : /api/embeddings/index (POST index_proofs/index_opportunities/index_all/stats)
+  * Route API : /api/embeddings/search (POST recherche sémantique)
+  * Test : 3 preuves indexées en 9s, recherche "croissance B2B" → preuve "Négociation grands comptes [croissance]" score 0.329
+- Option D : Conseiller IA branché sur RAG sémantique
+  * Import vectorSearch dans route /api/conseiller/ask
+  * Ajout ÉTAPE 3.5 : recherche sémantique sur proof_entry avec threshold 0.25
+  * Injection ragBlock dans memoryBlock (system prompt)
+  * RAG échoue silencieusement si erreur (non bloquant)
+  * Ne pas faire de RAG sur "continue" (déjà contextuel)
+  * Test : question "Quelles preuves de croissance B2B puis-je utiliser pour DG ?"
+    → 19.9s, 4107 caractères
+    → IA cite "Revenue Growth Management" et "Négociation grands comptes" (preuves réelles)
+    → Mémoire Prisma (65 personnes, international) + RAG + sources officielles
+
+Stage Summary:
+- ✅ Option A : TranslateButton dans /cv-maitre (bouton "Traduire EN")
+- ✅ Option B : TranslateButton dans /opportunites/[id] (bouton "Traduire")
+- ✅ Option C : Table Embedding + 3 preuves vectorisées (1024 dims) + recherche sémantique
+- ✅ Option D : Conseiller avec RAG — cite les preuves pertinentes en fonction de la question
+- ✅ Test final via preview publique : 19.9s, réponse niveau ChatGPT+ avec mémoire + RAG + sources
+- Architecture finale :
+  * GLM-5.2 (NVIDIA NIM) → Conseiller + fallback translate
+  * Riva Translate 4B → traductions EN↔FR (599ms)
+  * NV-EmbedQA-E5-V5 → embeddings 1024 dims pour RAG
+  * Z.AI SDK → fallback Conseiller si NVIDIA 429
+  * Fake stream + heartbeat → anti-timeout ALB public
