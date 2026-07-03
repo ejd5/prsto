@@ -310,52 +310,45 @@ export default function MockInterviewPanelPage() {
   // ─── TTS ───
   const speakQuestion = async (question: any) => {
     setIsSpeaking(true); setThinking(false);
-    try {
-      const res = await fetch("/api/tts", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: question.question, role: question.role.id }),
-      });
-      const data = await res.json();
-      if (data.success && data.audioBase64) {
-        if (audioRef.current) {
-          audioRef.current.src = `data:audio/mpeg;base64,${data.audioBase64}`;
-          audioRef.current.onended = () => {
-            setIsSpeaking(false);
-            if (micOn) startListening();
-          };
-          audioRef.current.play().catch(() => {});
-        }
-      } else if (data.provider === "web-speech") {
-        // Web Speech avec voix différenciée par genre
-        const u = new SpeechSynthesisUtterance(question.question);
-        u.lang = "fr-FR";
-        u.rate = 0.95;
-        // Pitch selon genre : homme = grave (0.7), femme = aigu (1.3)
-        const isMale = question.role.id === "ceo" || question.role.id === "pair" || question.role.id === "investisseur";
-        u.pitch = isMale ? 0.7 : 1.3;
 
-        // Chercher une voix française correspondant au genre
-        const voices = window.speechSynthesis.getVoices();
-        const frVoices = voices.filter(v => v.lang.startsWith("fr"));
-        if (frVoices.length > 0) {
-          // Essayer de trouver une voix du bon genre
-          const genderVoice = frVoices.find(v => {
-            const name = v.name.toLowerCase();
-            const isFemaleVoice = name.includes("female") || name.includes("femme") || name.includes("amelie") || name.includes("marie");
-            const isMaleVoice = name.includes("male") || name.includes("homme") || name.includes("thomas") || name.includes("paul");
-            return isMale ? isMaleVoice : isFemaleVoice;
-          });
-          if (genderVoice) u.voice = genderVoice;
-          else u.voice = frVoices[0];
-        }
+    // Genre du personnage
+    const isMale = question.role.id === "ceo" || question.role.id === "pair" || question.role.id === "investisseur";
 
-        u.onend = () => {
-          setIsSpeaking(false);
-          if (micOn) startListening();
-        };
-        window.speechSynthesis.speak(u);
+    // Web Speech DIRECT — permet de différencier homme (grave) / femme (aigu)
+    // Google TTS est toujours féminine, donc on l'évite pour le gender matching
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+
+      const u = new SpeechSynthesisUtterance(question.question);
+      u.lang = "fr-FR";
+      u.rate = 0.92;
+      u.pitch = isMale ? 0.5 : 1.5; // Homme très grave, femme très aigu
+      u.volume = 1;
+
+      // Chercher une voix française du bon genre si disponible
+      const voices = window.speechSynthesis.getVoices();
+      const frVoices = voices.filter(v => v.lang.startsWith("fr"));
+      if (frVoices.length > 0) {
+        const maleNames = ["thomas", "male", "homme", "grandpa", "reed"];
+        const femaleNames = ["amelie", "audrey", "marie", "female", "femme", "grandma", "zira"];
+        const genderVoice = frVoices.find(v => {
+          const n = v.name.toLowerCase();
+          return isMale ? maleNames.some(m => n.includes(m)) : femaleNames.some(m => n.includes(m));
+        });
+        if (genderVoice) u.voice = genderVoice;
+        else u.voice = frVoices[0];
       }
-    } catch { setIsSpeaking(false); }
+
+      u.onend = () => {
+        setIsSpeaking(false);
+        if (micOn) startListening();
+      };
+      u.onerror = () => { setIsSpeaking(false); };
+
+      setTimeout(() => window.speechSynthesis.speak(u), 100);
+    } else {
+      setIsSpeaking(false);
+    }
   };
 
   // ─── Next question (BLOCKED if no answer) ───
@@ -583,7 +576,7 @@ export default function MockInterviewPanelPage() {
             <img
               src={PORTRAIT_MAP[q.role.id] || "/branding/portraits/ceo-paul/paul-01.png"}
               alt={q.role.name}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 20%" }}
             />
             <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 40%, transparent 70%)" }} />
 
@@ -615,7 +608,7 @@ export default function MockInterviewPanelPage() {
               <div className="w-full h-full flex flex-col p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <VideoOff size={16} className="text-white opacity-40" />
-                  <span className="text-xs text-white opacity-40">Mode texte (pas de caméra)</span>
+                  <span className="text-xs text-white opacity-40">Mode texte — pas de caméra/micro détecté sur votre appareil</span>
                 </div>
                 <textarea
                   value={transcript}
