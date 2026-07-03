@@ -419,3 +419,133 @@ export async function generateJsonWithDeepSeek<T = unknown>(params: {
     return { ...result, success: false, error: "JSON invalide retourné par le modèle", errorType: "invalid_response" };
   }
 }
+
+// ─── Streaming (SSE) — pour éviter les timeouts ALB ───────────────
+// Renvoie un ReadableStream de chunks texte (pas un objet GenerateResult).
+// En cas d'erreur, le chunk final contiendra un message d'erreur préfixé par [ERROR].
+
+export async function streamWithDeepSeek(params: {
+  systemPrompt?: string;
+  userPrompt: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  timeout?: number;
+}): Promise<{
+  stream: ReadableStream<Uint8Array> | null;
+  error?: string;
+  errorType?: "no_key" | "network" | "timeout" | "model_unavailable" | "unknown";
+}> {
+  const config = await getDeepSeekConfig();
+  if (!config) {
+    return { stream: null, error: "IA non configurée", errorType: "no_key" };
+  }
+
+  const model = params.model || config.defaultModel;
+  const temperature = params.temperature ?? config.temperature;
+  const maxTokens = params.maxTokens || 4000;
+
+  const messages: DeepSeekMessage[] = [];
+  if (params.systemPrompt) {
+    messages.push({ role: "system", content: params.systemPrompt });
+  }
+  messages.push({ role: "user", content: params.userPrompt });
+
+  const controller = new AbortController();
+  const timeoutMs = params.timeout ?? 180000; // stream : on peut se permettre plus long
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response: Response;
+  try {
+    response = await fetch(`${config.baseUrl}/v1/chat/completions`, {
+      method: "POST",
+      headers: getProviderHeaders(config),
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens: maxTokens,
+        temperature,
+        stream: true,
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    const aborted = err instanceof Error && err.name === "AbortError";
+    return {
+      stream: null,
+      error: aborted ? "Timeout" : "Erreur réseau",
+      errorType: aborted ? "timeout" : "network",
+    };
+  }
+
+  if (!response.ok || !response.body) {
+    clearTimeout(timeoutId);
+    return {
+      stream: null,
+      error: `Réponse HTTP ${response.status}`,
+      errorType: response.status === 401 || response.status === 403 ? "no_key" : "model_unavailable",
+    };
+  }
+
+  // Transformer le SSE de l'API en un flux de texte simple
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const upstream = response.body;
+  let sseBuffer = "";
+
+  const stream = new ReadableStream<Uint8Array>({
+    async start(streamController) {
+      const reader = upstream.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          sseBuffer += decoder.decode(value, { stream: true });
+
+          // Parser les lignes SSE : data: {...}\n\n
+          const lines = sseBuffer.split("\n");
+          sseBuffer = lines.pop() || "";
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith("data:")) continue;
+            const payload = trimmed.slice(5).trim();
+            if (payload === "[DONE]") {
+              streamController.close();
+              clearTimeout(timeoutId);
+              return;
+            }
+            try {
+              const obj = JSON.parse(payload);
+              const delta = obj?.choices?.[0]?.delta?.content;
+              if (typeof delta === "string" && delta.length > 0) {
+                streamController.enqueue(encoder.encode(delta));
+              }
+            } catch {
+              // ignore parse errors on partial chunks
+            }
+          }
+        }
+        streamController.close();
+      } catch (err) {
+        const aborted = err instanceof Error && err.name === "AbortError";
+        streamController.enqueue(
+          encoder.encode(
+            aborted
+              ? "\n\n[TIMEOUT — la génération a dépassé 3 minutes. Reformulez ou découpez votre demande.]"
+              : "\n\n[Erreur pendant la génération. Réessayez.]"
+          )
+        );
+        streamController.close();
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
+    cancel() {
+      clearTimeout(timeoutId);
+      controller.abort();
+    },
+  });
+
+  return { stream };
+}

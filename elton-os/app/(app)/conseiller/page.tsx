@@ -83,14 +83,72 @@ export default function ConseillerPage() {
           history: newMessages.slice(-11, -1).map((m) => ({ role: m.role, content: m.content })),
         }),
       });
-      const data = await res.json();
-      const assistantMsg: Message = {
-        role: "assistant",
-        content: data.content || "Désolé, je n'ai pas pu traiter votre demande.",
-        source: data.source,
-        ts: Date.now(),
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
+
+      // ── Deux formats possibles ──
+      // 1. JSON (source: local/blocked/no_key/error) — réponse instantanée
+      // 2. text/event-stream (source: ai) — chunks en streaming
+      const contentType = res.headers.get("content-type") || "";
+      const sourceHeader = res.headers.get("x-conseiller-source") || "";
+
+      if (contentType.includes("text/event-stream") || contentType.includes("text/plain") || sourceHeader === "ai") {
+        // ── Mode streaming IA ──
+        // On crée un message assistant vide qu'on remplit au fur et à mesure
+        const assistantId = Date.now();
+        const assistantMsg: Message = {
+          role: "assistant",
+          content: "",
+          source: "ai",
+          ts: assistantId,
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+
+        if (!res.body) {
+          throw new Error("Pas de body de streaming");
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = "";
+        let lastUpdate = 0;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+
+          // Ignorer les chunks qui ne contiennent que des espaces (heartbeat anti-timeout ALB)
+          if (chunk.trim() === "") {
+            // C'est un heartbeat — on ne l'accumule pas
+            continue;
+          }
+
+          // Si le chunk contient des espaces au début (heartbeat + vrai contenu), on les strip
+          const meaningful = chunk.replace(/^\s+/, "");
+          acc += meaningful;
+
+          // Throttle les updates React à 1 toutes les 60ms pour éviter les re-renders excessifs
+          const now = Date.now();
+          if (now - lastUpdate > 60) {
+            lastUpdate = now;
+            const currentAcc = acc;
+            setMessages((prev) =>
+              prev.map((m) => (m.ts === assistantId ? { ...m, content: currentAcc } : m))
+            );
+          }
+        }
+        // Update final
+        setMessages((prev) => prev.map((m) => (m.ts === assistantId ? { ...m, content: acc } : m)));
+      } else {
+        // ── Mode JSON (réponse locale/blocked/no_key/error) ──
+        const data = await res.json();
+        const assistantMsg: Message = {
+          role: "assistant",
+          content: data.content || "Désolé, je n'ai pas pu traiter votre demande.",
+          source: data.source,
+          ts: Date.now(),
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+      }
     } catch (err) {
       setMessages((prev) => [
         ...prev,
