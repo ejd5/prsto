@@ -46,6 +46,15 @@ function createEmptyMetrics(): CallMetrics {
 
 type Phase = "setup" | "call" | "debrief";
 
+// Map role ID → portrait (l'API ne renvoie pas le portrait, on le lookup localement)
+const PORTRAIT_MAP: Record<string, string> = {
+  ceo: "/branding/portraits/ceo-paul/paul-01.png",
+  cfo: "/branding/portraits/dirmarketing-sabrina/sabrina-01.png",
+  drh: "/branding/portraits/drh-ingrid/ingrid-01.png",
+  pair: "/branding/portraits/cto-john/john-01.png",
+  investisseur: "/branding/portraits/boardmanager-david/david-01.png",
+};
+
 export default function MockInterviewPanelPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("setup");
@@ -566,83 +575,43 @@ export default function MockInterviewPanelPage() {
           </button>
         </div>
 
-        {/* Main visio area — split screen 65% / 35% */}
-        <div className="flex-1 flex gap-0.5 p-0.5">
-          {/* Interviewer (left, 65%) — portrait en background plein cadre */}
-          <div className="relative rounded-2xl overflow-hidden" style={{ flex: "0 0 65%", backgroundImage: `url(${q.role.portrait})`, backgroundSize: "cover", backgroundPosition: "center top" }}>
-            {/* Dark overlay */}
-            <div className="absolute inset-0" style={{
-              background: isSpeaking
-                ? "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.1) 100%)"
-                : "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)"
-            }} />
+        {/* Main visio area */}
+        <div className="flex-1 flex gap-0.5 p-0.5 min-h-0">
+          {/* Interviewer (left) — flex-1 pour prendre toute la hauteur */}
+          <div className="flex-1 relative rounded-2xl overflow-hidden" style={{ background: "#0d0d1a" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={PORTRAIT_MAP[q.role.id] || "/branding/portraits/ceo-paul/paul-01.png"}
+              alt={q.role.name}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+            />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 40%, transparent 70%)" }} />
 
-            {/* Talking glow */}
             {isSpeaking && (
-              <div className="absolute inset-0 pointer-events-none" style={{
-                background: "radial-gradient(ellipse at center 40%, rgba(228,177,24,0.08) 0%, transparent 60%)",
-                animation: "pulse-glow 1s ease-in-out infinite alternate",
-              }} />
-            )}
-
-            {/* Question text overlay */}
-            {isSpeaking && (
-              <div className="absolute top-4 left-4 right-4 p-4 rounded-2xl" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(16px)" }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex items-center gap-1">
-                    {[0, 1, 2, 3].map(i => (
-                      <span key={i} className="w-1 rounded-full" style={{ background: "#E4B118", height: 14, animation: `wave 0.4s ${i * 0.08}s ease-in-out infinite alternate` }} />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#E4B118" }}>{q.role.name} parle</span>
-                </div>
-                <p className="text-sm leading-relaxed text-white">{q.question}</p>
+              <div className="absolute top-4 left-4 right-4 p-4 rounded-2xl" style={{ background: "rgba(0,0,0,0.8)" }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#E4B118", textTransform: "uppercase", letterSpacing: "0.1em" }}>{q.role.name} parle</span>
+                <p style={{ fontSize: 14, lineHeight: 1.5, color: "white", margin: "8px 0 0 0" }}>{q.question}</p>
               </div>
             )}
 
-            {/* Interviewer name */}
             <div className="absolute bottom-4 left-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: q.role.bgGradient }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", background: q.role.bgGradient, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon size={20} color="white" />
               </div>
               <div>
-                <div className="text-sm font-bold text-white">{q.role.name}</div>
-                <div className="text-xs" style={{ color: q.role.color }}>{q.role.title}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "white" }}>{q.role.name}</div>
+                <div style={{ fontSize: 12, color: q.role.color }}>{q.role.title}</div>
               </div>
-              {isSpeaking && <span className="text-[10px] text-white opacity-50 ml-2">parle...</span>}
-              {thinking && <span className="text-xs text-white opacity-50 ml-2"><Loader2 size={12} className="animate-spin inline mr-1" />réfléchit...</span>}
+              {isSpeaking && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginLeft: 8 }}>parle...</span>}
+              {thinking && <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginLeft: 8 }}>réfléchit...</span>}
             </div>
           </div>
 
-          {/* User webcam (right, 35%) — GRANDE fenêtre pleine hauteur */}
-          <div className="relative rounded-2xl overflow-hidden border-2" style={{ flex: "1 1 35%", borderColor: cameraOn ? (faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626") : "rgba(255,255,255,0.15)", background: "#0d0d1a" }}>
+          {/* User area (right, 35%) */}
+          <div className="w-[35%] relative rounded-2xl overflow-hidden" style={{ background: "#0d0d1a", border: "2px solid rgba(255,255,255,0.15)" }}>
             {cameraOn ? (
-              <>
-                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
-                {/* Face status indicator */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
-                    <div className="w-2 h-2 rounded-full" style={{ background: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626" }} />
-                    <span className="text-[10px] text-white font-medium">
-                      {faceStatus.detected ? (faceStatus.looking ? "Contact visuel OK" : "Regard fuyant") : "Visage non détecté"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
-                    <Activity size={10} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
-                    <span className="text-[10px] text-white">{faceStatus.tilt}°</span>
-                  </div>
-                </div>
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <span className="text-xs text-white font-medium" style={{ background: "rgba(0,0,0,0.6)", padding: "4px 10px", borderRadius: 8 }}>Vous</span>
-                  {isListening && (
-                    <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(220,38,38,0.4)", color: "#F87171" }}>
-                      <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#DC2626" }} /> Micro actif
-                    </span>
-                  )}
-                </div>
-              </>
+              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
             ) : (
-              /* Mode texte — pas de caméra */
               <div className="w-full h-full flex flex-col p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <VideoOff size={16} className="text-white opacity-40" />
@@ -654,7 +623,6 @@ export default function MockInterviewPanelPage() {
                   placeholder="Tapez votre réponse ici..."
                   className="flex-1 w-full p-3 rounded-xl text-sm text-white resize-none"
                   style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}
-                  autoFocus
                 />
                 <div className="mt-2 text-[10px] text-white opacity-30">
                   {transcript.trim().length} caractères {transcript.trim().length > 10 && "✓"}
@@ -664,7 +632,7 @@ export default function MockInterviewPanelPage() {
           </div>
         </div>
 
-        {/* Bottom: transcript + controls */}
+                {/* Bottom: transcript + controls */}
         <div className="px-4 py-3 space-y-2" style={{ background: "rgba(0,0,0,0.6)" }}>
           {error && <div className="px-4 py-2 rounded-xl text-sm" style={{ background: "rgba(220,38,38,0.15)", color: "#F87171" }}>{error}</div>}
 
