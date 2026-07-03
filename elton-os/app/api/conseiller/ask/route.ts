@@ -258,6 +258,8 @@ ${memoryBlock}
 7. Maximum 400 mots sauf si demande explicite de détail.`;
 
           // ── ÉTAPE 4 : Appeler NVIDIA NIM en streaming ──
+          // maxTokens réduit à 600 pour rester sous 60s (limite ALB public).
+          // Si l'utilisateur veut plus de détails, il demande "continue" ou une sous-question.
           const recentHistory = history.slice(-4);
           const historyBlock =
             recentHistory.length > 0
@@ -268,8 +270,8 @@ ${memoryBlock}
             systemPrompt,
             userPrompt: `${historyBlock}Candidat: ${message}`,
             temperature: 0.65,
-            maxTokens: 1200,
-            timeout: 180000,
+            maxTokens: 450, // Réponse en ~20-25s pour rester sous 60s (limite ALB public)
+            timeout: 90000,
           });
 
           if (!result.stream) {

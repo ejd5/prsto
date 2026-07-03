@@ -46,6 +46,14 @@ const ALLOWED_TOPICS = [
   "réorientation", "reconversion", "transition",
   "demande", "augmentation", "promotion",
   "démission", "préavis", "non-concurrence",
+  // International / visa / expatriation
+  "usa", "états-unis", "etats-unis", "américain", "americain", "us ", "new york", "san francisco",
+  "uk", "london", "londres", "angleterre", "royaume-uni",
+  "suisse", "belgique", "luxembourg", "allemagne", "dubai", "dubaï", "singapour",
+  "international", "international", "expatriation", "expatrié", "expatriation",
+  "visa", "h1b", "l1", "e2", "green card", "greencard", "sponsor", "parrainage",
+  "mobilité internationale", "relocation", "expat",
+  "français à l'étranger", "francais a l'etranger", "french abroad",
 ];
 
 export function isTopicAllowed(question: string): boolean {

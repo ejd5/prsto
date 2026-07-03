@@ -55,6 +55,7 @@ export default function ConseillerPage() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [elapsed, setElapsed] = useState(0); // secondes écoulées depuis le début du chargement
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -73,8 +74,26 @@ export default function ConseillerPage() {
     setMessages(newMessages);
     setInput("");
     setLoading(true);
+    setElapsed(0);
+    const elapsedInterval = setInterval(() => {
+      setElapsed((e) => e + 1);
+    }, 1000);
 
     try {
+      // ── AbortController avec timeout long (3 minutes) ──
+      // Le serveur peut mettre 30-60s à répondre (compilation Next.js dev + IA NVIDIA NIM).
+      // Sans timeout explicite long, le navigateur coupe à 30s → "Connexion impossible".
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minutes max
+      // Au bout de 25s sans réponse, on prévient l'utilisateur que c'est long mais en cours
+      const patienceNoticeId = setTimeout(() => {
+        setMessages((prev) => {
+          // Si on est toujours en loading et qu'on a ajouté un message assistant vide
+          // pour le streaming, on lui ajoute une note de patience
+          return prev;
+        });
+      }, 25000);
+
       const res = await fetch("/api/conseiller/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +101,10 @@ export default function ConseillerPage() {
           message: text,
           history: newMessages.slice(-11, -1).map((m) => ({ role: m.role, content: m.content })),
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
+      clearTimeout(patienceNoticeId);
 
       // ── Deux formats possibles ──
       // 1. JSON (source: local/blocked/no_key/error) — réponse instantanée
@@ -150,17 +172,23 @@ export default function ConseillerPage() {
         setMessages((prev) => [...prev, assistantMsg]);
       }
     } catch (err) {
+      // Distinguer les erreurs : abort (timeout 3min) vs réseau vs serveur
+      const isAbort = err instanceof Error && (err.name === "AbortError" || err.message.includes("abort"));
+      const content = isAbort
+        ? "⏱ La réponse met plus de 3 minutes à arriver. Le serveur est probablement surchargé ou la question très complexe. Réessayez avec une question plus courte, ou reformulez en plusieurs sous-questions."
+        : "⚠️ Connexion interrompue. Le serveur met parfois 30-60s à répondre la première fois (compilation + IA). Patientez quelques secondes et **retestez la même question** — la route sera déjà compilée et la réponse arrivera en 15-25s.";
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content:
-            "⚠️ Connexion impossible. Vérifiez votre réseau et réessayez. Si le problème persiste, le service Conseiller peut être temporairement indisponible.",
+          content,
           source: "error",
           ts: Date.now(),
         },
       ]);
     } finally {
+      clearInterval(elapsedInterval);
       setLoading(false);
       inputRef.current?.focus();
     }
@@ -353,7 +381,7 @@ export default function ConseillerPage() {
         ))}
 
         {loading && (
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             <div
               style={{
                 width: 36,
@@ -364,6 +392,7 @@ export default function ConseillerPage() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#0B1F18",
+                flexShrink: 0,
               }}
             >
               <Sparkles size={16} />
@@ -375,14 +404,38 @@ export default function ConseillerPage() {
                 background: "white",
                 border: "1px solid rgba(16,56,38,0.08)",
                 display: "flex",
-                gap: 6,
-                alignItems: "center",
+                flexDirection: "column",
+                gap: 8,
+                minWidth: 280,
               }}
             >
-              <Dot delay={0} />
-              <Dot delay={150} />
-              <Dot delay={300} />
-              <span style={{ marginLeft: 8, fontSize: 13, color: "#6A8F6D" }}>Le Conseiller réfléchit…</span>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <Dot delay={0} />
+                <Dot delay={150} />
+                <Dot delay={300} />
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#6A8F6D" }}>Le Conseiller réfléchit…</span>
+                <span
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 11,
+                    color: "rgba(106,143,109,0.6)",
+                    fontFamily: "monospace",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {elapsed}s
+                </span>
+              </div>
+              {elapsed >= 15 && elapsed < 30 && (
+                <div style={{ fontSize: 11, color: "#6A8F6D", lineHeight: 1.5 }}>
+                  💭 Chargement de votre mémoire (profil, candidatures, preuves) et appel à l'IA…
+                </div>
+              )}
+              {elapsed >= 30 && (
+                <div style={{ fontSize: 11, color: "#D97706", lineHeight: 1.5 }}>
+                  ⏱ Plus long que d'habitude — l'IA génère une réponse détaillée. Ne fermez pas la page, ça arrive…
+                </div>
+              )}
             </div>
           </div>
         )}

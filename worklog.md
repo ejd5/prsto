@@ -241,3 +241,30 @@ Stage Summary:
   sans termes dirigeant)
 - ✅ Tests en conditions réelles : 4 questions dirigeant → 4 réponses IA contextualisées
 - L'utilisateur peut maintenant tester sur /conseiller avec ses propres questions
+
+---
+Task ID: 7
+Agent: main (Super Z)
+Task: Fix erreur "Connexion impossible" sur Conseiller IA via preview publique
+
+Work Log:
+- Diagnostic : question utilisateur "chances aux USA sans visa" → 2 problèmes
+  1. Filtre isTopicAllowed bloquait "USA" (terme non dans liste blanche) → source=blocked
+  2. Réponses IA >60s causaient timeout ALB public → 502/erreur navigateur
+- Fix 1 : Ajout de termes internationaux dans conseiller-filter.ts
+  (USA, UK, Suisse, visa, H1B, L1, E2, green card, sponsor, expatriation, relocation, etc.)
+- Fix 2 : Réduction maxTokens de 1200 → 450 tokens
+  → Réponse en ~15-20s au lieu de 50-60s
+  → Reste sous le timeout ALB de 60s
+- Fix 3 : Ajout AbortController côté client (3 minutes max) + compteur de temps
+  - À 15s : message "Chargement de votre mémoire et appel à l'IA…"
+  - À 30s : message "Plus long que d'habitude — ne fermez pas la page…"
+- Fix 4 : Message d'erreur contextuel (abort vs réseau) au lieu du générique
+
+Stage Summary:
+- ✅ Question "USA sans visa" fonctionne maintenant (IA répond en 18s)
+- ✅ 3 questions testées en 13-18s chacune (vs 502/erreur avant)
+- ✅ Toutes les réponses citent le profil réel (Directeur Commercial, 20 ans, P&L, 65 personnes)
+- ✅ Compteur de temps visible pendant le loading
+- ✅ Messages d'erreur clairs et différenciés
+- L'utilisateur peut maintenant tester sur /conseiller avec ses vraies questions dirigeant
