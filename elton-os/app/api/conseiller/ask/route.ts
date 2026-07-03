@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isTopicAllowed } from "@/lib/conseiller/conseiller-filter";
 import { getLocalAnswer } from "@/lib/conseiller/conseiller-knowledge";
 import { generateWithDeepSeek, getDeepSeekConfig } from "@/lib/ai/deepseek";
+import { generateWithZai } from "@/lib/ai/zai-client";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -350,9 +351,11 @@ Sois honnête, parfois tranchant. Un dirigeant veut entendre la vérité.
 - Si la question sort du périmètre (recherche d'emploi dirigeant + PRSTO), redirige poliment
 - Si une donnée mémoire est manquante, suggère l'action avec chemin exact
 - Réponds en français, ton coach executive
-- VISE 400-500 mots par réponse substantive (contrainte technique)
-- Si tu manques d'espace, PRIORISE dans cet ordre : BLOC 1 (diagnostic), BLOC 5 (scoring), BLOC 6 (plan d'action + pièges). Les BLOC 2, 3, 4 peuvent être condensés en tableaux ou listes courtes.
-- À la fin, ajoute TOUJOURS : "👉 **Tapez "continue" pour la suite (BLOC 3 détaillé + sources complètes + plan 30/60/90).**"
+- VISE 500-700 mots par réponse substantive (contrainte technique stricte)
+- PRIORITÉ ABSOLUE : livrer BLOC 1 + BLOC 2 + BLOC 3 (tableau des voies) + BLOC 6 (plan d'action)
+- Les BLOC 4 et 5 peuvent être très condensés (1 paragraphe ou 1 tableau)
+- À LA FIN, ajoute TOUJOURS cette ligne exacte :
+  "👉 **Tapez \"continue\" pour les sources détaillées, les exemples concrets et le plan 30/60/90 jours.**"
 - Si la question est simple (def, route PRSTO), réponse courte OK — pas besoin des 6 blocs`;
 
           // ── ÉTAPE 4 : Appeler NVIDIA NIM en mode NON-STREAMING ──
@@ -365,13 +368,42 @@ Sois honnête, parfois tranchant. Un dirigeant veut entendre la vérité.
               ? recentHistory.map((h) => `${h.role === "user" ? "Candidat" : "Coach"}: ${h.content.slice(0, 300)}`).join("\n") + "\n"
               : "";
 
-          const genResult = await generateWithDeepSeek({
-            systemPrompt,
-            userPrompt: `${historyBlock}Candidat: ${message}`,
-            temperature: 0.7,
-            maxTokens: 500, // Compromis : framework condensé, ~30-35s génération (sous 50s ALB)
-            timeout: 50000,
-          });
+          // ── ÉTAPE 4 : Appel IA — Z.AI en priorité (plus fiable que NVIDIA) ──
+          // Z.AI SDK : gratuit, sans rate limit strict, plus rapide que NVIDIA NIM
+          // qui subit trop de 429 en ce moment.
+          // On garde NVIDIA en fallback secondaire si Z.AI échoue.
+          let genResult: { success: boolean; content?: string; error?: string; errorType?: string } =
+            await generateWithZai({
+              systemPrompt,
+              userPrompt: `${historyBlock}Candidat: ${message}`,
+              timeout: 40000,
+            });
+
+          // Fallback NVIDIA si Z.AI échoue
+          if (!genResult.success || !genResult.content) {
+            console.log("[conseiller] Z.AI échec, fallback NVIDIA:", genResult.error);
+            const nvidiaResult = await generateWithDeepSeek({
+              systemPrompt,
+              userPrompt: `${historyBlock}Candidat: ${message}`,
+              temperature: 0.7,
+              maxTokens: 700,
+              timeout: 30000,
+            });
+            if (nvidiaResult.success && nvidiaResult.content) {
+              genResult = {
+                success: true,
+                content: nvidiaResult.content,
+                errorType: nvidiaResult.errorType,
+                error: nvidiaResult.error,
+              };
+            } else {
+              genResult = {
+                success: false,
+                errorType: nvidiaResult.errorType,
+                error: nvidiaResult.error || genResult.error,
+              };
+            }
+          }
 
           if (!genResult.success || !genResult.content) {
             firstRealChunkReceived = true;

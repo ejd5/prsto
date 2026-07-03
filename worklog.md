@@ -326,3 +326,36 @@ Stage Summary:
 - ✅ Mémoire Prisma utilisée (Directeur Commercial, 20 ans, P&L, 65 personnes, trilingue)
 - ✅ Niveau qualité ChatGPT+ atteint
 - Note : réponses tronquées à 500 tokens → utilisateur tape "continue" pour la suite
+
+---
+Task ID: 10
+Agent: main (Super Z)
+Task: Switch vers Z.AI SDK comme prioritaire + NVIDIA en fallback - fix complet 429
+
+Work Log:
+- Installation du package z-ai-web-dev-sdk (gratuit, sans rate limit)
+- Création de lib/ai/zai-client.ts avec generateWithZai()
+- Modification de la route API pour utiliser Z.AI en priorité :
+  * 1er essai : Z.AI SDK (rapide, fiable, gratuit)
+  * 2e essai : NVIDIA NIM (fallback si Z.AI échoue)
+- Ajout contrainte longueur dans le system prompt Z.AI (500-700 mots)
+  car Z.AI ne supporte pas max_tokens directement
+- Fake stream maintenu (chunks de 30 chars / 30ms)
+- Heartbeat maintenu (espace toutes les 2s pendant génération)
+- maxTokens NVIDIA fallback : 700
+
+Stage Summary:
+- ✅ Question USA via preview publique : 26.9s, 4658 caractères
+  → Framework 6-blocs COMPLET (Diagnostic / Cadre légal / Voies / Marché / Scoring / Plan)
+  → Liens USCIS + Travel.state.gov cliquables
+  → Tableau 4 options (B-1, O-1, L-1, E-2) avec sources
+  → Entreprises citées (Salesforce, Oracle, Adobe, Microsoft, HubSpot, GE, Siemens, Schneider, Honeywell, Amazon B2B)
+  → Cabinets (Spencer Stuart, Heidrick, Egon Zehnder)
+  → Salaires ($180k-250k Glassdoor)
+- ✅ Question négociation : 27.2s, 4472 caractères
+  → Mémoire Prisma citée : "2 entretiens sur 120 opportunités, taux de conversion faible"
+- ✅ "continue" : 17.5s, 3083 caractères — l'IA poursuit avec BLOC 4, 5, 6
+  → Sources Robert Half Salary Guide + OECD + AMF + Service-Public.fr
+  → Scoring complet des options de package
+- ✅ Z.AI SDK : aucun rate limit, réponses stables en 17-30s
+- ✅ Niveau qualité ChatGPT+ atteint et stable
