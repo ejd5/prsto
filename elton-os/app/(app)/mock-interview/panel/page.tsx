@@ -85,52 +85,47 @@ export default function MockInterviewPanelPage() {
 
   // ─── Camera ───
   const startCamera = useCallback(async () => {
-    // Détecter si caméra et micro sont disponibles avant de demander
-    let hasCamera = false;
-    let hasMic = false;
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      hasCamera = devices.some(d => d.kind === "videoinput");
-      hasMic = devices.some(d => d.kind === "audioinput");
-      console.log("[visio] Devices:", hasCamera ? "caméra OK" : "pas de caméra", hasMic ? "micro OK" : "pas de micro");
-    } catch {
-      console.log("[visio] enumerateDevices non supporté, on essaie quand même");
-      hasCamera = true;
-      hasMic = true;
-    }
-
-    // Si pas de caméra ni micro → mode texte
-    if (!hasCamera && !hasMic) {
-      console.log("[visio] Pas de caméra ni micro → mode texte");
+    // Pas de mediaDevices → mode texte direct
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.log("[visio] mediaDevices non supporté → mode texte");
       setCameraOn(false);
       setMicOn(false);
       return;
     }
 
     try {
-      const constraints: MediaStreamConstraints = {};
-      if (hasCamera) constraints.video = { width: 640, height: 480 };
-      if (hasMic) constraints.audio = true;
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      // Essayer directement getUserMedia avec vidéo+audio
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480 },
+        audio: true,
+      });
       streamRef.current = stream;
 
-      let attempts = 0;
-      while (!videoRef.current && attempts < 20) {
-        await new Promise(r => setTimeout(r, 100));
-        attempts++;
-      }
+      const hasVideo = stream.getVideoTracks().length > 0;
+      const hasAudio = stream.getAudioTracks().length > 0;
 
-      if (videoRef.current && hasCamera) {
+      if (videoRef.current && hasVideo) {
         videoRef.current.srcObject = stream;
         try { await videoRef.current.play(); } catch {}
       }
-      setCameraOn(hasCamera);
-      setMicOn(hasMic);
-    } catch (err) {
-      console.log("[visio] getUserMedia échec:", err);
-      setCameraOn(false);
-      setMicOn(false);
+      setCameraOn(hasVideo);
+      setMicOn(hasAudio);
+    } catch (err: any) {
+      // NotFoundError, NotAllowedError, etc. → essayer vidéo seule
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          try { await videoRef.current.play(); } catch {}
+        }
+        setCameraOn(true);
+        setMicOn(false);
+      } catch (err2) {
+        // Toujours échec → mode texte
+        setCameraOn(false);
+        setMicOn(false);
+      }
     }
   }, []);
 
@@ -315,13 +310,40 @@ export default function MockInterviewPanelPage() {
       if (data.success && data.audioBase64) {
         if (audioRef.current) {
           audioRef.current.src = `data:audio/mpeg;base64,${data.audioBase64}`;
-          audioRef.current.onended = () => { setIsSpeaking(false); startListening(); };
-          audioRef.current.play();
+          audioRef.current.onended = () => {
+            setIsSpeaking(false);
+            if (micOn) startListening();
+          };
+          audioRef.current.play().catch(() => {});
         }
       } else if (data.provider === "web-speech") {
+        // Web Speech avec voix différenciée par genre
         const u = new SpeechSynthesisUtterance(question.question);
-        u.lang = "fr-FR"; u.rate = 0.95;
-        u.onend = () => { setIsSpeaking(false); startListening(); };
+        u.lang = "fr-FR";
+        u.rate = 0.95;
+        // Pitch selon genre : homme = grave (0.7), femme = aigu (1.3)
+        const isMale = question.role.id === "ceo" || question.role.id === "pair" || question.role.id === "investisseur";
+        u.pitch = isMale ? 0.7 : 1.3;
+
+        // Chercher une voix française correspondant au genre
+        const voices = window.speechSynthesis.getVoices();
+        const frVoices = voices.filter(v => v.lang.startsWith("fr"));
+        if (frVoices.length > 0) {
+          // Essayer de trouver une voix du bon genre
+          const genderVoice = frVoices.find(v => {
+            const name = v.name.toLowerCase();
+            const isFemaleVoice = name.includes("female") || name.includes("femme") || name.includes("amelie") || name.includes("marie");
+            const isMaleVoice = name.includes("male") || name.includes("homme") || name.includes("thomas") || name.includes("paul");
+            return isMale ? isMaleVoice : isFemaleVoice;
+          });
+          if (genderVoice) u.voice = genderVoice;
+          else u.voice = frVoices[0];
+        }
+
+        u.onend = () => {
+          setIsSpeaking(false);
+          if (micOn) startListening();
+        };
         window.speechSynthesis.speak(u);
       }
     } catch { setIsSpeaking(false); }
