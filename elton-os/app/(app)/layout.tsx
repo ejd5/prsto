@@ -55,7 +55,7 @@ const NAV_SECTIONS = [
     title: "Training Camp",
     items: [
       { href: "/entretiens", label: "Entretiens", icon: Calendar },
-      { href: "/mock-interview/panel", label: "Mocks", icon: MessageSquare },
+      { href: "/mock-interview/setup", label: "Mocks", icon: MessageSquare },
     ],
   },
   {
