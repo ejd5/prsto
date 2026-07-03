@@ -14,11 +14,11 @@ import { prisma } from "@/lib/prisma";
  */
 
 const PANEL_ROLES = [
-  { id: "ceo", name: "CEO / N+1", focus: "vision stratégique, leadership, alignement avec la direction" },
-  { id: "cfo", name: "CFO / DAF", focus: "P&L, gestion financière, ROI, gestion des risques" },
-  { id: "drh", name: "DRH / Chief People Officer", focus: "management d'équipe, culture, soft skills" },
-  { id: "pair", name: "Pair Comex / futur collègue", focus: "collaboration, expertise métier, intégration" },
-  { id: "investisseur", name: "Board Member / Investisseur", focus: "création de valeur, exit, gouvernance" },
+  { id: "ceo", name: "CEO / N+1", focus: "vision stratégique, leadership, alignement avec la direction", color: "#E4B118", bgGradient: "linear-gradient(135deg, #E4B118 0%, #F2C94C 100%)" },
+  { id: "cfo", name: "CFO / DAF", focus: "P&L, gestion financière, ROI, gestion des risques", color: "#0E3A29", bgGradient: "linear-gradient(135deg, #0E3A29 0%, #1A5A3E 100%)" },
+  { id: "drh", name: "DRH / Chief People Officer", focus: "management d'équipe, culture, soft skills", color: "#6A8F6D", bgGradient: "linear-gradient(135deg, #6A8F6D 0%, #8FB092 100%)" },
+  { id: "pair", name: "Pair Comex / futur collègue", focus: "collaboration, expertise métier, intégration", color: "#2563EB", bgGradient: "linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)" },
+  { id: "investisseur", name: "Board Member / Investisseur", focus: "création de valeur, exit, gouvernance", color: "#DC2626", bgGradient: "linear-gradient(135deg, #DC2626 0%, #F87171 100%)" },
 ];
 
 export async function POST(request: NextRequest) {
@@ -116,12 +116,23 @@ Ne retourne QUE le JSON, pas de texte avant ou après.`;
     // Enrichir avec les métadonnées des rôles
     const enrichedQuestions = questions.map((q: { role: string; question: string; context?: string }) => {
       const roleMeta = PANEL_ROLES.find(r => r.id === q.role) || PANEL_ROLES[0];
+      // Map role id to iconName for the frontend
+      const iconNameMap: Record<string, string> = {
+        ceo: "Crown",
+        cfo: "DollarSign",
+        drh: "Users",
+        pair: "Briefcase",
+        investisseur: "TrendingUp",
+      };
       return {
         role: {
           id: roleMeta.id,
           name: roleMeta.name.split(" / ")[0],
           title: roleMeta.name,
           description: roleMeta.focus,
+          iconName: iconNameMap[roleMeta.id] || "Sparkles",
+          color: roleMeta.color || "#E4B118",
+          bgGradient: roleMeta.bgGradient || "linear-gradient(135deg, #E4B118 0%, #F2C94C 100%)",
         },
         question: q.question,
         context: q.context,

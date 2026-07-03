@@ -8,11 +8,16 @@ import {
   ChevronRight, Volume2, AlertCircle, CheckCircle2,
 } from "lucide-react";
 
+// Lookup map — évite les problèmes de résolution Turbopack
+const ICONS: Record<string, React.ElementType> = {
+  Crown, DollarSign, Users, Briefcase, TrendingUp,
+};
+
 interface PanelRole {
   id: string;
   name: string;
   title: string;
-  icon: React.ElementType;
+  iconName: string;
   color: string;
   bgGradient: string;
   description: string;
@@ -23,7 +28,7 @@ const PANEL_ROLES: PanelRole[] = [
     id: "ceo",
     name: "Paul Mercier",
     title: "CEO / N+1",
-    icon: Crown,
+    iconName: "Crown",
     color: "#E4B118",
     bgGradient: "linear-gradient(135deg, #E4B118 0%, #F2C94C 100%)",
     description: "Vision stratégique, leadership, alignement vision",
@@ -32,7 +37,7 @@ const PANEL_ROLES: PanelRole[] = [
     id: "cfo",
     name: "Marie Lefèvre",
     title: "CFO / DAF",
-    icon: DollarSign,
+    iconName: "DollarSign",
     color: "#0E3A29",
     bgGradient: "linear-gradient(135deg, #0E3A29 0%, #1A5A3E 100%)",
     description: "P&L, gestion financière, ROI, risques",
@@ -41,7 +46,7 @@ const PANEL_ROLES: PanelRole[] = [
     id: "drh",
     name: "Ingrid Dubois",
     title: "DRH / Chief People Officer",
-    icon: Users,
+    iconName: "Users",
     color: "#6A8F6D",
     bgGradient: "linear-gradient(135deg, #6A8F6D 0%, #8FB092 100%)",
     description: "Culture, management d'équipe, soft skills",
@@ -50,7 +55,7 @@ const PANEL_ROLES: PanelRole[] = [
     id: "pair",
     name: "Thomas Bertrand",
     title: "Pair Comex / futur collègue",
-    icon: Briefcase,
+    iconName: "Briefcase",
     color: "#2563EB",
     bgGradient: "linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)",
     description: "Collaboration, expertise métier, intégration",
@@ -59,7 +64,7 @@ const PANEL_ROLES: PanelRole[] = [
     id: "investisseur",
     name: "David Rousseau",
     title: "Board Member / Investisseur",
-    icon: TrendingUp,
+    iconName: "TrendingUp",
     color: "#DC2626",
     bgGradient: "linear-gradient(135deg, #DC2626 0%, #F87171 100%)",
     description: "Création de valeur, exit, gouvernance",
@@ -289,7 +294,7 @@ export default function MockInterviewPanelPage() {
           {/* Panel preview */}
           <div className="grid grid-cols-5 gap-3 mb-8">
             {PANEL_ROLES.map(role => {
-              const Icon = role.icon;
+              const Icon = ICONS[role.iconName] || Sparkles;
               return (
                 <div
                   key={role.id}
@@ -378,7 +383,7 @@ export default function MockInterviewPanelPage() {
   // ─── PHASE QUESTIONS ─────────────────────────────────────
   if (phase === "questions" && questions.length > 0) {
     const currentQ = questions[currentQuestionIndex];
-    const RoleIcon = currentQ.role.icon;
+    const RoleIcon = ICONS[currentQ.role.iconName] || Sparkles;
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
     return (
