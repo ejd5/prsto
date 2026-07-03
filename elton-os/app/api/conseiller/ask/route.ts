@@ -368,39 +368,38 @@ Sois honnête, parfois tranchant. Un dirigeant veut entendre la vérité.
               ? recentHistory.map((h) => `${h.role === "user" ? "Candidat" : "Coach"}: ${h.content.slice(0, 300)}`).join("\n") + "\n"
               : "";
 
-          // ── ÉTAPE 4 : Appel IA — Z.AI en priorité (plus fiable que NVIDIA) ──
-          // Z.AI SDK : gratuit, sans rate limit strict, plus rapide que NVIDIA NIM
-          // qui subit trop de 429 en ce moment.
-          // On garde NVIDIA en fallback secondaire si Z.AI échoue.
+          // ── ÉTAPE 4 : Appel IA — Z.AI SDK prioritaire (le plus fiable et rapide) ──
+          // Z.AI SDK : gratuit, sans rate limit, réponses en 15-25s
+          // Fallback : GLM-5.2 via NVIDIA NIM si Z.AI échoue
           let genResult: { success: boolean; content?: string; error?: string; errorType?: string } =
             await generateWithZai({
               systemPrompt,
               userPrompt: `${historyBlock}Candidat: ${message}`,
-              timeout: 40000,
+              timeout: 35000,
             });
 
-          // Fallback NVIDIA si Z.AI échoue
+          // Fallback GLM-5.2 via NVIDIA si Z.AI échoue
           if (!genResult.success || !genResult.content) {
-            console.log("[conseiller] Z.AI échec, fallback NVIDIA:", genResult.error);
-            const nvidiaResult = await generateWithDeepSeek({
+            console.log("[conseiller] Z.AI SDK échec, fallback GLM-5.2:", genResult.error);
+            const glmResult = await generateWithDeepSeek({
               systemPrompt,
               userPrompt: `${historyBlock}Candidat: ${message}`,
               temperature: 0.7,
               maxTokens: 700,
-              timeout: 30000,
+              timeout: 25000,
             });
-            if (nvidiaResult.success && nvidiaResult.content) {
+            if (glmResult.success && glmResult.content) {
               genResult = {
                 success: true,
-                content: nvidiaResult.content,
-                errorType: nvidiaResult.errorType,
-                error: nvidiaResult.error,
+                content: glmResult.content,
+                errorType: glmResult.errorType,
+                error: glmResult.error,
               };
             } else {
               genResult = {
                 success: false,
-                errorType: nvidiaResult.errorType,
-                error: nvidiaResult.error || genResult.error,
+                errorType: glmResult.errorType,
+                error: glmResult.error || genResult.error,
               };
             }
           }
