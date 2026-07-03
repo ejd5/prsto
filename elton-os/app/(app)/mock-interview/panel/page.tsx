@@ -293,11 +293,9 @@ export default function MockInterviewPanelPage() {
         // 1. Démarrer la caméra (détecte automatiquement si device disponible)
         await startCamera();
 
-        // 2. Démarrer MediaPipe seulement si streamRef a une vidéo (caméra activée)
-        const hasVideo = streamRef.current?.getVideoTracks().length > 0;
-        if (hasVideo) {
-          initMediaPipe().catch(() => {});
-        }
+        // 2. MediaPipe désactivé temporairement (cause des erreurs sur certains navigateurs)
+        // Sera réactivé quand on aura une solution stable pour le chargement du modèle.
+        // initMediaPipe().catch(() => {});
 
         // 3. Attendre 1.5s puis parler la 1ère question
         setTimeout(() => speakQuestion(questions[0]), 1500);
