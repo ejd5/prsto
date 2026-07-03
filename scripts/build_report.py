@@ -1,0 +1,1563 @@
+#!/usr/bin/env python3
+"""Génère le rapport d'analyse stratégique PRSTO en HTML self-contained.
+Output: /home/z/my-project/download/PRSTO_analyse_strategique.html
+"""
+
+import sys, os
+sys.path.insert(0, "/home/z/my-project/scripts")
+from build_report_data import PROJECT_FACTS, COMPETITORS, RECOMMENDATIONS
+
+OUTPUT = "/home/z/my-project/download/PRSTO_analyse_strategique.html"
+
+CSS = """
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-cream: #FAF6EF;
+  --bg-paper: #FFFDF8;
+  --primary-dark: #0E3A29;
+  --primary-darker: #0B2E21;
+  --primary-deep: #0B1F18;
+  --accent-gold: #E4B118;
+  --accent-gold-light: #F2C94C;
+  --accent-gold-soft: #FEF3C7;
+  --text-dark: #0B1F18;
+  --text-muted: #6A8F6D;
+  --text-body: #50625A;
+  --border-soft: rgba(16,56,38,0.08);
+  --border-medium: rgba(16,56,38,0.15);
+  --red: #DC2626;
+  --amber: #D97706;
+  --green: #16A34A;
+  --blue: #2563EB;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-cream);
+  color: var(--text-body);
+  line-height: 1.6;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ─── Cover ─── */
+.cover {
+  background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 80px 0 100px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(228,177,24,0.12), transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.cover::after {
+  content: '';
+  position: absolute;
+  bottom: -200px; left: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(106,143,109,0.10), transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.cover .container { position: relative; z-index: 1; }
+.cover-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: white;
+  margin-bottom: 8px;
+}
+.cover-logo span { color: var(--accent-gold); }
+.cover-tagline {
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 60px;
+  letter-spacing: 0.02em;
+}
+.cover-meta {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 13px;
+}
+.cover-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cover-meta-label {
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+  font-weight: 600;
+}
+.cover-meta-value {
+  color: white;
+  font-weight: 600;
+}
+.cover-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  max-width: 760px;
+}
+.cover-subtitle {
+  font-size: 16px;
+  color: rgba(255,255,255,0.75);
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+/* ─── TOC ─── */
+.toc {
+  background: var(--bg-paper);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 40px 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(255,253,248,0.92);
+}
+.toc-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.toc-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  list-style: none;
+}
+.toc-list a {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+.toc-list a:hover {
+  border-bottom-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* ─── Sections ─── */
+section {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+section:last-of-type { border-bottom: none; }
+.section-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  background: var(--accent-gold-soft);
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 17px;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+  max-width: 760px;
+  line-height: 1.6;
+}
+
+/* ─── Generic content blocks ─── */
+p { margin-bottom: 16px; line-height: 1.7; color: var(--text-body); }
+p.lead { font-size: 17px; color: var(--text-dark); }
+strong { color: var(--text-dark); font-weight: 600; }
+em { color: var(--accent-gold); font-style: normal; font-weight: 600; }
+
+ul, ol { margin: 0 0 24px 24px; }
+li { margin-bottom: 8px; line-height: 1.65; }
+li::marker { color: var(--accent-gold); }
+
+h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 32px 0 16px;
+  letter-spacing: -0.02em;
+}
+h4 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 24px 0 12px;
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s;
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.stat-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: left;
+}
+.stat-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -0.03em;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ─── Tables ─── */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  margin: 24px 0;
+  background: var(--bg-paper);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  background: var(--primary-dark);
+  color: white;
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+  color: var(--text-body);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(228,177,24,0.04); }
+.td-name { font-weight: 600; color: var(--text-dark); }
+.td-strong { color: var(--text-dark); font-weight: 500; }
+
+/* ─── Competitor cards ─── */
+.competitor-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.competitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-soft);
+  flex-wrap: wrap;
+}
+.competitor-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+}
+.competitor-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.competitor-pricing {
+  background: var(--accent-gold-soft);
+  color: var(--amber);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.competitor-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.competitor-col h5 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.competitor-col.strengths h5 { color: var(--green); }
+.competitor-col.weaknesses h5 { color: var(--red); }
+.competitor-col ul { margin-left: 16px; margin-bottom: 0; }
+.competitor-col li { font-size: 13px; margin-bottom: 6px; }
+
+@media (max-width: 720px) {
+  .competitor-cols { grid-template-columns: 1fr; }
+}
+
+/* ─── Recommendations ─── */
+.rec-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--accent-gold);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+.rec-card:hover { box-shadow: var(--shadow-md); }
+.rec-card.critique { border-left-color: var(--red); }
+.rec-card.haute { border-left-color: var(--amber); }
+.rec-card.moyenne { border-left-color: var(--accent-gold); }
+.rec-card.baisse { border-left-color: var(--text-muted); }
+
+.rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.rec-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-dark);
+  flex: 1;
+  min-width: 220px;
+}
+.rec-cat {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.rec-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+.badge-prio-critique { background: #FEE2E2; color: var(--red); }
+.badge-prio-haute { background: #FEF3C7; color: var(--amber); }
+.badge-prio-moyenne { background: var(--accent-gold-soft); color: var(--accent-gold); }
+.badge-prio-baisse { background: #F1F5F9; color: var(--text-muted); }
+.badge-effort-faible { background: #DCFCE7; color: var(--green); }
+.badge-effort-moyen { background: var(--accent-gold-soft); color: var(--amber); }
+.badge-effort-eleve { background: #FEE2E2; color: var(--red); }
+.badge-impact-eleve { background: #DBEAFE; color: var(--blue); }
+.badge-impact-moyen { background: #E0E7FF; color: #6366F1; }
+.badge-impact-bas { background: #F1F5F9; color: var(--text-muted); }
+
+.rec-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-body);
+}
+
+/* ─── SWOT ─── */
+.swot {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+.swot-quadrant {
+  padding: 24px;
+  border-radius: 14px;
+  border: 1px solid;
+}
+.swot-quadrant h4 {
+  margin-top: 0;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.swot-quadrant ul { margin-left: 18px; margin-bottom: 0; }
+.swot-quadrant li { font-size: 13px; margin-bottom: 6px; }
+.swot-strengths { background: #ECFDF5; border-color: #BBF7D0; }
+.swot-strengths h4 { color: var(--green); }
+.swot-weaknesses { background: #FEF2F2; border-color: #FECACA; }
+.swot-weaknesses h4 { color: var(--red); }
+.swot-opportunities { background: #EFF6FF; border-color: #BFDBFE; }
+.swot-opportunities h4 { color: var(--blue); }
+.swot-threats { background: #FFFBEB; border-color: #FDE68A; }
+.swot-threats h4 { color: var(--amber); }
+
+@media (max-width: 720px) {
+  .swot { grid-template-columns: 1fr; }
+}
+
+/* ─── Menu mockup ─── */
+.menu-mockup {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+.menu-sidebar {
+  background: var(--primary-dark);
+  border-radius: 14px;
+  padding: 20px 14px;
+  color: white;
+  font-size: 12px;
+}
+.menu-section { margin-bottom: 18px; }
+.menu-section-title {
+  color: rgba(255,255,255,0.4);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0 8px 6px;
+}
+.menu-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-item.active {
+  background: rgba(228,177,24,0.12);
+  color: var(--accent-gold);
+  border-left: 3px solid var(--accent-gold);
+}
+.menu-changes {
+  background: var(--bg-paper);
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid var(--border-soft);
+}
+.menu-changes h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.change-row {
+  display: grid;
+  grid-template-columns: 1fr 30px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 13px;
+}
+.change-row:last-child { border-bottom: none; }
+.change-old { color: var(--text-muted); text-decoration: line-through; }
+.change-arrow { text-align: center; color: var(--accent-gold); font-weight: 700; }
+.change-new { color: var(--text-dark); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .menu-mockup { grid-template-columns: 1fr; }
+  .change-row { grid-template-columns: 1fr 30px 1fr; }
+}
+
+/* ─── Pillars / feature grid ─── */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.pillar {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px;
+}
+.pillar-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--accent-gold-soft);
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.pillar-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+.pillar-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ─── Final summary ─── */
+.final-cta {
+  background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 48px;
+  text-align: center;
+  margin: 40px 0;
+}
+.final-cta h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: white;
+}
+
+/* ─── Misc ─── */
+.highlight-box {
+  background: linear-gradient(135deg, rgba(228,177,24,0.08), rgba(228,177,24,0.02));
+  border-left: 4px solid var(--accent-gold);
+  padding: 20px 24px;
+  border-radius: 8px;
+  margin: 24px 0;
+  font-size: 14px;
+}
+.quote {
+  border-left: 3px solid var(--accent-gold);
+  padding-left: 20px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin: 24px 0;
+  font-size: 15px;
+}
+
+footer {
+  padding: 60px 0 40px;
+  background: var(--primary-darker);
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  font-size: 13px;
+}
+footer .container { color: rgba(255,255,255,0.5); }
+footer strong { color: var(--accent-gold); }
+
+@media print {
+  .toc { position: static; }
+  section { padding: 40px 0; page-break-inside: avoid; }
+  .competitor-card, .rec-card { page-break-inside: avoid; }
+}
+"""
+
+# Generate HTML
+def gen_competitor(c):
+    strengths = "".join(f"<li>{s}</li>" for s in c["strengths"])
+    weaknesses = "".join(f"<li>{w}</li>" for w in c["weaknesses"])
+    return f"""
+    <div class="competitor-card" id="comp-{c['name'].lower().replace(' ', '-').replace('.','')}">
+      <div class="competitor-header">
+        <div>
+          <div class="competitor-name">{c['name']}</div>
+          <div class="competitor-meta">{c['type']} • {c['audience']}</div>
+          <div class="competitor-meta" style="margin-top:6px"><strong>Trafic :</strong> {c['traffic']}</div>
+        </div>
+        <div class="competitor-pricing">{c['pricing']}</div>
+      </div>
+      <div class="competitor-cols">
+        <div class="competitor-col strengths">
+          <h5>✓ Forces</h5>
+          <ul>{strengths}</ul>
+        </div>
+        <div class="competitor-col weaknesses">
+          <h5>✗ Faiblesses</h5>
+          <ul>{weaknesses}</ul>
+        </div>
+      </div>
+    </div>
+    """
+
+def gen_rec(r):
+    cat, title, prio, effort, impact, desc = r
+    prio_class = prio.lower()
+    return f"""
+    <div class="rec-card {prio_class}">
+      <div class="rec-header">
+        <div style="flex:1; min-width: 220px;">
+          <div class="rec-cat">{cat}</div>
+          <div class="rec-title">{title}</div>
+        </div>
+        <div class="rec-badges">
+          <span class="badge badge-prio-{prio_class}">{prio}</span>
+          <span class="badge badge-effort-{effort.lower()}">Effort {effort.lower()}</span>
+          <span class="badge badge-impact-{impact.lower()}">Impact {impact.lower()}</span>
+        </div>
+      </div>
+      <div class="rec-desc">{desc}</div>
+    </div>
+    """
+
+# Group recommendations by category
+from collections import defaultdict
+recs_by_cat = defaultdict(list)
+for r in RECOMMENDATIONS:
+    recs_by_cat[r[0]].append(r)
+
+cat_order = ["Positionnement", "Branding", "Menu", "Landing", "Features", "Extension", "Sourcing", "IA", "Internationalisation", "Performance", "Sécurité", "SEO/Content", "UX/UI", "Roadmap"]
+
+recs_html = ""
+for cat in cat_order:
+    if cat not in recs_by_cat:
+        continue
+    recs = recs_by_cat[cat]
+    recs_html += f"<h3 id='rec-{cat.lower().replace('/','').replace(' ','-')}'>{cat}</h3>"
+    for r in recs:
+        recs_html += gen_rec(r)
+
+competitors_html = "".join(gen_competitor(c) for c in COMPETITORS)
+
+# Count competitors by type
+total_comps = len(COMPETITORS)
+fr_comps = sum(1 for c in COMPETITORS if "France" in c["audience"] or "cadres" in c["audience"].lower())
+exec_comps = sum(1 for c in COMPETITORS if "executive" in c["audience"].lower() or "dirigeant" in c["audience"].lower() or "top" in c["audience"].lower())
+ai_comps = sum(1 for c in COMPETITORS if "AI" in c["type"] or "ai" in c["type"].lower())
+
+HTML = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRSTO — Analyse stratégique & recommandations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>{CSS}</style>
+</head>
+<body>
+
+<!-- ═══════════════ COVER ═══════════════ -->
+<header class="cover">
+  <div class="container">
+    <div class="cover-logo">PR<span>STO</span></div>
+    <div class="cover-tagline">Le copilote carrière IA des cadres dirigeants</div>
+    <div class="cover-title">Analyse stratégique &amp; recommandations produit</div>
+    <div class="cover-subtitle">
+      État des lieux complet du projet PRSTO (elton-os), étude concurrentielle du marché
+      de la recherche d'emploi executive, et plan d'action priorisé pour transformer
+      PRSTO en référence européenne du copilote carrière des dirigeants.
+    </div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Date</span>
+        <span class="cover-meta-value">3 juillet 2026</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Stack analysée</span>
+        <span class="cover-meta-value">{PROJECT_FACTS['stack']}</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Concurrents étudiés</span>
+        <span class="cover-meta-value">{total_comps}</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">Recommandations</span>
+        <span class="cover-meta-value">{len(RECOMMENDATIONS)}</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ TOC ═══════════════ -->
+<nav class="toc">
+  <div class="container">
+    <div class="toc-title">Sommaire</div>
+    <ul class="toc-list">
+      <li><a href="#resume">1. Résumé exécutif</a></li>
+      <li><a href="#vision">2. Vision &amp; marché cible</a></li>
+      <li><a href="#etat">3. État des lieux du projet</a></li>
+      <li><a href="#dashboard">4. Audit dashboard &amp; menu</a></li>
+      <li><a href="#landing">5. Audit landing page</a></li>
+      <li><a href="#marche">6. Analyse du marché</a></li>
+      <li><a href="#concurrents">7. Étude concurrentielle</a></li>
+      <li><a href="#swot">8. SWOT PRSTO</a></li>
+      <li><a href="#recommandations">9. Recommandations</a></li>
+      <li><a href="#roadmap">10. Roadmap proposée</a></li>
+      <li><a href="#next">11. Prochaines étapes</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══════════════ 1. RÉSUMÉ ═══════════════ -->
+<section id="resume">
+  <div class="container">
+    <span class="section-tag">Synthèse</span>
+    <h2 class="section-title">Résumé exécutif</h2>
+    <p class="section-subtitle">Ce que vous allez trouver dans ce rapport, en 60 secondes.</p>
+
+    <div class="card-grid">
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--primary-dark)">{PROJECT_FACTS['prisma_models']}</div>
+        <div class="stat-label">Modèles Prisma — base de données riche et structurée</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--accent-gold)">{PROJECT_FACTS['nav_items']}</div>
+        <div class="stat-label">Items de menu — trop, à regrouper en 4 sections</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--text-muted)">{total_comps}</div>
+        <div class="stat-label">Concurrents analysés (FR, EU, US, IA tools)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--blue)">{len(RECOMMENDATIONS)}</div>
+        <div class="stat-label">Recommandations classées par priorité et effort</div>
+      </div>
+    </div>
+
+    <h3>Verdict en 3 points</h3>
+    <p><strong>1. Le produit est solide techniquement.</strong> 38 modèles Prisma, 479 fichiers TypeScript, 6 sources d'offres connectées, extension Chrome pour 6 plateformes, IA NVIDIA NIM gratuite intégrée. La fondation est largement supérieure à la majorité des outils IA job search du marché (Teal, Huntr, Simplify) sur la profondeur fonctionnelle.</p>
+
+    <p><strong>2. Le positionnement executive est noyé.</strong> La landing parle de « cadres dirigeants » mais le menu, les fonctionnalités et les tarifs sont trop génériques. Un dirigeant DG/CEO qui arrive sur la landing ne comprend pas en 10 secondes que PRSTO est fait pour lui spécifiquement. Experteer a verrouillé son positionnement avec son seuil €60k+ — PRSTO doit faire de même avec un seuil d'expérience + fonctions éligibles.</p>
+
+    <p><strong>3. Le « second brain » est le Graal sous-exploité.</strong> Le Conseiller PRSTO existe dans le code mais n'est pas dans le menu et n'a pas de mémoire longue. C'est pourtant exactement la différenciation qui tuerait LinkedIn/Teal/Jobscan : un conseiller IA qui connaît votre parcours, vos preuves (Proof Vault), vos candidatures en cours, et qui peut vous briefier chaque matin. À activer en priorité absolue.</p>
+
+    <div class="highlight-box">
+      <strong>💡 Déclic stratégique :</strong> Le marché ne manque pas d'outils de recherche d'emploi. Il manque un <em>copilote de campagne</em> calibré pour des process de 6-18 mois, multi-étapes, multi-interlocuteurs. C'est exactement la whitespace que PRSTO peut verrouiller en Europe avant qu'un acteur US (Teal, Simplify) ne le fasse.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 2. VISION ═══════════════ -->
+<section id="vision">
+  <div class="container">
+    <span class="section-tag">Vision</span>
+    <h2 class="section-title">Votre vision, restituée</h2>
+    <p class="section-subtitle">Ce que j'ai compris de votre intention — à valider avant tout le reste.</p>
+
+    <h3>Le problème que vous résolvez</h3>
+    <p>Les cadres dirigeants (DG, DGD, CEO, COO, CFO, CTO, CMO, Country Manager, VP, Président) vivent des process de recrutement d'une durée et d'une complexité radicalement différentes du reste du marché :</p>
+    <ul>
+      <li><strong>Durée :</strong> 6 à 18 mois en moyenne, contre 1-3 mois pour un cadre intermédiaire</li>
+      <li><strong>Étapes :</strong> 7 à 12 étapes (cabinet de chasse → 1er call → case study → panel → final → négociation → onboarding)</li>
+      <li><strong>Interlocuteurs :</strong> 15 à 30 personnes (chasseurs, DRH, pairs, board, consultants externes)</li>
+      <li><strong>Enjeu financier :</strong> packages de 200k€ à 2M€+, erreurs coûteuses des deux côtés</li>
+      <li><strong>Confidentialité :</strong> le candidat dirigeant ne peut pas « postuler » publiquement, il doit être « approché » ou se positionner subtilement</li>
+    </ul>
+    <p>Aucun outil généraliste (LinkedIn, APEC, Indeed) n'est calibré pour cette durée, cette complexité et cette confidentialité. Les cabinets de chasse (Michael Page, Robert Walters, Odgers Berndtson) font le matching mais ne fournissent aucun outil au candidat lui-même. C'est la whitespace que PRSTO attaque.</p>
+
+    <h3>Votre proposition de valeur, restituée</h3>
+    <div class="highlight-box">
+      <strong>PRSTO</strong> est le premier copilote carrière IA en Europe spécifiquement conçu pour les cadres dirigeants en recherche active ou passive. Il combine :
+      <ul style="margin-top:12px">
+        <li><strong>18 outils intégrés</strong> couvrant toute la campagne (sourcing, scoring, CV, lettre, mock interview, CRM recruteur, market radar, negotiation prep)</li>
+        <li><strong>Un second brain IA</strong> qui mémorise votre parcours, vos preuves, vos candidatures et vous briefier chaque matin</li>
+        <li><strong>Une extension Chrome</strong> active sur 6 plateformes (LinkedIn, APEC, Cadremploi, HelloWork, WTTJ, Indeed) avec side panel IA conversationnel temps réel</li>
+        <li><strong>Une approche éthique</strong> : zéro envoi automatique, l'IA augmente le dirigeant mais ne remplace jamais son jugement</li>
+      </ul>
+    </div>
+
+    <h3>Marché cible (segments)</h3>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-icon">🎯</div>
+        <div class="pillar-title">Cœur de cible</div>
+        <div class="pillar-desc">Cadres dirigeants français en recherche active, 8-25 ans d'expérience, packages 120k-500k€. Taille : ~80 000 personnes en France.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🌍</div>
+        <div class="pillar-title">Extension EU</div>
+        <div class="pillar-desc">Dirigeants UK/DACH/BENELUX (anglophones). Taille : ~250 000 personnes. Vague 2 post-MVP.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🌎</div>
+        <div class="pillar-title">International</div>
+        <div class="pillar-desc">USA + LATAM via traduction EN/ES. Taille : ~1,2 M personnes éligibles. Vague 3.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🤝</div>
+        <div class="pillar-title">B2B cabinets</div>
+        <div class="pillar-desc">Cabinets de chasse en SaaS B2B2C (API matching candidats↔missions). TAM France 30 M€/an.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 3. ÉTAT DES LIEUX ═══════════════ -->
+<section id="etat">
+  <div class="container">
+    <span class="section-tag">Audit technique</span>
+    <h2 class="section-title">État des lieux du projet</h2>
+    <p class="section-subtitle">Ce qui existe déjà dans le code, ce qui fonctionne, ce qui manque.</p>
+
+    <h3>Architecture technique</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Composant</th><th>Technologie</th><th>État</th><th>Commentaire</th></tr>
+        <tr><td class="td-name">Framework</td><td>Next.js 16.2.9 (Turbopack)</td><td class="td-strong">✓ À jour</td><td>Version récente, Turbopack activé — bon choix</td></tr>
+        <tr><td class="td-name">React</td><td>19.2.4</td><td class="td-strong">✓ À jour</td><td>React 19 stable, Server Components disponibles</td></tr>
+        <tr><td class="td-name">ORM</td><td>Prisma 5.22 + SQLite</td><td class="td-strong">⚠ À migrer</td><td>SQLite OK pour dev, à passer sur PostgreSQL (Neon/Supabase) pour la prod</td></tr>
+        <tr><td class="td-name">Auth</td><td>JWT + bcryptjs</td><td class="td-strong">⚠ Limité</td><td>OK pour démarrer, mais pas de rotation de tokens, pas de SSO. Ajouter NextAuth/Auth.js</td></tr>
+        <tr><td class="td-name">IA LLM</td><td>NVIDIA NIM (gratuit) + DeepSeek</td><td class="td-strong">✓ Stratégie coût OK</td><td>Excellent choix pour maîtriser les coûts. Ajouter fallback OpenRouter</td></tr>
+        <tr><td class="td-name">IA Vision</td><td>@mediapipe/tasks-vision</td><td class="td-strong">✓ Présent</td><td>Pour mock interview (analyse posture)</td></tr>
+        <tr><td class="td-name">IA Embeddings</td><td>@huggingface/transformers</td><td class="td-strong">✓ Présent</td><td>Pour second brain — à exploiter massivement</td></tr>
+        <tr><td class="td-name">PDF/DOCX</td><td>pdf-lib + docx + mammoth</td><td class="td-strong">✓ Stack complète</td><td>Génération et parsing CV/lettres — bien</td></tr>
+        <tr><td class="td-name">Cartes</td><td>react-leaflet + leaflet</td><td class="td-strong">⚠ Lourd</td><td>Market Radar — lazy load nécessaire</td></tr>
+        <tr><td class="td-name">Tests</td><td>Vitest + Playwright</td><td class="td-strong">✓ Présent</td><td>72 fichiers tests, 7 e2e — bon ratio</td></tr>
+        <tr><td class="td-name">Déploiement</td><td>Dockerfile + docker-compose</td><td class="td-strong">✓ Prêt</td><td>Conteneurisation OK, à pousser sur Railway/Render/Fly.io</td></tr>
+      </table>
+    </div>
+
+    <h3>Écosystème fonctionnel (ce qui existe)</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h4>🎯 Sourcing d'offres</h4>
+        <ul>
+          <li>6 connectors : LinkedIn public, France Travail API, Michael Page, Firecrawl safe, public ATS, generic JSON-LD</li>
+          <li>Extension Chrome sur 6 plateformes (LinkedIn, Indeed, APEC, Cadremploi, HelloWork, WTTJ)</li>
+          <li>Source-scanner + safe-sources (job sources validées)</li>
+          <li>Cron de sourcing automatique</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>📊 Scoring &amp; analyse</h4>
+        <ul>
+          <li>Scoring 7 dimensions (executive, location, semantic, ATS, red flags, recommendation, action)</li>
+          <li>Quick-score API pour scoring léger</li>
+          <li>Anti-hallucination IA (lib/ai/anti-hallucination.ts)</li>
+          <li>Quality-check module</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>📝 CV &amp; documents</h4>
+        <ul>
+          <li>CV Maître (modèle canonique structuré)</li>
+          <li>CV Adapté (généré par offre cible)</li>
+          <li>AI CV Optimizer (analyse structurelle + bullet points)</li>
+          <li>ATS Scanner (matching CV↔offre)</li>
+          <li>Documents templates</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🎤 Préparation entretien</h4>
+        <ul>
+          <li>Mock Interview (mono ?) avec analyse posture</li>
+          <li>Interview Prep library</li>
+          <li>STAR Simulator (mentionné landing)</li>
+          <li>Boardroom Studio (mentionné landing, à vérifier implémentation)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>📡 Market Radar</h4>
+        <ul>
+          <li>Cartographie marché caché</li>
+          <li>Candidates tracking</li>
+          <li>FT URLs + WTTJ URLs (France Travail + Welcome to the Jungle)</li>
+          <li>Scan + preview</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>👥 CRM Recruteur</h4>
+        <ul>
+          <li>RecruiterContact, CompanyTarget, ContactInteraction</li>
+          <li>Pipeline Kanban</li>
+          <li>Compta (commissions)</li>
+          <li>Extract CV + extract offer</li>
+          <li>Match candidat↔mission (mode recruteur)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🧠 Conseiller IA (second brain)</h4>
+        <ul>
+          <li>lib/conseiller/conseiller-engine.ts</li>
+          <li>lib/conseiller/conseiller-knowledge.ts (réponses locales)</li>
+          <li>Liste blanche de topics (anti off-topic)</li>
+          <li>⚠ Pas dans le menu principal</li>
+          <li>⚠ Pas de mémoire longue</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🛡 Proof Vault</h4>
+        <ul>
+          <li>Modèle ProofEntry dans Prisma</li>
+          <li>Page /proof-vault dans le menu</li>
+          <li>⚠ Sous-exploité (pas connecté au mock interview ni au CV optimizer)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>📈 Performance &amp; analytics</h4>
+        <ul>
+          <li>Page /performance (KPIs campagne)</li>
+          <li>Dashboard analytics</li>
+          <li>Cron reports matin/soir</li>
+          <li>Real-usage tracking</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🌐 LinkedIn Optimizer</h4>
+        <ul>
+          <li>Score SSI, About, expériences</li>
+          <li>Ciblage recruteur</li>
+          <li>API /api/crm/enrich-linkedin</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Schéma de données (38 modèles Prisma)</h3>
+    <p>La base est extrêmement riche — c'est un actif majeur. Modèles principaux :</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Domaine</th><th>Modèles</th><th>Usage</th></tr>
+        <tr><td class="td-name">Auth</td><td>User, Session</td><td>Comptes + sessions JWT</td></tr>
+        <tr><td class="td-name">Profil</td><td>Profile, Skill, Experience, PriorityRole, TargetCountry</td><td>Profil dirigeant structuré</td></tr>
+        <tr><td class="td-name">CV</td><td>CVMaster, Document, ChangeLog</td><td>CV maître + versions</td></tr>
+        <tr><td class="td-name">Preuves</td><td>ProofEntry</td><td>Réalisations indexées (Proof Vault)</td></tr>
+        <tr><td class="td-name">Offres</td><td>JobSource, SafeJobSource, Job, RawJob, JobScore, JobSearchRun, BrowserSearchConfig</td><td>Sourcing complet multi-sources</td></tr>
+        <tr><td class="td-name">Pipeline</td><td>Opportunity, ApplicationDraft, AssistedApplySession, OpportunityTodo, Relance, Interview, InterviewPrep</td><td>Suivi candidatures + relances</td></tr>
+        <tr><td class="td-name">CRM</td><td>RecruiterContact, CompanyTarget, ContactInteraction</td><td>CRM recruteurs/chasseurs</td></tr>
+        <tr><td class="td-name">Market Radar</td><td>MarketRadar, RadarCandidate</td><td>Veille marché caché</td></tr>
+        <tr><td class="td-name">Recruteur mode</td><td>Candidate, RecruiterClient, RecruiterMission, CandidateDossier, CandidateNote, Commission</td><td>Mode cabinet de recrutement</td></tr>
+        <tr><td class="td-name">Système</td><td>Setting, AIPrompt, DuplicateGroup, ImportSource, PipelineTask, SourcingRun, SourcingReport, ContactLead, Analysis</td><td>Configuration + tâches async</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 4. DASHBOARD ═══════════════ -->
+<section id="dashboard">
+  <div class="container">
+    <span class="section-tag">UX/UI</span>
+    <h2 class="section-title">Audit dashboard &amp; menu</h2>
+    <p class="section-subtitle">La navigation actuelle — ce qui marche, ce qui devrait changer.</p>
+
+    <h3>Structure actuelle : 6 sections × 17 items</h3>
+    <p>La sidebar actuelle regroupe 17 items de menu en 6 sections. C'est trop chargé pour une largeur de 220px : beaucoup de labels sont en 12,5px et tronqués. Le cerveau humain retient 4±2 chunks, pas 6.</p>
+
+    <div class="menu-mockup">
+      <div class="menu-sidebar">
+        <div class="menu-section">
+          <div class="menu-section-title">Principal</div>
+          <div class="menu-item active">▸ Tableau de bord</div>
+          <div class="menu-item">▸ Performance</div>
+        </div>
+        <div class="menu-section">
+          <div class="menu-section-title">Mes Offres</div>
+          <div class="menu-item">▸ Opportunités</div>
+          <div class="menu-item">▸ Candidatures</div>
+          <div class="menu-item">▸ Insights marché</div>
+        </div>
+        <div class="menu-section">
+          <div class="menu-section-title">Documents &amp; CV</div>
+          <div class="menu-item">▸ CV Maître</div>
+          <div class="menu-item">▸ Documents</div>
+          <div class="menu-item">▸ Proof Vault</div>
+        </div>
+        <div class="menu-section">
+          <div class="menu-section-title">Préparation</div>
+          <div class="menu-item">▸ Entretiens</div>
+          <div class="menu-item">▸ Mock Interview</div>
+        </div>
+        <div class="menu-section">
+          <div class="menu-section-title">IA &amp; Optimisation</div>
+          <div class="menu-item">▸ Recherche IA</div>
+          <div class="menu-item">▸ AI CV Optimizer</div>
+          <div class="menu-item">▸ LinkedIn Optimizer</div>
+        </div>
+        <div class="menu-section">
+          <div class="menu-section-title">Compte</div>
+          <div class="menu-item">▸ Mon Profil</div>
+          <div class="menu-item">▸ Paramètres</div>
+          <div class="menu-item">▸ Guide</div>
+        </div>
+      </div>
+      <div class="menu-changes">
+        <h4>Propositions de renommage</h4>
+        <div class="change-row">
+          <div class="change-old">Tableau de bord</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Cockpit</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Performance</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Indicateurs</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Opportunités</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Pipelines ouverts</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Candidatures</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Missions en cours</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Insights marché</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Radar marché</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Mes Offres (section)</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Ma campagne</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Préparation (section)</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Training Camp</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Compte (section)</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Réglages</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">AI CV Optimizer</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">CV AI</div>
+        </div>
+        <div class="change-row">
+          <div class="change-old">Mock Interview</div>
+          <div class="change-arrow">→</div>
+          <div class="change-new">Mocks</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Restructuration proposée : 5 sections × 17 items</h3>
+    <p>Conserver tous les items mais mieux groupés. Ajouter le Conseiller en 5e position dans INTELLIGENCE et en CTA bas de sidebar.</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Section</th><th>Items</th><th>Logique</th></tr>
+        <tr>
+          <td class="td-name">1. CAMPAGNE</td>
+          <td>Cockpit, Pipelines ouverts, Missions en cours, Radar marché</td>
+          <td>Tout ce qui est opérationnel au quotidien</td>
+        </tr>
+        <tr>
+          <td class="td-name">2. ARSENAUX</td>
+          <td>CV Maître, Documents, Proof Vault</td>
+          <td>Le matériel de campagne (inputs)</td>
+        </tr>
+        <tr>
+          <td class="td-name">3. TRAINING CAMP</td>
+          <td>Entretiens, Mocks, Interview Prep Library</td>
+          <td>Préparation active aux échanges</td>
+        </tr>
+        <tr>
+          <td class="td-name">4. INTELLIGENCE</td>
+          <td>Recherche IA, CV AI, LinkedIn Optimizer, <strong>Conseiller IA (à ajouter)</strong></td>
+          <td>Tous les outils IA, le Conseiller comme hub permanent</td>
+        </tr>
+        <tr>
+          <td class="td-name">5. RÉGLAGES</td>
+          <td>Mon Profil, Paramètres, Guide</td>
+          <td>Compte, séparé visuellement en bas</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <strong>💡 Conseil de lecture :</strong> Un dirigeant ne « poste pas des candidatures », il « pilote une campagne ». Le vocabulaire du menu doit refléter cette posture. <em>Cockpit, Mission, Arsenal, Training, Intelligence</em> — ce sont les mots qu'un dirigeant utilise déjà mentalement.
+    </div>
+
+    <h3>Palette de couleurs — verdict</h3>
+    <p>Votre palette actuelle est excellente :</p>
+    <ul>
+      <li><strong>Vert sombre #0E3A29 / #0B2E21</strong> : sérieux, premium, racine (couleur des clubs privés, des salons de direction)</li>
+      <li><strong>Or #E4B118 / #F2C94C</strong> : premium, accomplissement, distinction — parfait pour un produit dirigeant</li>
+      <li><strong>Crème #FAF6EF / #FFFDF8</strong> : papier, qualité, warmth — casse le côté froid du SaaS classique</li>
+      <li><strong>Texte sombre #0B1F18</strong> : legibility maximale</li>
+    </ul>
+    <p>C'est une palette qui distingue immédiatement PRSTO de Teal (bleu/turquoise), Huntr (orange), LinkedIn (bleu corporate), APEC (rouge). À conserver, c'est un actif branding.</p>
+
+    <h3>Problèmes UX identifiés</h3>
+    <ul>
+      <li><strong>Sidebar 220px trop étroite</strong> — labels tronqués à 12,5px. Passer à 240-260px.</li>
+      <li><strong>Pas de dark theme</strong> — sur des sessions longues, le crème fatigue l'œil. Ajouter un toggle.</li>
+      <li><strong>« Guide » dans la section Compte</strong> — c'est une ressource, pas un réglage. Le déplacer hors menu ou en faire une icône « ? » en haut à droite.</li>
+      <li><strong>2 sections de 2 items</strong> (Principal, Préparation) — trop courtes. Soit fusionner, soit enrichir.</li>
+      <li><strong>Conseiller absent du menu</strong> — c'est le feature différenciant, il devrait être 1 clic partout.</li>
+      <li><strong>Badge « 2 » sur Entretiens</strong> hardcoded en démo — nettoyer.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════ 5. LANDING ═══════════════ -->
+<section id="landing">
+  <div class="container">
+    <span class="section-tag">Conversion</span>
+    <h2 class="section-title">Audit landing page</h2>
+    <p class="section-subtitle">La page /prsto — première impression, ce qui convertit, ce qui fuit.</p>
+
+    <h3>Structure actuelle (12 sections)</h3>
+    <ol>
+      <li><strong>LandingHeader</strong> — top nav</li>
+      <li><strong>HeroSection</strong> — « Vous postez depuis 6 mois sans résultat ? »</li>
+      <li><strong>TrustBand</strong> — logos partenaires</li>
+      <li><strong>StatsSection</strong> — 87% succès, 300+ cadres, 17 ATS, 8s génération</li>
+      <li><strong>FeatureGrid</strong> — 6 features (ATS Scanner, CV Optimizer, LinkedIn Optimizer, Market Radar, CRM Recruteur, Interview Studio)</li>
+      <li><strong>ProductMockup</strong> — visuel produit</li>
+      <li><strong>HowItWorks</strong> — 3 étapes (Importer, Cibler, Laisser l'IA travailler)</li>
+      <li><strong>TestimonialsSection</strong> — 5 témoignages (Sébastien, Caroline, Pierre, Amélie, Thomas)</li>
+      <li><strong>PricingSection</strong> — Gratuit / Pro (39,90€/mois) + périodes (semaine/mois/3mois/6mois)</li>
+      <li><strong>FaqSection</strong> — FAQ</li>
+      <li><strong>FinalCta</strong> — CTA final</li>
+      <li><strong>LandingFooter</strong> — footer</li>
+    </ol>
+
+    <h3>Points forts</h3>
+    <ul>
+      <li><strong>Palette cohérente avec le dashboard</strong> — transition fluide landing → app</li>
+      <li><strong>CTA principal clair</strong> — « Commencer gratuitement » + démo « Voir le dashboard »</li>
+      <li><strong>Pricing transparent</strong> — 4 périodes, sans engagement, résiliable — rassurant</li>
+      <li><strong>Témoignages avec roles précis</strong> — VP Sales, Country Manager, DG, Head of Sales — valide le positionnement executive</li>
+      <li><strong>FAQ présente</strong> — réduit les frictions</li>
+    </ul>
+
+    <h3>Points faibles &amp; correctifs</h3>
+
+    <h4>1. Hero culpabilisant</h4>
+    <p>« Vous postez depuis 6 mois sans résultat ? Et si le problème n'était pas vous, mais votre méthode ? »</p>
+    <p>Un dirigeant qui a échoué 6 mois n'a pas besoin qu'on lui rappelle. Reformuler en positif :</p>
+    <div class="highlight-box">
+      <strong>Nouveau hero proposé :</strong> « Votre prochain poste de direction se mérite. PRSTO vous donne les 18 outils pour le décrocher. » + sous-titre : « Le copilote carrière IA pensé pour les dirigeants. Pas pour la masse. »
+    </div>
+
+    <h4>2. Stats à valider</h4>
+    <p>87% de succès, 300+ cadres accompagnés, 17 ATS supportés, 8s génération CV. Si ces chiffres sont réels, parfait. Si ce sont des projections, les remplacer par des métriques produit vérifiables :</p>
+    <ul>
+      <li>« 18 outils intégrés »</li>
+      <li>« 6 sources d'offres scannées en continu »</li>
+      <li>« 1 extension Chrome multi-plateformes »</li>
+      <li>« 0 envoi automatique — votre campagne, votre contrôle »</li>
+    </ul>
+
+    <h4>3. Pricing : manque le plan Elite</h4>
+    <p>Le pricing actuel (Gratuit + Pro 39,90€/mois) est trop accessible pour des dirigeants qui dépensent 50-200k€ en chasseurs de tête. Cela peut paraître « suspect » (trop cheap = pas sérieux). Ajouter un 3e plan :</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h4>Gratuit</h4>
+        <div style="font-size: 32px; font-weight: 800; color: var(--text-dark)">0€</div>
+        <p style="font-size: 13px; color: var(--text-muted)">Pour découvrir</p>
+      </div>
+      <div class="card">
+        <h4>Pro</h4>
+        <div style="font-size: 32px; font-weight: 800; color: var(--text-dark)">39,90€<span style="font-size:14px; font-weight:500; color: var(--text-muted)">/mois</span></div>
+        <p style="font-size: 13px; color: var(--text-muted)">Pour les cadres en recherche active</p>
+      </div>
+      <div class="card" style="border: 2px solid var(--accent-gold)">
+        <h4 style="color: var(--accent-gold)">Elite / Dirigeant ★</h4>
+        <div style="font-size: 32px; font-weight: 800; color: var(--text-dark)">149€<span style="font-size:14px; font-weight:500; color: var(--text-muted)">/mois</span></div>
+        <p style="font-size: 13px; color: var(--text-muted)">Pour les DG/CEO en transition</p>
+        <ul style="font-size: 13px; margin-top: 12px">
+          <li>Tout Pro, +</li>
+          <li>Conseiller IA illimité (second brain)</li>
+          <li>Mock Interview Panel complet (5 rôles)</li>
+          <li>Market Radar temps réel</li>
+          <li>Coaching humain 1h/mois</li>
+          <li>Support prioritaire 7j/7</li>
+          <li>Accès anticipé nouvelles sources</li>
+        </ul>
+      </div>
+    </div>
+    <p>L'ancrage psychologique fait que le Pro paraît accessible, et l'Elite valide la valeur pour ceux qui veulent tout. C'est exactement la stratégie Experteer (€12-30/mois pour le job board) mais à l'envers — vous offrez plus, donc vous pouvez facturer plus.</p>
+
+    <h4>4. Section Extension Chrome invisible</h4>
+    <p>L'extension PRSTO Copilot existe (browser-extension/prsto-v4) avec un side panel IA conversationnel — c'est un argument commercial majeur. Mais elle n'apparaît nulle part sur la landing. Ajouter une section dédiée :</p>
+    <div class="highlight-box">
+      <strong>Section à ajouter entre FeatureGrid et ProductMockup :</strong> « L'extension PRSTO Copilot — votre second cerveau sur 6 plateformes. » Avec démo vidéo 30s : l'utilisateur scrolle une offre LinkedIn, le side panel IA analyse en temps réel, propose un scoring, suggère 3 questions à poser en entretien, génère une lettre de motivation adaptée.
+    </div>
+
+    <h4>5. Pas de page « Manifeste »</h4>
+    <p>Les dirigeants n'achètent pas un outil, ils achètent une vision. Créer une page /manifeste qui pose le problème :</p>
+    <div class="quote">
+      « Un process de recrutement de dirigeant dure 6-18 mois, traverse 7-12 étapes, mobilise 15-30 interlocuteurs. Les outils généralistes (LinkedIn, APEC) ne sont pas calibrés pour cette durée et cette complexité. »
+    </div>
+    <p>Cette page devient le hub SEO pour « recherche emploi dirigeant », « process recrutement CEO », « coaching career transition dirigeant ». Y inclure une infographie du pipeline type. Liens depuis le footer + depuis le hero.</p>
+
+    <h4>6. Pas de page « Cas clients »</h4>
+    <p>5 témoignages anonymes « Sébastien M., VP Sales » — c'est bien mais pas assez. Pour des dirigeants à 200k€+, il faut du case study nommé (ou semi-nommé avec accord) :</p>
+    <ul>
+      <li>« Comment [Prénom N.], ex-COO de [Scale-up B2B SaaS], a décroché un poste de DG en 4 mois via PRSTO »</li>
+      <li>« [Prénom N.], CFO en transition, 11 candidatures vs 47 avant PRSTO, 3 offres finales »</li>
+    </ul>
+    <p>3-5 cas clients illustrés = crédibilité immédiate.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ 6. MARCHÉ ═══════════════ -->
+<section id="marche">
+  <div class="container">
+    <span class="section-tag">Marché</span>
+    <h2 class="section-title">Analyse du marché</h2>
+    <p class="section-subtitle">Le paysage de la recherche d'emploi — par catégorie, par audience, par géographie.</p>
+
+    <h3>4 catégories d'acteurs</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h4>1. Job boards généralistes</h4>
+        <p>LinkedIn, APEC, Cadremploi, HelloWork, Welcome to the Jungle, Indeed, France Travail</p>
+        <p style="font-size:13px; color: var(--text-muted); margin-top:8px">Modèle : volume d'offres. Aucun outil candidat. Trafic massif mais peu qualifié.</p>
+      </div>
+      <div class="card">
+        <h4>2. Job boards premium executive</h4>
+        <p>Experteer, The Ladders, 6figurejobs</p>
+        <p style="font-size:13px; color: var(--text-muted); margin-top:8px">Modèle : abonnement pour accès offres + chasseurs. UX datée. Pas d'IA.</p>
+      </div>
+      <div class="card">
+        <h4>3. Outils IA job search</h4>
+        <p>Teal, Jobscan, Huntr, Simplify, Sonara, Loopcv, Rezi</p>
+        <p style="font-size:13px; color: var(--text-muted); margin-top:8px">Modèle : SaaS freemium. Focus US. Pas executive. 1 feature dominante (tracker, ATS scanner, autofill, auto-apply).</p>
+      </div>
+      <div class="card">
+        <h4>4. Cabinets de chasse</h4>
+        <p>Michael Page, Robert Walters, Odgers Berndtson, Egon Zehnder, Heidrick &amp; Struggles, Page Executive</p>
+        <p style="font-size:13px; color: var(--text-muted); margin-top:8px">Modèle : service aux entreprises, pas aux candidats. Pas un outil, une relation humaine.</p>
+      </div>
+    </div>
+
+    <h3>La whitespace que PRSTO attaque</h3>
+    <div class="highlight-box">
+      Aucun acteur ne combine : <strong>(a) focus executive strict</strong> + <strong>(b) 18 outils intégrés</strong> + <strong>(c) extension Chrome IA temps réel</strong> + <strong>(d) second brain IA mémorisant</strong> + <strong>(e) pricing premium assumé</strong> + <strong>(f) origine européenne</strong>.<br><br>
+      Experteer a (a) + (f) mais pas (b)(c)(d)(e). Teal a (b)(c) mais pas (a)(d)(e)(f). LinkedIn a (c) mais pas (a)(b)(d)(e). PRSTO peut être le premier à réunir les 6.
+    </div>
+
+    <h3>Trafic des job boards français (estimations Similarweb)</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Site</th><th>Trafic mensuel</th><th>Catégorie</th><th>Position mondiale</th></tr>
+        <tr><td class="td-name">francetravail.fr</td><td>~30-50 M visites</td><td>Jobs &amp; Employment</td><td class="td-strong">#1 France, ~#1035 monde</td></tr>
+        <tr><td class="td-name">hellowork.com</td><td>~20-30 M visites</td><td>Jobs &amp; Employment</td><td class="td-strong">#4 catégorie, ~#3552 monde</td></tr>
+        <tr><td class="td-name">apec.fr</td><td>~2,45 M visites</td><td>Jobs &amp; Employment (cadres)</td><td class="td-strong">Top 3 FR cadres</td></tr>
+        <tr><td class="td-name">welcometothejungle.com</td><td>~3,5 M visites</td><td>Jobs &amp; Employment</td><td class="td-strong">#6 catégorie mondiale, ~#8894 monde</td></tr>
+        <tr><td class="td-name">cadremploi.fr</td><td>~1,5-2 M visites (estimation)</td><td>Jobs &amp; Employment (cadres)</td><td class="td-strong">Top 5 FR cadres</td></tr>
+        <tr><td class="td-name">indeed.fr</td><td>~15-25 M visites</td><td>Jobs &amp; Employment</td><td class="td-strong">Top 3 FR</td></tr>
+        <tr><td class="td-name">linkedin.com (FR)</td><td>~20-30 M visites</td><td>Réseau social pro</td><td class="td-strong">#1 mondial (~1 Md membres)</td></tr>
+      </table>
+    </div>
+    <p style="font-size:13px; color: var(--text-muted)">Source : Similarweb (mai 2026), estimations publiques. Les chiffres exacts fluctuent, l'ordre de grandeur est fiable.</p>
+
+    <h3>Durée moyenne des recherches d'emploi cadre en France</h3>
+    <p>Selon l'APEC et diverses études :</p>
+    <ul>
+      <li><strong>Cadre intermédiaire :</strong> 2-4 mois</li>
+      <li><strong>Cadre confirmé (5-10 ans) :</strong> 4-7 mois</li>
+      <li><strong>Cadre senior (10-15 ans) :</strong> 6-10 mois</li>
+      <li><strong>Cadre dirigeant (15+ ans, fonction C) :</strong> 9-18 mois, jusqu'à 24 mois en période de tension</li>
+    </ul>
+    <p>C'est exactement votre marché. 80 000 dirigeants en France en transition à tout moment, × 9-18 mois = ~150 000 « mois-dirigeants » par an à adresser. À 39,90€/mois (plan Pro), TAM français = ~6 M€/an. À 149€/mois (Elite), TAM français = ~22 M€/an. EU ×3-4 = 60-90 M€/an. International ×10 = 200-300 M€/an.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ 7. CONCURRENTS ═══════════════ -->
+<section id="concurrents">
+  <div class="container">
+    <span class="section-tag">Concurrents</span>
+    <h2 class="section-title">Étude concurrentielle détaillée</h2>
+    <p class="section-subtitle">{total_comps} acteurs analysés — forces, faiblesses, et ce que PRSTO peut reprendre ou éviter.</p>
+
+    {competitors_html}
+  </div>
+</section>
+
+<!-- ═══════════════ 8. SWOT ═══════════════ -->
+<section id="swot">
+  <div class="container">
+    <span class="section-tag">Synthèse</span>
+    <h2 class="section-title">SWOT PRSTO</h2>
+    <p class="section-subtitle">Forces, faiblesses, opportunités, menaces — vue d'ensemble.</p>
+
+    <div class="swot">
+      <div class="swot-quadrant swot-strengths">
+        <h4>✓ Forces</h4>
+        <ul>
+          <li>Stack technique moderne (Next.js 16, React 19, Turbopack)</li>
+          <li>38 modèles Prisma — base de données très riche</li>
+          <li>6 connectors de sourcing déjà implémentés</li>
+          <li>Extension Chrome sur 6 plateformes (LinkedIn, APEC, Cadremploi, HelloWork, WTTJ, Indeed)</li>
+          <li>IA NVIDIA NIM gratuite — coûts maîtrisés</li>
+          <li>Palette branding premium (vert sombre + or) différenciante</li>
+          <li>Proof Vault — feature unique sur le marché</li>
+          <li>CRM recruteur intégré (rare côté candidat)</li>
+          <li>Origine européenne — RGPD natif, vision non-US</li>
+          <li>Mode recruteur (cabinet) — double marché B2C+B2B</li>
+        </ul>
+      </div>
+      <div class="swot-quadrant swot-weaknesses">
+        <h4>✗ Faiblesses</h4>
+        <ul>
+          <li>Positionnement executive noyé dans le menu et la landing</li>
+          <li>Conseiller IA (second brain) codé mais invisible</li>
+          <li>Proof Vault sous-exploité (pas connecté aux autres modules)</li>
+          <li>Pas d'i18n — tout en dur en français</li>
+          <li>Auth JWT simple — pas de SSO, pas de rotation</li>
+          <li>SQLite — à migrer vers PostgreSQL pour la prod</li>
+          <li>17 items de menu en 6 sections — trop chargé</li>
+          <li>Stats landing potentiellement non validées</li>
+          <li>Bundle size à vérifier (50+ dépendances lourdes)</li>
+          <li>Pas de page Manifeste / Cas clients</li>
+          <li>Tarification trop accessible (39,90€) — manque le plan Elite</li>
+        </ul>
+      </div>
+      <div class="swot-quadrant swot-opportunities">
+        <h4>+ Opportunités</h4>
+        <ul>
+          <li>Whitespace : aucun acteur ne combine executive + 18 outils + IA + extension Chrome</li>
+          <li>LinkedIn Premium n'apporte rien aux dirigeants — fragilité</li>
+          <li>APEC a une UX datée — place pour un acteur moderne</li>
+          <li>Experteer a vieilli (UX 2010, pas d'IA) — facilité à les dépasser</li>
+          <li>Teal/Huntr/Simplify ciblent US tech — Europe executive libre</li>
+          <li>Trend AI coach (LinkedIn l'a lancé 2024) — validation marché</li>
+          <li>Cabinets de chasse en manque d'outils candidat — partenariat possible</li>
+          <li>Marché LATAM en croissance, peu d'outils premium locaux</li>
+          <li>Loi française transparence salaires 2026 — boosts marché dirigeant</li>
+          <li>Volonté européenne de souveraineté IA — financements BPI</li>
+        </ul>
+      </div>
+      <div class="swot-quadrant swot-threats">
+        <h4>− Menaces</h4>
+        <ul>
+          <li>LinkedIn pourrait sortir un mode « Premium Career Executive » ciblé</li>
+          <li>Teal/Huntr pourraient se réorienter executive (US money)</li>
+          <li>Cabinets de chasse pourraient lancer leur propre outil candidat</li>
+          <li>Scraping LinkedIn/APEC — ToS changeants, blocages IP</li>
+          <li>NVIDIA NIM gratuit — pourrait devenir payant (dépendance)</li>
+          <li>Recrutement dirigeant très réputationnel — 1 mauvaise review = impact fort</li>
+          <li>Coût acquisition client dirigeant élevé (LinkedIn ads cher)</li>
+          <li>Régulation IA EU (AI Act) — compliance à anticiper</li>
+          <li>Crise économique = ralentissement recrutement dirigeants</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 9. RECOMMANDATIONS ═══════════════ -->
+<section id="recommandations">
+  <div class="container">
+    <span class="section-tag">Action</span>
+    <h2 class="section-title">Recommandations</h2>
+    <p class="section-subtitle">{len(RECOMMENDATIONS)} recommandations classées par priorité (Critique / Haute / Moyenne / Basse) et effort (Faible / Moyen / Élevé).</p>
+
+    <div class="card-grid" style="margin-bottom: 32px">
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--red); font-size: 28px">{sum(1 for r in RECOMMENDATIONS if r[2]=='CRITIQUE')}</div>
+        <div class="stat-label">Critique — à faire cette semaine</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--amber); font-size: 28px">{sum(1 for r in RECOMMENDATIONS if r[2]=='HAUTE')}</div>
+        <div class="stat-label">Haute — à faire ce mois</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--accent-gold); font-size: 28px">{sum(1 for r in RECOMMENDATIONS if r[2]=='MOYENNE')}</div>
+        <div class="stat-label">Moyenne — ce trimestre</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--text-muted); font-size: 28px">{sum(1 for r in RECOMMENDATIONS if r[2]=='BAISSE')}</div>
+        <div class="stat-label">Basse — roadmap V2</div>
+      </div>
+    </div>
+
+    {recs_html}
+  </div>
+</section>
+
+<!-- ═══════════════ 10. ROADMAP ═══════════════ -->
+<section id="roadmap">
+  <div class="container">
+    <span class="section-tag">Calendrier</span>
+    <h2 class="section-title">Roadmap proposée</h2>
+    <p class="section-subtitle">Une séquence réaliste sur 6 mois pour transformer PRSTO en référence européenne.</p>
+
+    <h3>Sprint 1 — Semaines 1-2 : « Verrouiller le positionnement »</h3>
+    <ul>
+      <li>Renommer /elton-os → /prsto dans toutes les routes publiques</li>
+      <li>Renommer browser-extension/elton-os-importer → prsto-importer</li>
+      <li>Refonte Hero landing (supprimer culpabilisation, ajouter « 18 outils pour dirigeants »)</li>
+      <li>Ajouter filtre onboarding (≥ 8 ans d'expérience management)</li>
+      <li>Restructurer menu en 5 sections (CAMPAGNE / ARSENAUX / TRAINING / INTELLIGENCE / RÉGLAGES)</li>
+      <li>Ajouter Conseiller dans menu INTELLIGENCE + CTA bas de sidebar</li>
+      <li>Élargir sidebar à 250px, raccourcir les labels</li>
+    </ul>
+
+    <h3>Sprint 2 — Semaines 3-4 : « Activer le second brain »</h3>
+    <ul>
+      <li>Brancher le Conseiller sur l'historique des candidatures + entretiens</li>
+      <li>Connecter le Proof Vault au CV Optimizer (sélection auto des preuves pertinentes)</li>
+      <li>Connecter le Proof Vault au Mock Interview (le panel pioche dans les preuves)</li>
+      <li>Cron matinal : brief à 7h « 3 relances à faire, 1 entretien à préparer, 2 offres >80% »</li>
+      <li>Embeddings locaux via @huggingface/transformers (déjà dans package.json)</li>
+    </ul>
+
+    <h3>Sprint 3 — Semaines 5-8 : « Premium positioning »</h3>
+    <ul>
+      <li>Lancer le plan Elite 149€/mois avec coaching humain 1h/mois</li>
+      <li>Créer la page /manifeste + infographie pipeline dirigeant</li>
+      <li>Créer la page /cas-clients avec 3-5 mini-cases studies</li>
+      <li>Ajouter section Extension Chrome sur la landing avec vidéo démo 30s</li>
+      <li>Lancer le blog « Carnet PRSTO » avec 2 articles/semaine</li>
+      <li>Newsletter hebdo « Brief Dirigeant » (capture emails)</li>
+    </ul>
+
+    <h3>Sprint 4 — Semaines 9-12 : « Internationalisation »</h3>
+    <ul>
+      <li>Migrer vers next-intl, extraire toutes les chaînes dans /messages</li>
+      <li>Traduire en EN (priorité — marché UK/DACH plus tôt)</li>
+      <li>Sous-domaines prsto.fr / prsto.io / prsto.es</li>
+      <li>Ajouter connectors : Robert Walters, eFinancialCareers, BoardEx</li>
+      <li>Préparer Vercel deploy + domaines + Cloudflare CDN</li>
+    </ul>
+
+    <h3>Sprint 5 — Semaines 13-20 : « V2 features »</h3>
+    <ul>
+      <li>Mock Interview Panel complet (5 rôles : CEO, CFO, DRH, pair, investisseur) avec voices NVIDIA TTS</li>
+      <li>Boardroom Simulator (Pitch Comex 100 jours, panel 5 IA, débrief 360°)</li>
+      <li>API publique pour cabinets de chasse (B2B SaaS)</li>
+      <li>Migration SQLite → PostgreSQL (Neon ou Supabase)</li>
+      <li>Auth NextAuth/Auth.js avec SSO Google + LinkedIn</li>
+      <li>Dark theme toggle</li>
+      <li>Bundle analyzer pass — lazy load leaflet/mediapipe</li>
+    </ul>
+
+    <h3>Sprint 6 — Semaines 21-24 : « Scale &amp; partnerships »</h3>
+    <ul>
+      <li>Partenariats cabinets de chasse (Michael Page, Robert Walters) — co-marketing</li>
+      <li>Lancement officiel EU (FR + UK + DACH)</li>
+      <li>Sponsoring podcasts career (French Tech, HBR France, Les Echos Executives)</li>
+      <li>Programme ambassadeurs dirigeants (10-20 premiers clients → témoignages vidéo)</li>
+      <li>SEO content : 50 articles longue traine publiés</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════ 11. NEXT STEPS ═══════════════ -->
+<section id="next">
+  <div class="container">
+    <span class="section-tag">Démarrage</span>
+    <h2 class="section-title">Prochaines étapes immédiates</h2>
+    <p class="section-subtitle">Ce que vous pouvez faire dès demain.</p>
+
+    <div class="final-cta">
+      <h2>3 actions pour cette semaine</h2>
+      <p style="font-size: 16px; max-width: 700px; margin: 0 auto 24px; color: rgba(255,255,255,0.85)">
+        Voici les 3 actions à impact maximal que vous pouvez lancer dès maintenant.
+      </p>
+    </div>
+
+    <h3>Action 1 — Verrouiller le positionnement (1 jour)</h3>
+    <p>Refondre le Hero de la landing pour affirmer le positionnement executive. Renommer les routes /elton-os → /prsto. Ajouter le filtre onboarding expérience minimum. Effort faible, impact énorme sur la clarté de la marque.</p>
+
+    <h3>Action 2 — Activer le Conseiller dans le menu (1 jour)</h3>
+    <p>Le code du Conseiller existe. Il suffit de l'ajouter au menu INTELLIGENCE + CTA bas de sidebar. Le brancher sur une vraie mémoire (candidatures + entretiens récents) peut se faire en 3-5 jours. Effort modéré, différenciateur énorme vs concurrents.</p>
+
+    <h3>Action 3 — Lancer le plan Elite 149€/mois (2 jours)</h3>
+    <p>Modifier PricingSection.tsx pour ajouter le 3e plan. Créer les features correspondantes (mock interview panel illimité, market radar temps réel, coaching humain). Effort faible, impact direct sur l'ARPU et le positionnement premium.</p>
+
+    <div class="highlight-box" style="margin-top: 40px">
+      <strong>💡 Conseil final :</strong> Vous avez déjà 80% du code nécessaire pour dominer ce marché. Les 20% qui restent sont : <em>clarté de positionnement</em>, <em>activation du second brain</em>, et <em>tarification premium assumée</em>. Trois semaines de focus peuvent transformer PRSTO d'« outil intéressant » en « référence européenne évidente ».
+    </div>
+
+    <h3>Comment je peux vous aider à exécuter</h3>
+    <p>Si vous validez ce rapport, je peux :</p>
+    <ul>
+      <li><strong>Sprint 1 immédiat :</strong> Refondre le Hero, restructurer le menu, ajouter le Conseiller — je peux le faire maintenant</li>
+      <li><strong>Sprint 2 :</strong> Brancher le second brain sur le Conseiller — code à écrire en suivant les recs ci-dessus</li>
+      <li><strong>Sprint 3 :</strong> Créer le plan Elite, la page Manifeste, les Cas Clients</li>
+      <li><strong>Sprint 4 :</strong> Migrer vers next-intl, traduire EN</li>
+      <li><strong>Audits ciblés :</strong> Bundle size, sécurité, performances, SEO</li>
+    </ul>
+    <p>Dites-moi simplement par quel sprint vous voulez commencer.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="container">
+    <p style="margin-bottom: 12px"><strong>PRSTO</strong> — Rapport d'analyse stratégique</p>
+    <p>Généré le 3 juillet 2026 à partir du code source du projet elton-os et de recherches marché publiques.</p>
+    <p style="margin-top: 12px; font-size: 12px; opacity: 0.6">Document confidentiel — à usage interne PRSTO uniquement.</p>
+  </div>
+</footer>
+
+</body>
+</html>
+"""
+
+os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
+with open(OUTPUT, "w", encoding="utf-8") as f:
+    f.write(HTML)
+
+print(f"[OK] Rapport généré : {OUTPUT}")
+print(f"     Taille : {os.path.getsize(OUTPUT)/1024:.1f} Ko")
+print(f"     Concurrents : {total_comps}")
+print(f"     Recommandations : {len(RECOMMENDATIONS)}")
