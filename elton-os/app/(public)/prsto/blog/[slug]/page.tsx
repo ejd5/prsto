@@ -152,7 +152,13 @@ export default async function ArticlePage({
         <div
           className={`w-full h-56 md:h-72 lg:h-80 rounded-2xl bg-gradient-to-br ${gradient} relative overflow-hidden mb-10 md:mb-12`}
         >
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDAgM2wyMCAzNEgyMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-30" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/blog/${article.slug}.png`}
+            alt={article.title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8">
             <div className="text-4xl md:text-5xl font-bold text-white/10 font-playfair">
               {article.category === "Marché & Tendances"

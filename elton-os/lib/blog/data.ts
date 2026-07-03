@@ -122,7 +122,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Imaginez un iceberg. La partie émergée — visible depuis n'importe quel job board — ce sont les 22 % de postes publiés. En dessous, trois strates composent le marché caché, et chaque strate exige une approche radicalement différente.",
+        text: "Imaginez un iceberg. La partie émergée : visible depuis n'importe quel job board : ce sont les 22 % de postes publiés. En dessous, trois strates composent le marché caché, et chaque strate exige une approche radicalement différente.",
       },
       {
         type: "h3",
@@ -179,7 +179,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "h3",
-        text: "1. Le réseau dormant — votre actif le plus sous-estimé",
+        text: "1. Le réseau dormant : votre actif le plus sous-estimé",
       },
       {
         type: "p",
@@ -187,12 +187,12 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "pullQuote",
-        text: "« Les trois meilleurs recrutements que j'ai faits cette année viennent de candidats qui n'étaient pas en recherche. Ils étaient simplement visibles — ils postaient, parlaient en conférence, publiaient des analyses. Quand j'ai eu besoin d'un profil, leur nom m'est venu naturellement. »",
+        text: "« Les trois meilleurs recrutements que j'ai faits cette année viennent de candidats qui n'étaient pas en recherche. Ils étaient simplement visibles : ils postaient, parlaient en conférence, publiaient des analyses. Quand j'ai eu besoin d'un profil, leur nom m'est venu naturellement. »",
         author: "Directeur des Ressources Humaines, groupe assurances",
       },
       {
         type: "h3",
-        text: "2. La visibilité d'expertise — être trouvé sans postuler",
+        text: "2. La visibilité d'expertise : être trouvé sans postuler",
       },
       {
         type: "p",
@@ -204,7 +204,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "h3",
-        text: "3. L'approche indirecte — le détour qui fait la différence",
+        text: "3. L'approche indirecte : le détour qui fait la différence",
       },
       {
         type: "p",
@@ -330,7 +330,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "« Sous ma responsabilité, le chiffre d'affaires a significativement augmenté. » Cette phrase ne vous rapporte aucun point. Pour un ATS, une augmentation non chiffrée n'existe pas. « Croissance du CA de 34 % en 18 mois, de 12 M€ à 16 M€, avec une marge passée de 8 % à 14 % » — voilà ce qu'un algorithme sait valoriser : des chiffres, des pourcentages, des fourchettes, des durées.",
+        text: "« Sous ma responsabilité, le chiffre d'affaires a significativement augmenté. » Cette phrase ne vous rapporte aucun point. Pour un ATS, une augmentation non chiffrée n'existe pas. « Croissance du CA de 34 % en 18 mois, de 12 M€ à 16 M€, avec une marge passée de 8 % à 14 % » : voilà ce qu'un algorithme sait valoriser : des chiffres, des pourcentages, des fourchettes, des durées.",
       },
       {
         type: "h2",
@@ -482,7 +482,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Après 300 négociations, j'ai remarqué un schéma récurrent : les meilleurs négociateurs — ceux qui repartent systématiquement avec 20 à 40 % de plus que l'offre initiale — partagent une caractéristique commune. Ce ne sont pas les plus agressifs. Ce ne sont pas non plus ceux qui ont les meilleurs CV. Ce sont ceux qui abordent la négociation comme un partenariat stratégique, pas comme un affrontement.",
+        text: "Après 300 négociations, j'ai remarqué un schéma récurrent : les meilleurs négociateurs : ceux qui repartent systématiquement avec 20 à 40 % de plus que l'offre initiale : partagent une caractéristique commune. Ce ne sont pas les plus agressifs. Ce ne sont pas non plus ceux qui ont les meilleurs CV. Ce sont ceux qui abordent la négociation comme un partenariat stratégique, pas comme un affrontement.",
       },
       {
         type: "p",
@@ -519,7 +519,7 @@ export const articles: BlogArticle[] = [
     content: [
       {
         type: "intro",
-        text: "Ils sont les gardiens du temple. Les chasseurs de têtes — ou « executive search consultants » pour les puristes — contrôlent l'accès aux postes les plus convoités de l'économie française. Leur métier semble simple : trouver les meilleurs profils pour les postes de direction. Mais la réalité est infiniment plus complexe, plus politique, et souvent plus opaque que ce que les cabinets veulent bien montrer.",
+        text: "Ils sont les gardiens du temple. Les chasseurs de têtes : ou « executive search consultants » pour les puristes : contrôlent l'accès aux postes les plus convoités de l'économie française. Leur métier semble simple : trouver les meilleurs profils pour les postes de direction. Mais la réalité est infiniment plus complexe, plus politique, et souvent plus opaque que ce que les cabinets veulent bien montrer.",
       },
       {
         type: "stat",
@@ -547,7 +547,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "pullQuote",
-        text: "« La base du cabinet contient 12 000 profils de dirigeants francophones. Chaque profil a été rencontré physiquement par au moins un associé. Le taux de transformation — candidat rencontré devenant candidat placé — est de 4 %. Mais quand on tape dans la base plutôt que sur le marché, le taux de succès du placement passe à 65 %. »",
+        text: "« La base du cabinet contient 12 000 profils de dirigeants francophones. Chaque profil a été rencontré physiquement par au moins un associé. Le taux de transformation : candidat rencontré devenant candidat placé : est de 4 %. Mais quand on tape dans la base plutôt que sur le marché, le taux de succès du placement passe à 65 %. »",
         author: "Ancien associé, cabinet anglo-saxon Top 5",
       },
       {
@@ -556,7 +556,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "C'est la source la plus confidentielle. Les administrateurs des entreprises — ces quelques centaines de personnes qui siègent dans les conseils du CAC 40, du SBF 120 et des ETI — sont les prescripteurs les plus influents du recrutement de direction. Quand un administrateur recommande un nom, le chasseur ne vérifie même pas le CV. Il prend rendez-vous.",
+        text: "C'est la source la plus confidentielle. Les administrateurs des entreprises : ces quelques centaines de personnes qui siègent dans les conseils du CAC 40, du SBF 120 et des ETI : sont les prescripteurs les plus influents du recrutement de direction. Quand un administrateur recommande un nom, le chasseur ne vérifie même pas le CV. Il prend rendez-vous.",
       },
       {
         type: "p",
@@ -568,7 +568,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "LinkedIn est utilisé, mais jamais comme source principale. Le chasseur commence par sa base et son réseau d'administrateurs. Ce n'est qu'en cas d'impasse — profil très spécifique, secteur de niche — qu'il active LinkedIn. Et quand il le fait, il n'utilise pas la recherche publique. Il utilise des outils tiers (Lusha, Apollo, Sales Navigator avancé) qui lui permettent de contourner les limites de LinkedIn et d'exporter des listes de profils.",
+        text: "LinkedIn est utilisé, mais jamais comme source principale. Le chasseur commence par sa base et son réseau d'administrateurs. Ce n'est qu'en cas d'impasse : profil très spécifique, secteur de niche : qu'il active LinkedIn. Et quand il le fait, il n'utilise pas la recherche publique. Il utilise des outils tiers (Lusha, Apollo, Sales Navigator avancé) qui lui permettent de contourner les limites de LinkedIn et d'exporter des listes de profils.",
       },
       {
         type: "h2",
@@ -626,7 +626,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Les grands salons RH ne sont pas fréquentés par les chasseurs du Top 5. En revanche, les conférences sectorielles restreintes — type Medef, Institut de l'Entreprise, conférences HEC/X/Mines — sont leur terrain de chasse. Un déjeuner de 45 minutes après une conférence vaut 50 CV envoyés.",
+        text: "Les grands salons RH ne sont pas fréquentés par les chasseurs du Top 5. En revanche, les conférences sectorielles restreintes : type Medef, Institut de l'Entreprise, conférences HEC/X/Mines : sont leur terrain de chasse. Un déjeuner de 45 minutes après une conférence vaut 50 CV envoyés.",
       },
       {
         type: "h3",
@@ -634,7 +634,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Le meilleur accès au réseau des chasseurs passe par une personne déjà connue et respectée qui accepte de 'vous porter'. Ce sponsor — ancien dirigeant, administrateur, associé de cabinet — vous ouvre des portes que votre CV n'ouvrira jamais. Comment trouver un sponsor ? En rendant service, en partageant une expertise, en étant utile sans rien demander en retour.",
+        text: "Le meilleur accès au réseau des chasseurs passe par une personne déjà connue et respectée qui accepte de 'vous porter'. Ce sponsor : ancien dirigeant, administrateur, associé de cabinet : vous ouvre des portes que votre CV n'ouvrira jamais. Comment trouver un sponsor ? En rendant service, en partageant une expertise, en étant utile sans rien demander en retour.",
       },
       {
         type: "h3",
@@ -642,7 +642,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "La construction d'un réseau de chasseurs prend 12 à 24 mois. Ce n'est pas une course mais un investissement. Les dirigeants qui appellent un chasseur uniquement quand ils cherchent un poste sont perçus comme opportunistes. Ceux qui cultivent une relation dans la durée — un café par an, un article partagé, une recommandation — deviennent des 'actifs' que le chasseur active naturellement quand un mandat correspond à leur profil.",
+        text: "La construction d'un réseau de chasseurs prend 12 à 24 mois. Ce n'est pas une course mais un investissement. Les dirigeants qui appellent un chasseur uniquement quand ils cherchent un poste sont perçus comme opportunistes. Ceux qui cultivent une relation dans la durée : un café par an, un article partagé, une recommandation : deviennent des 'actifs' que le chasseur active naturellement quand un mandat correspond à leur profil.",
       },
       {
         type: "h2",
@@ -658,7 +658,7 @@ export const articles: BlogArticle[] = [
       },
       {
         type: "p",
-        text: "Et c'est précisément pour cela que votre capacité à être 'repéré' sans postuler — via votre expertise visible, votre réseau de sponsors, et votre présence aux bons endroits — sera votre avantage concurrentiel le plus durable.",
+        text: "Et c'est précisément pour cela que votre capacité à être 'repéré' sans postuler : via votre expertise visible, votre réseau de sponsors, et votre présence aux bons endroits : sera votre avantage concurrentiel le plus durable.",
       },
     ],
   },

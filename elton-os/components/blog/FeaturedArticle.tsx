@@ -10,6 +10,7 @@ export default function FeaturedArticle({
   article: BlogArticle;
 }) {
   const gradient = getCategoryGradient(article.category);
+  const imagePath = `/blog/${article.slug}.png`;
 
   return (
     <Link
@@ -20,7 +21,14 @@ export default function FeaturedArticle({
         <div
           className={`md:col-span-2 bg-gradient-to-br ${gradient} relative overflow-hidden p-8 flex flex-col justify-between min-h-[200px] md:min-h-full`}
         >
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMzAgM2wxNSAyNkgxNXoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-40" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imagePath}
+            alt={article.title}
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           <div className="relative z-10">
             <div className="flex items-center gap-2">
               <Sparkle size={14} weight="fill" className="text-[#E4B118]" />

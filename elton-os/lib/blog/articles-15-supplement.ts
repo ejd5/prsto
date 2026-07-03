@@ -1,4 +1,4 @@
-// ─── 15 nouveaux articles Blog PRSTO — 2e série ───────────────
+// ─── 15 nouveaux articles Blog PRSTO : 2e série ───────────────
 // Auteurs internationaux variés, sujets 100% différents de la 1ère série
 import type { BlogArticle } from "./data";
 
@@ -140,7 +140,7 @@ export const articles15supplement: BlogArticle[] = [
 ],
   },
   {
-    slug: "réseautage-dirigeants-international",
+    slug: "reseautage-dirigeants-international",
     title: "Construire un réseau international de dirigeants : la méthode en 6 étapes",
     subtitle: "Pourquoi votre réseau local ne suffit plus et comment bâtir une présence mondiale",
     excerpt: "Dans un monde globalisé, un réseau de dirigeants purement local est un handicap stratégique. Voici comment construire un réseau international en 6 étapes concrètes.",
