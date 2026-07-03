@@ -86,16 +86,36 @@ export default function MockInterviewPanelPage() {
   // ─── Camera ───
   const startCamera = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+      // Demander vidéo + audio en même temps (permissions navigateur combinées)
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480 },
+        audio: true,
+      });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
       setCameraOn(true);
+      setMicOn(true);
+      console.log("[visio] Caméra + micro activés");
     } catch (err) {
-      console.error("Camera error:", err);
-      setCameraOn(false);
+      console.error("[visio] Camera/mic error:", err);
+      // Si l'erreur vient du micro, essayer juste la vidéo
+      try {
+        const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        streamRef.current = videoStream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = videoStream;
+          await videoRef.current.play();
+        }
+        setCameraOn(true);
+        setMicOn(false);
+        console.log("[visio] Caméra activée (sans micro)");
+      } catch (err2) {
+        console.error("[visio] Video-only error:", err2);
+        setCameraOn(false);
+      }
     }
   }, []);
 
@@ -486,14 +506,10 @@ export default function MockInterviewPanelPage() {
           </button>
         </div>
 
-        {/* Main visio area */}
-        <div className="flex-1 flex relative">
-          {/* Interviewer (background full screen) */}
-          <div className="flex-1 relative" style={{
-            backgroundImage: `url(${q.role.portrait})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-          }}>
+        {/* Main visio area — split screen 65% / 35% */}
+        <div className="flex-1 flex gap-0.5 p-0.5">
+          {/* Interviewer (left, 65%) — portrait en background plein cadre */}
+          <div className="relative rounded-2xl overflow-hidden" style={{ flex: "0 0 65%", backgroundImage: `url(${q.role.portrait})`, backgroundSize: "cover", backgroundPosition: "center top" }}>
             {/* Dark overlay */}
             <div className="absolute inset-0" style={{
               background: isSpeaking
@@ -501,7 +517,7 @@ export default function MockInterviewPanelPage() {
                 : "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)"
             }} />
 
-            {/* Talking animation overlay */}
+            {/* Talking glow */}
             {isSpeaking && (
               <div className="absolute inset-0 pointer-events-none" style={{
                 background: "radial-gradient(ellipse at center 40%, rgba(228,177,24,0.08) 0%, transparent 60%)",
@@ -509,30 +525,28 @@ export default function MockInterviewPanelPage() {
               }} />
             )}
 
-            {/* Question text overlay (top) */}
+            {/* Question text overlay */}
             {isSpeaking && (
-              <div className="absolute top-6 left-6 right-6 p-5 rounded-2xl" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(16px)" }}>
+              <div className="absolute top-4 left-4 right-4 p-4 rounded-2xl" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(16px)" }}>
                 <div className="flex items-center gap-2 mb-2">
-                  {isSpeaking && (
-                    <div className="flex items-center gap-1">
-                      {[0, 1, 2, 3].map(i => (
-                        <span key={i} className="w-1 rounded-full" style={{ background: "#E4B118", height: 16, animation: `wave 0.4s ${i * 0.08}s ease-in-out infinite alternate` }} />
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1">
+                    {[0, 1, 2, 3].map(i => (
+                      <span key={i} className="w-1 rounded-full" style={{ background: "#E4B118", height: 14, animation: `wave 0.4s ${i * 0.08}s ease-in-out infinite alternate` }} />
+                    ))}
+                  </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#E4B118" }}>{q.role.name} parle</span>
                 </div>
-                <p className="text-base leading-relaxed text-white">{q.question}</p>
+                <p className="text-sm leading-relaxed text-white">{q.question}</p>
               </div>
             )}
 
-            {/* Interviewer name (bottom left) */}
-            <div className="absolute bottom-6 left-6 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: q.role.bgGradient }}>
-                <Icon size={22} color="white" />
+            {/* Interviewer name */}
+            <div className="absolute bottom-4 left-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: q.role.bgGradient }}>
+                <Icon size={20} color="white" />
               </div>
               <div>
-                <div className="text-base font-bold text-white">{q.role.name}</div>
+                <div className="text-sm font-bold text-white">{q.role.name}</div>
                 <div className="text-xs" style={{ color: q.role.color }}>{q.role.title}</div>
               </div>
               {isSpeaking && <span className="text-[10px] text-white opacity-50 ml-2">parle...</span>}
@@ -540,23 +554,40 @@ export default function MockInterviewPanelPage() {
             </div>
           </div>
 
-          {/* User webcam (PiP, bottom right) */}
-          <div className="absolute bottom-6 right-6 w-48 h-36 rounded-2xl overflow-hidden border-2" style={{ borderColor: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626", background: "#1a1a2e" }}>
+          {/* User webcam (right, 35%) — GRANDE fenêtre pleine hauteur */}
+          <div className="relative rounded-2xl overflow-hidden border-2" style={{ flex: "1 1 35%", borderColor: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626", background: "#0d0d1a" }}>
             {cameraOn ? (
               <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
             ) : (
-              <div className="w-full h-full flex items-center justify-center"><VideoOff size={24} className="text-white opacity-30" /></div>
+              <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                <VideoOff size={40} className="text-white opacity-20" />
+                <span className="text-xs text-white opacity-30">Caméra désactivée</span>
+              </div>
             )}
-            {/* Face status indicator */}
-            <div className="absolute top-1 left-1 flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: "rgba(0,0,0,0.6)" }}>
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626" }} />
-              <span className="text-[8px] text-white">
-                {faceStatus.detected ? (faceStatus.looking ? "Contact OK" : "Regard") : "Pas de visage"}
-              </span>
+
+            {/* Face status indicator (top) */}
+            <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
+                <div className="w-2 h-2 rounded-full" style={{ background: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626" }} />
+                <span className="text-[10px] text-white font-medium">
+                  {faceStatus.detected ? (faceStatus.looking ? "Contact visuel OK" : "Regard fuyant") : "Visage non détecté"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
+                <Activity size={10} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
+                <span className="text-[10px] text-white">{faceStatus.tilt}°</span>
+              </div>
             </div>
-            <div className="absolute bottom-1 left-1 right-1 flex items-center justify-between">
-              <span className="text-[8px] text-white opacity-60">Vous</span>
-              {isListening && <span className="flex items-center gap-0.5 text-[8px]" style={{ color: "#F87171" }}><span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "#DC2626" }} /> écoute</span>}
+
+            {/* Bottom label */}
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+              <span className="text-xs text-white font-medium" style={{ background: "rgba(0,0,0,0.6)", padding: "4px 10px", borderRadius: 8 }}>Vous</span>
+              {isListening && (
+                <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(220,38,38,0.4)", color: "#F87171" }}>
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#DC2626" }} />
+                  Micro actif
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -570,27 +601,51 @@ export default function MockInterviewPanelPage() {
             </div>
           )}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Bouton caméra */}
               <button onClick={() => { cameraOn ? stopCamera() : startCamera(); }}
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
                 style={{ background: cameraOn ? "rgba(255,255,255,0.1)" : "rgba(220,38,38,0.3)", color: cameraOn ? "white" : "#F87171" }}>
-                {cameraOn ? <Video size={16} /> : <VideoOff size={16} />}
+                {cameraOn ? <Video size={18} /> : <VideoOff size={18} />}
               </button>
-              <button onClick={() => { if (isListening) { stopListening(); setMicOn(false); } else { startListening(); } }}
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
-                style={{ background: isListening ? "rgba(220,38,38,0.3)" : micOn ? "rgba(255,255,255,0.1)" : "rgba(220,38,38,0.3)", color: isListening ? "#F87171" : micOn ? "white" : "#F87171" }}>
-                {isListening ? <Mic size={16} /> : <MicOff size={16} />}
+
+              {/* Bouton micro — GROS et visible */}
+              <button
+                onClick={() => {
+                  if (isListening) { stopListening(); setMicOn(false); }
+                  else { startListening(); }
+                }}
+                className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: isListening ? "rgba(220,38,38,0.4)" : !micOn ? "rgba(220,38,38,0.2)" : "rgba(16,56,38,0.4)",
+                  color: isListening ? "#F87171" : micOn ? "#16A34A" : "#F87171",
+                  border: `2px solid ${isListening ? "#DC2626" : micOn ? "#16A34A" : "rgba(220,38,38,0.3)"}`,
+                }}>
+                {isListening ? <Mic size={18} /> : <MicOff size={18} />}
+                {isListening ? "PARLEZ MAINTENANT" : micOn ? "Cliquer pour parler" : "Activer le micro"}
               </button>
-              <div className="flex items-center gap-1 ml-2">
-                <Eye size={12} style={{ color: faceStatus.looking ? "#16A34A" : "#6A8F6D" }} />
-                <Activity size={12} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
+
+              {/* Indicateurs posture */}
+              <div className="flex items-center gap-2 ml-1">
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
+                  <Eye size={12} style={{ color: faceStatus.looking ? "#16A34A" : "#6A8F6D" }} />
+                  <span className="text-[10px] text-white opacity-60">{faceStatus.looking ? "OK" : "—"}</span>
+                </div>
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
+                  <Activity size={12} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
+                  <span className="text-[10px] text-white opacity-60">{faceStatus.tilt}°</span>
+                </div>
               </div>
+
+              {/* Status message */}
               {!isSpeaking && !thinking && (
-                <span className="text-xs text-white opacity-50 ml-2">
-                  {isListening ? "Parlez votre réponse..." : hasAnswer ? "Réponse enregistrée ✓" : "Activez le micro pour répondre"}
+                <span className="text-xs ml-2" style={{ color: hasAnswer ? "#16A34A" : "rgba(255,255,255,0.4)" }}>
+                  {hasAnswer ? "✓ Réponse enregistrée" : isListening ? "Parlez votre réponse..." : ""}
                 </span>
               )}
             </div>
+
+            {/* Bouton suivant */}
             <button onClick={nextQuestion} disabled={isSpeaking || thinking || !hasAnswer}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all"
               style={{
