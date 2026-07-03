@@ -172,3 +172,39 @@ Stage Summary:
   3. Migration next-intl pour FR/EN/ES (10 jours)
   4. Mock Interview Panel complet avec 5 rôles Comex
   5. Boardroom Simulator (pitch Comex 100 jours)
+
+---
+Task ID: 5
+Agent: main (Super Z)
+Task: Étape 1 - Activer la clé NVIDIA NIM pour le Conseiller IA
+
+Work Log:
+- Diagnostic : Setting.aiProvider = "openrouter" dans la base, mais la clé OpenRouter encryptée était invalide
+  → conseiller-engine.ts retournait source=no_key
+- Test direct de la clé NVIDIA NIM (nvapi-UKjhnz...) :
+  * GET /v1/models → 200 OK (liste de ~150 modèles disponibles)
+  * POST /v1/chat/completions avec deepseek-ai/deepseek-v4-pro → 200 OK
+  * Réponse : "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
+- Mise à jour de Setting dans Prisma :
+  * aiProvider: "openrouter" → "nim"
+  * defaultModel: "openai/gpt-oss-120b:free" → "deepseek-ai/deepseek-v4-pro"
+  * proModel: idem
+  * baseUrl: "https://integrate.api.nvidia.com"
+  * timeout: 60s, temperature: 0.5
+- Test 1 (question générique "Analyse ma campagne") : source=local (match base locale)
+- Test 2 (question entretien DG) : source=local (match base locale sur "entretien")
+- Test 3 (négociation package 350k€ CEO Series B) : source=ai ✓
+  → Le Conseiller a cité les preuves réelles du Proof Vault :
+    "Je vois que ton Proof Vault contient déjà une preuve sur le P&L Management
+     et une autre sur le Revenue Growth Management"
+  → A identifié les preuves manquantes critiques pour un CEO (levée, scale-up, exit)
+  → A proposé des actions concrètes avec chemins exacts (/proof-vault)
+  → A donné des chiffres précis (180-220k€ fixe, 1.5-3% equity, vesting 4 ans)
+
+Stage Summary:
+- ✅ NVIDIA NIM activé avec succès — le Conseiller IA répond maintenant avec la mémoire Prisma
+- ✅ Second brain pleinement opérationnel : profil + opportunités + entretiens + preuves + CV Maître injectés
+- ✅ Test en conditions réelles : réponse IA contextualisée de 800+ mots sur la négociation de package CEO
+- ⚠ Le système de base locale (conseiller-knowledge.ts) intercepte les questions génériques — comportement normal
+  (la base locale = réponses instantanées, l'IA = réponses contextualisées)
+- Le Conseiller est accessible via /conseiller et via le CTA en bas de sidebar
