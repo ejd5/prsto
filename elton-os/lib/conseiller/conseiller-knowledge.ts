@@ -291,7 +291,50 @@ Ou posez-moi directement votre question !`,
 export function getLocalAnswer(question: string): string | null {
   const q = question.toLowerCase().trim();
 
-  // Score each entry by keyword matches
+  // ── Gate 1 : si la question est longue ou contient des chiffres/contexte spécifique,
+  // on laisse l'IA traiter. La base locale ne doit répondre qu'aux questions VRAIMENT
+  // génériques (aides, définitions, démarrage) — pas aux questions de dirigeant
+  // spécifiques qui méritent une réponse contextualisée par le second brain IA.
+  //
+  // Signaux d'une question "spécifique" qui doit aller à l'IA :
+  //   - plus de 8 mots OU
+  //   - contient des chiffres (350k€, 5 ans, Series B, etc.) OU
+  //   - contient un secteur/fonction précis (CEO, DG, scale-up, private equity, etc.) OU
+  //   - contient des mots-outils de questionnement approfondi (comment, pourquoi, stratégie, etc.)
+  // ──────────────────────────────────────────────────────────────────────────────
+  const wordCount = q.split(/\s+/).filter(Boolean).length;
+  const hasNumbers = /\d/.test(q);
+  const SPECIFIC_SIGNALS = [
+    "ceo", "cfo", "coo", "cto", "cmo", "dg ", "directeur général", "country manager",
+    "vp ", "vice president", "président", "board", "comex", "codir",
+    "series a", "series b", "series c", "scale-up", "scale up", "startup", "scaleup",
+    "private equity", "venture", "leveraged", "lbo", "mbo", "due diligence",
+    "package", "equity", "bspce", "stock option", "vesting", "cliff",
+    "350k", "200k", "500k", "1m€", "2m€", "k€", "m€",
+    "négociation", "négocier", "contrepouvoir", "ancrage",
+    "stratégie", "stratégique", "strategie", "strategique",
+    "pitch", "plan 100 jours", "100 jours", "comex",
+    "entretien de", "entretien pour", "entretien avec",
+    "cabinet de chasse", "chasseur de tête", "headhunter",
+    "linkedin premium", "apec", "cadremploi",
+    "réseautage", "networking", "réseau",
+    "comment", "pourquoi", "quelle stratégie", "que faire",
+    "analyse", "analyse ma", "analyse ma campagne", "bilan",
+    "marché caché", "marché de l'emploi",
+    "p&l", "ebitda", "arr", "ca", "chiffre d'affaires",
+    "réorientation", "reconversion", "transition",
+    "demande", "augmentation", "promotion",
+    "démission", "préavis", "non-concurrence",
+    "lettre de motivation pour", "cv pour", "cv de",
+  ];
+  const hasSpecificSignal = SPECIFIC_SIGNALS.some(s => q.includes(s));
+
+  // Si la question ressemble à une vraie question de dirigeant → IA
+  if (wordCount > 8 || hasNumbers || hasSpecificSignal) {
+    return null; // → laisse l'IA prendre le relais
+  }
+
+  // ── Gate 2 : pour les questions courtes/génériques, on score par keyword ──
   let best: { entry: AnswerEntry; score: number } | null = null;
 
   for (const entry of ANSWER_ENGINE) {

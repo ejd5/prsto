@@ -208,3 +208,36 @@ Stage Summary:
 - ⚠ Le système de base locale (conseiller-knowledge.ts) intercepte les questions génériques — comportement normal
   (la base locale = réponses instantanées, l'IA = réponses contextualisées)
 - Le Conseiller est accessible via /conseiller et via le CTA en bas de sidebar
+
+---
+Task ID: 6
+Agent: main (Super Z)
+Task: Fix routing Conseiller - questions spécifiques doivent aller à l'IA, pas à la base locale
+
+Work Log:
+- Diagnostic : getLocalAnswer() dans conseiller-knowledge.ts matchait toutes les questions
+  contenant un mot-clé ("entretien", "cv", "pipeline", "offre") — y compris les questions
+  très spécifiques de dirigeant qui méritent l'IA + mémoire
+- Solution : ajout d'un "Gate 1" dans getLocalAnswer qui détecte les questions spécifiques
+  et les laisse passer à l'IA. Signaux d'une question "spécifique" :
+  • Plus de 8 mots
+  • Contient des chiffres (350k€, 5 ans, Series B, etc.)
+  • Contient un signal dirigeant (CEO, CFO, COO, DG, country manager, scale-up, private equity,
+    package, equity, BSPCE, vesting, cliff, board, comex, codir, etc.)
+  • Contient un mot-outil de questionnement approfondi (comment, pourquoi, stratégie, etc.)
+- Test 1 (question générique courte) → base locale OK
+- Test 2 ("Quelles sont les questions les plus probables pour un entretien de DG dans une
+  scale-up SaaS B2B en Series C ?") → source=ai ✓
+  Réponse IA cite les 2 entretiens planifiés dans le pipeline + profil dirigeant
+- Test 3 ("Stratégie pour marché caché dirigeant") → source=ai ✓
+  Réponse IA cite : Directeur Commercial + 20 ans + P&L Management + 65 personnes + international
+- Test final ("Comment négocier un package de 250k€ pour un poste de COO ?") → source=ai ✓
+  Réponse IA cite : "Je vois dans votre profil que vous pilotez déjà des P&L et managez 65 personnes"
+
+Stage Summary:
+- ✅ Routing corrigé — toutes les questions spécifiques de dirigeant vont maintenant à l'IA
+- ✅ Le second brain fonctionne dans toutes les réponses IA : profil, preuves, entretiens cités
+- ✅ La base locale ne répond qu'aux questions VRAIMENT génériques (≤ 8 mots, sans chiffres,
+  sans termes dirigeant)
+- ✅ Tests en conditions réelles : 4 questions dirigeant → 4 réponses IA contextualisées
+- L'utilisateur peut maintenant tester sur /conseiller avec ses propres questions
