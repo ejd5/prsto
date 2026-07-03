@@ -423,3 +423,58 @@ Stage Summary:
   → 5 exemples chiffrés (Schneider 2.8M€, L'Oréal 450k€+120% bonus, Airbus 50/30/20, Palantir, LVMH)
   → L'IA a BIEN adapté au sujet de l'historique (package, pas USA)
 - ✅ Plus de répétition du BLOC 1 — l'IA approfondit vraiment
+
+---
+Task ID: 13
+Agent: main (Super Z)
+Task: Sprint 1 — Intégration Riva Translate + Embeddings NVIDIA + TranslateButton UI
+
+Work Log:
+- Test clé Chatterbox TTS (nvapi-zXx6RSkD...) :
+  * Le modèle n'est PAS accessible via /v1/audio/speech (404)
+  * Documentation build.nvidia.com indique : gRPC via Riva Python Client
+  * Conclusion : intégration complexe (gRPC), reportée à Sprint 2
+
+- Test Riva Translate (nvidia/riva-translate-4b-instruct-v1.1) :
+  * API /v1/chat/completions standard ✅
+  * Format prompt optimal : "Source to Target: text"
+  * Post-traitement : nettoyage des labels recopiés par le modèle
+  * Limitation : gère bien EN↔FR (599ms, 541ms) mais mal les autres paires
+  * Solution : fallback automatique sur GLM-5.2 pour FR→ES, FR→DE, etc.
+
+- Test Embeddings NVIDIA (nvidia/nv-embedqa-e5-v5) :
+  * API /v1/embeddings ✅
+  * 1024 dimensions, ~350ms pour batch de 2 textes
+  * Similarité cosinus calculée côté serveur
+  * Test CV vs offre : 0.74 ("Très similaire")
+  * Note : bge-m3 non accessible via API (erreur 500)
+
+- Test Nemotron Parse :
+  * API /v1/chat/completions retourne 400 : "Content cannot be a plain string"
+  * Le modèle est un VLM qui nécessite une IMAGE en entrée
+  * Reporté à V2 (conversion PDF → image nécessaire)
+
+- Fichiers créés :
+  * lib/ai/translate.ts (290 lignes) — Riva + fallback LLM, détection langue, batch
+  * lib/ai/embeddings.ts (250 lignes) — generateEmbedding, batch, cosineSimilarity, findSimilar
+  * app/api/translate/route.ts — POST /api/translate
+  * app/api/embeddings/route.ts — POST /api/embeddings
+  * app/api/embeddings/similarity/route.ts — POST /api/embeddings/similarity
+  * components/ui/TranslateButton.tsx — composant React réutilisable
+
+Stage Summary:
+- ✅ 3 nouvelles API opérationnelles via preview publique
+- ✅ Translate : FR→EN 599ms, EN→FR 541ms, FR→ES 1.7s (LLM fallback), FR→DE 1.1s (LLM fallback)
+- ✅ Embeddings : 1024 dims, 350ms, similarité cosinus fonctionnelle
+- ✅ TranslateButton UI créé (compact + full variants, 6 langues, copier-coller)
+- ✅ Toutes routes en HTTP 200 via preview publique
+- ⚠️ Chatterbox TTS : nécessite gRPC, reporté à Sprint 2
+- ⚠️ Nemotron Parse : nécessite image (VLM), reporté à V2
+- ⚠️ bge-m3 : non accessible via API NVIDIA (erreur 500)
+
+Prochaines étapes possibles :
+1. Intégrer TranslateButton dans /cv-maitre (bouton à côté du texte CV)
+2. Intégrer TranslateButton dans /opportunites (traduire offres EN)
+3. Créer table Prisma Embedding + vectoriser le Proof Vault
+4. Brancher le Conseiller sur la recherche sémantique (RAG sur preuves)
+5. Sprint 2 : Chatterbox TTS via gRPC pour Mock Interview vocal
