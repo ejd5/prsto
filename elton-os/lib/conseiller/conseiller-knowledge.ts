@@ -304,6 +304,13 @@ export function getLocalAnswer(question: string): string | null {
   // ──────────────────────────────────────────────────────────────────────────────
   const wordCount = q.split(/\s+/).filter(Boolean).length;
   const hasNumbers = /\d/.test(q);
+
+  // Cas spécial : "continue" ou "suite" doit toujours aller à l'IA
+  // (pour récupérer la partie 2 d'une réponse tronquée par maxTokens)
+  if (q === "continue" || q === "suite" || q.startsWith("continue ") || q.startsWith("suite ")) {
+    return null; // → laisse l'IA prendre le relais
+  }
+
   const SPECIFIC_SIGNALS = [
     "ceo", "cfo", "coo", "cto", "cmo", "dg ", "directeur général", "country manager",
     "vp ", "vice president", "président", "board", "comex", "codir",

@@ -457,18 +457,68 @@ export async function streamWithDeepSeek(params: {
 
   let response: Response;
   try {
-    response = await fetch(`${config.baseUrl}/v1/chat/completions`, {
-      method: "POST",
-      headers: getProviderHeaders(config),
-      body: JSON.stringify({
-        model,
-        messages,
-        max_tokens: maxTokens,
-        temperature,
-        stream: true,
-      }),
-      signal: controller.signal,
-    });
+    // ── Pas de retry : si 429, fallback immédiat en mode non-streaming ──
+    // NVIDIA NIM gratuit a un rate limit strict. Les retries attendent trop
+    // longtemps (5s × 2 = 10s) et dépassent le timeout ALB public (60s).
+    // On préfère fallback direct sur generateWithDeepSeek (mode non-streaming)
+    // qui marche plus fiablement.
+    try {
+      response = await fetch(`${config.baseUrl}/v1/chat/completions`, {
+        method: "POST",
+        headers: getProviderHeaders(config),
+        body: JSON.stringify({
+          model,
+          messages,
+          max_tokens: maxTokens,
+          temperature,
+          stream: true,
+        }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      clearTimeout(timeoutId);
+      const aborted = err instanceof Error && err.name === "AbortError";
+      return {
+        stream: null,
+        error: aborted ? "Timeout" : "Erreur réseau",
+        errorType: aborted ? "timeout" : "network",
+      };
+    }
+
+    // Si 429 (rate limit) → fallback immédiat en mode non-streaming
+    if (response.status === 429) {
+      clearTimeout(timeoutId);
+      try {
+        const fallbackResult = await generateWithDeepSeek({
+          systemPrompt: params.systemPrompt,
+          userPrompt: params.userPrompt,
+          temperature: params.temperature,
+          maxTokens: params.maxTokens,
+          timeout: 60000,
+        });
+        if (fallbackResult.success && fallbackResult.content) {
+          const encoder = new TextEncoder();
+          const fallbackStream = new ReadableStream<Uint8Array>({
+            start(controller) {
+              controller.enqueue(encoder.encode(fallbackResult.content));
+              controller.close();
+            },
+          });
+          return { stream: fallbackStream };
+        }
+        return {
+          stream: null,
+          error: "Rate limit dépassé et fallback échoué",
+          errorType: "model_unavailable",
+        };
+      } catch {
+        return {
+          stream: null,
+          error: "Rate limit dépassé",
+          errorType: "model_unavailable",
+        };
+      }
+    }
   } catch (err) {
     clearTimeout(timeoutId);
     const aborted = err instanceof Error && err.name === "AbortError";

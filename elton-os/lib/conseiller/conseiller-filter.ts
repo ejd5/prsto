@@ -54,6 +54,8 @@ const ALLOWED_TOPICS = [
   "visa", "h1b", "l1", "e2", "green card", "greencard", "sponsor", "parrainage",
   "mobilité internationale", "relocation", "expat",
   "français à l'étranger", "francais a l'etranger", "french abroad",
+  // Commandes de continuation
+  "continue", "suite", "détails", "details", "approfondis", "précise",
 ];
 
 export function isTopicAllowed(question: string): boolean {

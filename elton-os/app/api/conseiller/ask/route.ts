@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isTopicAllowed } from "@/lib/conseiller/conseiller-filter";
 import { getLocalAnswer } from "@/lib/conseiller/conseiller-knowledge";
-import { streamWithDeepSeek, getDeepSeekConfig } from "@/lib/ai/deepseek";
+import { generateWithDeepSeek, getDeepSeekConfig } from "@/lib/ai/deepseek";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -350,50 +350,51 @@ Sois honnête, parfois tranchant. Un dirigeant veut entendre la vérité.
 - Si la question sort du périmètre (recherche d'emploi dirigeant + PRSTO), redirige poliment
 - Si une donnée mémoire est manquante, suggère l'action avec chemin exact
 - Réponds en français, ton coach executive
-- Vise 1000-1500 mots par réponse substantive, structurée en 6 blocs
-- Si la question est simple (def, route PRSTO), réponse courte OK — le framework 6-blocs est pour les questions stratégiques`;
+- VISE 400-500 mots par réponse substantive (contrainte technique)
+- Si tu manques d'espace, PRIORISE dans cet ordre : BLOC 1 (diagnostic), BLOC 5 (scoring), BLOC 6 (plan d'action + pièges). Les BLOC 2, 3, 4 peuvent être condensés en tableaux ou listes courtes.
+- À la fin, ajoute TOUJOURS : "👉 **Tapez "continue" pour la suite (BLOC 3 détaillé + sources complètes + plan 30/60/90).**"
+- Si la question est simple (def, route PRSTO), réponse courte OK — pas besoin des 6 blocs`;
 
-          // ── ÉTAPE 4 : Appeler NVIDIA NIM en streaming ──
-          // maxTokens réduit à 600 pour rester sous 60s (limite ALB public).
-          // Si l'utilisateur veut plus de détails, il demande "continue" ou une sous-question.
+          // ── ÉTAPE 4 : Appeler NVIDIA NIM en mode NON-STREAMING ──
+          // Le mode stream a un rate limit trop strict (429 fréquent).
+          // On utilise generateWithDeepSeek (non-streaming) qui marche mieux,
+          // puis on simule le streaming côté serveur pour l'UX utilisateur.
           const recentHistory = history.slice(-4);
           const historyBlock =
             recentHistory.length > 0
               ? recentHistory.map((h) => `${h.role === "user" ? "Candidat" : "Coach"}: ${h.content.slice(0, 300)}`).join("\n") + "\n"
               : "";
 
-          const result = await streamWithDeepSeek({
+          const genResult = await generateWithDeepSeek({
             systemPrompt,
             userPrompt: `${historyBlock}Candidat: ${message}`,
             temperature: 0.7,
-            maxTokens: 1000, // Framework 6-blocs condensé (sous 50s ALB public)
-            timeout: 90000,
+            maxTokens: 500, // Compromis : framework condensé, ~30-35s génération (sous 50s ALB)
+            timeout: 50000,
           });
 
-          if (!result.stream) {
+          if (!genResult.success || !genResult.content) {
             firstRealChunkReceived = true;
             const errorMsg =
-              result.errorType === "no_key"
+              genResult.errorType === "no_key"
                 ? "👋 La clé IA n'est pas configurée. Allez dans /parametres pour activer NVIDIA NIM."
-                : result.errorType === "timeout"
+                : genResult.errorType === "timeout"
                 ? "⏱ La génération a dépassé le délai. Reformulez votre question plus courte."
-                : `Erreur technique (${result.error || "inconnue"}). Réessayez dans un instant.`;
+                : `Erreur technique (${genResult.error || "inconnue"}). Réessayez dans un instant.`;
             safeEnqueue(encoder.encode(errorMsg));
           } else {
-            const reader = result.stream.getReader();
-            try {
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                if (value && value.length > 0) {
-                  firstRealChunkReceived = true;
-                  safeEnqueue(value);
-                }
-              }
-            } catch (err) {
-              safeEnqueue(
-                encoder.encode("\n\n[Erreur pendant la génération. Réessayez.]")
-              );
+            // ── Simuler le streaming : découper la réponse en chunks ──
+            // On envoie la réponse par morceaux de ~30 caractères toutes les 30ms.
+            // Cela crée l'effet "machine à écrire" côté utilisateur tout en
+            // maintenant la connexion TCP active (anti-timeout ALB).
+            firstRealChunkReceived = true;
+            const fullText = genResult.content;
+            const chunkSize = 30;
+            for (let i = 0; i < fullText.length; i += chunkSize) {
+              const chunk = fullText.slice(i, i + chunkSize);
+              safeEnqueue(encoder.encode(chunk));
+              await new Promise((r) => setTimeout(r, 30));
+              if (closed) break;
             }
           }
         } catch (err) {

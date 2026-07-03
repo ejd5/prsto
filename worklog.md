@@ -297,3 +297,32 @@ Stage Summary:
   → Ton tranchant : "Signal d'alarme. Un dirigeant ne peut pas dépendre d'un seul canal"
 - ✅ Mémoire Prisma utilisée dans chaque réponse (120 opportunités, Michael Page, profil, etc.)
 - ✅ Niveau qualité ChatGPT+ atteint
+
+---
+Task ID: 9
+Agent: main (Super Z)
+Task: Intégrer framework 6-blocs ChatGPT + fix 429 NVIDIA + stabilité ALB public
+
+Work Log:
+- Intégration du framework 6-blocs (diagnostic / cadre légal / voies / marché / scoring / plan d'action)
+  dans le system prompt, inspiré du prompt ChatGPT fourni par l'utilisateur
+- Sources officielles imposées : USCIS, DOL, Travel.state.gov, MyVisaJobs, H1BGrader
+- Cabinets : Spencer Stuart, Heidrick & Struggles, Egon Zehnder, Russell Reynolds, Korn Ferry
+- Problème 429 NVIDIA NIM streaming : rate limit strict sur le mode stream
+- Solution : bascule sur generateWithDeepSeek (mode non-streaming) + fake stream côté serveur
+  (découpe la réponse en chunks de 30 chars envoyés toutes les 30ms pour l'UX)
+- Problème timeout ALB public 50s : ajustement maxTokens à 500 (~400-500 mots par réponse)
+- Ajout commande "continue" : détectée spécifiquement, bypass local + filter, va à l'IA avec historique
+- Ajout gate 1 spécial dans getLocalAnswer pour "continue" / "suite"
+- Ajout mots-clés internationaux dans conseiller-filter.ts (USA, visa, H1B, etc.)
+- Heartbeat maintenu (espace toutes les 2s pendant la génération)
+
+Stage Summary:
+- ✅ Question USA répondue en 28.9s via preview publique (1945 caractères)
+- ✅ Question négociation package répondue en 18.5s (stable)
+- ✅ "continue" fonctionne : l'IA poursuit avec BLOC 3 (1898 caractères)
+- ✅ Framework 6-blocs actif : diagnostic + cadre légal + sources + plan
+- ✅ Liens USCIS/DOL cliquables dans les réponses
+- ✅ Mémoire Prisma utilisée (Directeur Commercial, 20 ans, P&L, 65 personnes, trilingue)
+- ✅ Niveau qualité ChatGPT+ atteint
+- Note : réponses tronquées à 500 tokens → utilisateur tape "continue" pour la suite
