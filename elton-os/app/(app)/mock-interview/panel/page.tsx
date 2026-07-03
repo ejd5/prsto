@@ -352,25 +352,28 @@ export default function MockInterviewPanelPage() {
   };
 
   // ─── Next question (BLOCKED if no answer) ───
+  // Stocke la VRAIE réponse textuelle pour l'envoyer au débrief
+  const allAnswersRef = useRef<string[]>([]);
+
   const nextQuestion = () => {
     const hasAnswer = transcript.trim().length > 10;
     if (!hasAnswer) {
-      setError("⚠ Vous devez répondre à la question avant de continuer. Activez votre micro et parlez.");
+      setError("⚠ Vous devez taper votre réponse avant de continuer.");
       setTimeout(() => setError(null), 4000);
       return;
     }
 
     stopListening(); setIsSpeaking(false);
-    const words = transcript.trim().split(/\s+/);
-    const fillers = words.filter(w => FILLER_WORDS.includes(w.toLowerCase().replace(/[.,!?]/g, "")));
 
+    // Stocker la VRAIE réponse
+    allAnswersRef.current.push(transcript.trim());
+
+    // Métriques
+    const words = transcript.trim().split(/\s+/);
     metricsRef.current.answersProvided++;
     metricsRef.current.wordCount += words.length;
+    const fillers = words.filter(w => FILLER_WORDS.includes(w.toLowerCase().replace(/[.,!?]/g, "")));
     metricsRef.current.fillerWordCount += fillers.length;
-    if (speakStartRef.current) {
-      metricsRef.current.speakingTimeTotal += (Date.now() - speakStartRef.current) / 1000;
-      speakStartRef.current = null;
-    }
 
     setTranscript("");
 
@@ -383,92 +386,53 @@ export default function MockInterviewPanelPage() {
     }
   };
 
-  // ─── Debrief based on REAL metrics ───
+  // ─── Debrief : envoie les VRAIES réponses à l'IA ───
   const generateDebrief = async () => {
     setLoading(true); setPhase("debrief");
     stopCamera(); stopListening();
 
-    // Calculer les vraies métriques
     const m = metricsRef.current;
-    m.faceDetectedRatio = frameCountRef.current > 0 ? (faceDetectedCountRef.current / frameCountRef.current) * 100 : 0;
-    m.eyeContactRatio = faceDetectedCountRef.current > 0 ? (eyeContactCountRef.current / faceDetectedCountRef.current) * 100 : 0;
-    m.headTiltAvg = faceDetectedCountRef.current > 0 ? tiltSumRef.current / faceDetectedCountRef.current : 0;
-    m.answersSkipped = questions.length - m.answersProvided;
-    m.postureScore = m.faceDetectedRatio > 80 && m.headTiltAvg < 10 ? 80 : m.faceDetectedRatio > 50 ? 50 : 20;
 
-    const pace = m.speakingTimeTotal > 0 ? Math.round(m.wordCount / (m.speakingTimeTotal / 60)) : 0;
+    // Construire les vraies Q/R avec les réponses réelles
+    const qaPairs = questions.map((q, i) => ({
+      role: q.role.title,
+      question: q.question,
+      answer: allAnswersRef.current[i] || "(non répondue)",
+    }));
 
-    // Debrief basé sur les VRAIES données
-    const debriefItems = [
-      {
-        dimension: "Contact visuel",
-        score: Math.round(m.eyeContactRatio),
-        feedback: m.eyeContactRatio > 70
-          ? `Excellent contact visuel (${Math.round(m.eyeContactRatio)}% du temps vers la caméra). Vous projetez de la confiance.`
-          : m.eyeContactRatio > 40
-          ? `Contact visuel moyen (${Math.round(m.eyeContactRatio)}%). Travaillez à regarder davantage la caméra, pas l'écran.`
-          : m.faceDetectedRatio > 0
-          ? `Faible contact visuel (${Math.round(m.eyeContactRatio)}%). Les recruteurs interprètent cela comme un manque de confiance.`
-          : "Visage non détecté par la caméra. Impossible d'analyser le contact visuel.",
-      },
-      {
-        dimension: "Posture & présence",
-        score: m.postureScore,
-        feedback: m.headTiltAvg < 8 && m.faceDetectedRatio > 70
-          ? `Posture droite et stable (inclinaison tête: ${m.headTiltAvg.toFixed(1)}°). Présence professionnelle.`
-          : m.headTiltAvg < 15
-          ? `Posture correcte mais instable (inclinaison moyenne: ${m.headTiltAvg.toFixed(1)}°). Veillez à garder la tête droite.`
-          : `Posture à améliorer (inclinaison tête: ${m.headTiltAvg.toFixed(1)}°). Tenez-vous droit, épaules en arrière.`,
-      },
-      {
-        dimension: "Expression orale",
-        score: m.wordCount > 0 ? Math.min(100, Math.round((m.wordCount / Math.max(m.speakingTimeTotal, 1)) * 60 * 0.4 + 60 - m.fillerWordCount * 5)) : 0,
-        feedback: m.wordCount === 0
-          ? "Aucune réponse vocale fournie. Activez votre micro pour que le système analyse votre expression."
-          : `${m.wordCount} mots parlés en ${Math.round(m.speakingTimeTotal)}s (${pace} mots/min). ${m.fillerWordCount} mots de remplissage détectés (euh, genre, donc...). ${m.fillerWordCount > m.wordCount * 0.05 ? "Trop de mots parasites — travaillez votre concision." : "Bon rythme, peu de mots parasites."}`,
-      },
-      {
-        dimension: "Participation",
-        score: Math.round((m.answersProvided / questions.length) * 100),
-        feedback: m.answersProvided === questions.length
-          ? `Vous avez répondu à toutes les questions (${m.answersProvided}/${questions.length}). Engagement total.`
-          : `Vous n'avez répondu qu'à ${m.answersProvided} question(s) sur ${questions.length}. ${m.answersSkipped} non répondue(s). Un entretien réel exige une réponse à chaque question.`,
-      },
-      {
-        dimension: "Détection visage",
-        score: Math.round(m.faceDetectedRatio),
-        feedback: m.faceDetectedRatio > 80
-          ? `Visage détecté ${Math.round(m.faceDetectedRatio)}% du temps. Bon cadrage caméra.`
-          : m.faceDetectedRatio > 40
-          ? `Visage détecté seulement ${Math.round(m.faceDetectedRatio)}% du temps. Ajustez votre cadrage — restez face caméra.`
-          : `Visage rarement détecté (${Math.round(m.faceDetectedRatio)}%). Vérifiez l'éclairage et le cadrage de votre caméra.`,
-      },
-    ];
+    let debriefItems: any[] = [];
 
-    // Envoyer les Q/R à l'IA pour analyse du contenu (si des réponses existent)
-    if (m.answersProvided > 0) {
-      try {
-        const res = await fetch("/api/mock-interview-panel/debrief", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jobTitle, company,
-            metrics: { wordCount: m.wordCount, speakingTime: m.speakingTimeTotal, fillerWords: m.fillerWordCount, eyeContact: m.eyeContactRatio },
-            qaPairs: questions.map((q, i) => ({ role: q.role.title, question: q.question, answer: i < m.answersProvided ? "(réponse vocale enregistrée)" : "(non répondue)" })),
-          }),
-        });
-        const data = await res.json();
-        if (data.success && data.debrief) {
-          // Ajouter l'analyse de contenu IA au début
-          const contentAnalysis = data.debrief.find((d: any) => d.dimension && d.dimension.toLowerCase().includes("stratég") || d.dimension.toLowerCase().includes("contenu"));
-          if (contentAnalysis) {
-            debriefItems.unshift({
-              dimension: "Analyse du contenu (IA)",
-              score: contentAnalysis.score,
-              feedback: contentAnalysis.feedback,
-            });
-          }
-        }
-      } catch {}
+    try {
+      const res = await fetch("/api/mock-interview-panel/debrief", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobTitle, company,
+          qaPairs,
+          metrics: {
+            wordCount: m.wordCount,
+            fillerWords: m.fillerWordCount,
+            answersProvided: m.answersProvided,
+            totalQuestions: questions.length,
+          },
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success && data.debrief && data.debrief.length > 0) {
+        debriefItems = data.debrief;
+      } else {
+        // Fallback si l'IA échoue
+        debriefItems = [
+          { dimension: "Participation", score: Math.round((m.answersProvided / questions.length) * 100),
+            feedback: `Vous avez répondu à ${m.answersProvided} question(s) sur ${questions.length}.` },
+          { dimension: "Expression", score: m.wordCount > 50 ? 60 : 30,
+            feedback: `${m.wordCount} mots au total. ${m.fillerWordCount} mots de remplissage détectés.` },
+        ];
+      }
+    } catch {
+      debriefItems = [
+        { dimension: "Erreur", score: 0, feedback: "Analyse IA indisponible. Vos réponses ont bien été enregistrées." },
+      ];
     }
 
     setDebrief(debriefItems);
