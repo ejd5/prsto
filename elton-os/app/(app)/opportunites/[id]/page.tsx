@@ -7,7 +7,7 @@ import {
   Star, FileText, Copy, Loader2, AlertTriangle,
   CheckCircle2, Trash2, Link, Package,
   Briefcase, Banknote, Target, Zap, Shield, Gauge,
-  Sliders, Settings, HelpCircle, Activity, Sparkles, Cpu, TrendingUp,
+  Sliders, Settings, HelpCircle, Activity, Sparkles, Cpu, TrendingUp, Search,
 } from "lucide-react";
 import { getOpportunity, updateOpportunity, deleteOpportunity } from "@/lib/actions/opportunity";
 import { getScoreColor, getScoreBg } from "@/lib/score-colors";
@@ -51,6 +51,8 @@ export default function OpportunityDetailPage() {
   const [editNotes, setEditNotes] = useState("");
   const [showNotes, setShowNotes] = useState(false);
   const [exportingDossier, setExportingDossier] = useState(false);
+  const [similarOffers, setSimilarOffers] = useState<Array<{ entityId: string; content: string; score: number }> | null>(null);
+  const [searchingSimilar, setSearchingSimilar] = useState(false);
   const [todos, setTodos] = useState<any[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState("");
 
@@ -142,6 +144,39 @@ export default function OpportunityDetailPage() {
       await load();
     } else {
       notify("err", result.error || "Erreur d'analyse");
+    }
+  };
+
+  const handleSimilarOffers = async () => {
+    if (!opp?.rawText) return;
+    setSearchingSimilar(true);
+    setSimilarOffers(null);
+    try {
+      const res = await fetch("/api/embeddings/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `${opp.title} @ ${opp.company}\n\n${opp.rawText.slice(0, 3000)}`,
+          entityType: "opportunity",
+          topK: 5,
+          threshold: 0.3,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Exclure l'offre courante des résultats
+        const filtered = (data.results || []).filter((r: { entityId: string }) => r.entityId !== id);
+        setSimilarOffers(filtered);
+        if (filtered.length === 0) {
+          notify("ok", "Aucune offre similaire trouvée (seuil 0.3)");
+        }
+      } else {
+        notify("err", "Erreur recherche");
+      }
+    } catch {
+      notify("err", "Erreur réseau");
+    } finally {
+      setSearchingSimilar(false);
     }
   };
 
@@ -853,19 +888,68 @@ export default function OpportunityDetailPage() {
               <p className="text-xs font-mono" style={{ color: "var(--texte-tertiaire)" }}>
                 Pas encore d&apos;analyse pour cette offre
               </p>
-              <button onClick={handleAnalyze} disabled={analyzing || !opp.rawText}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md border transition-colors"
-                style={{
-                  borderColor: opp.rawText ? "var(--or)" : "var(--bordure)",
-                  color: opp.rawText ? "var(--or)" : "var(--texte-tertiaire)",
-                  opacity: analyzing ? 0.6 : 1,
-                }}>
-                {analyzing ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
-                {analyzing ? "Analyse en cours..." : opp.rawText ? "Analyser l'offre" : "Ajoutez le texte de l'offre pour analyser"}
-              </button>
+              <div className="flex gap-2">
+                <button onClick={handleAnalyze} disabled={analyzing || !opp.rawText}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md border transition-colors"
+                  style={{
+                    borderColor: opp.rawText ? "var(--or)" : "var(--bordure)",
+                    color: opp.rawText ? "var(--or)" : "var(--texte-tertiaire)",
+                    opacity: analyzing ? 0.6 : 1,
+                  }}>
+                  {analyzing ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+                  {analyzing ? "Analyse en cours..." : opp.rawText ? "Analyser l'offre" : "Ajoutez le texte de l'offre pour analyser"}
+                </button>
+                {opp.rawText && (
+                  <button onClick={handleSimilarOffers}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md border transition-colors"
+                    style={{ borderColor: "var(--bordure)", color: "var(--texte-secondaire)" }}>
+                    <Search size={12} /> Offres similaires
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
+
+        {/* Offres similaires (RAG sémantique) */}
+        {similarOffers && similarOffers.length > 0 && (
+          <div className="p-5 rounded-lg border space-y-3" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-5 rounded-full" style={{ background: "var(--or)" }} />
+              <h3 className="text-sm font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>
+                Offres similaires ({similarOffers.length})
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {similarOffers.map((s, i) => (
+                <div key={i} className="p-3 rounded-md border text-xs" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond)" }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-mono font-bold" style={{ color: "var(--or)" }}>
+                      Score: {(s.score * 100).toFixed(0)}%
+                    </span>
+                    <button
+                      onClick={() => router.push(`/opportunites/${s.entityId}`)}
+                      className="text-[10px] underline"
+                      style={{ color: "var(--texte-secondaire)" }}
+                    >
+                      Voir →
+                    </button>
+                  </div>
+                  <p className="line-clamp-2" style={{ color: "var(--texte-secondaire)" }}>
+                    {s.content.slice(0, 200)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {searchingSimilar && (
+          <div className="p-4 rounded-lg border flex items-center gap-2" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
+            <Loader2 size={14} className="animate-spin" style={{ color: "var(--or)" }} />
+            <span className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>Recherche d'offres similaires...</span>
+          </div>
+        )}
 
         {/* Colonne droite — actions / meta */}
         <div className="space-y-4">

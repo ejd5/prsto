@@ -567,3 +567,42 @@ Stage Summary:
 - ✅ J : Plan i18n détaillé sauvegardé (5KB, 5 phases, 10 jours)
 - Total embeddings : 7 (3 preuves + 4 opportunités)
 - Toutes routes en HTTP 200 via preview publique
+
+---
+Task ID: 16
+Agent: main (Super Z)
+Task: Option 1 (Mock Interview Panel vocal) + Option 2 (Offres similaires)
+
+Work Log:
+- Option 1 : Mock Interview Panel Comex vocal
+  * lib/ai/tts.ts — couche TTS abstraite (ElevenLabs + Web Speech fallback)
+    - 5 voix prédéfinies (CEO, CFO, DRH, Pair, Investisseur) avec gender + voiceId
+    - generateSpeechElevenLabs() — voix 100% humaine via API ElevenLabs
+    - generateSpeech() — fallback automatique Web Speech si ElevenLabs non configuré
+    - isElevenLabsConfigured() + listElevenLabsVoices()
+  * app/api/tts/route.ts — POST /api/tts (text + role → audio base64 ou config Web Speech)
+  * app/(app)/mock-interview/panel/page.tsx — UI complète Mock Interview Panel
+    - Phase setup : choix poste + entreprise, preview 5 rôles
+    - Phase questions : 5 questions IA contextualisées, lecture audio, zone réponse
+    - Phase débrief : score global + 5 dimensions (stratégie/finance/leadership/com/valeur)
+    - Progress bar, boutons play/stop, indication provider TTS
+  * app/api/mock-interview-panel/generate/route.ts — génère 5 questions via IA
+    (Z.AI prioritaire, GLM-5.2 fallback, mémoire Prisma profil)
+  * app/api/mock-interview-panel/debrief/route.ts — débrief 360° (5 dimensions, scores 0-100)
+  * Test : 5 questions générées en 9s, débrief fonctionnel
+  * Note : Web Speech fallback actif (ElevenLabs non configuré). Dès que l'utilisateur
+    fournira sa clé ELEVENLABS_API_KEY, les voix deviendront 100% humaines automatiquement.
+
+- Option 2 : Bouton "Offres similaires" dans /opportunites/[id]
+  * Ajout bouton "Offres similaires" à côté de "Analyser l'offre"
+  * handleSimilarOffers() — appel /api/embeddings/search avec entityType="opportunity"
+  * Affichage des résultats avec score % + lien "Voir →" vers l'offre similaire
+  * Exclusion de l'offre courante des résultats
+  * State searchingSimilar + similarOffers
+
+Stage Summary:
+- ✅ Mock Interview Panel vocal : 5 rôles, questions IA, voix (Web Speech maintenant, ElevenLabs ready)
+- ✅ Bouton "Offres similaires" : RAG sémantique sur opportunités indexées
+- ✅ Toutes routes en HTTP 200 via preview publique
+- ✅ Architecture TTS swappable : Web Speech (fallback) → ElevenLabs (premium, dès clé fournie)
+- En attente : clé ELEVENLABS_API_KEY pour activer les voix 100% humaines
