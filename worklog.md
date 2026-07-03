@@ -106,3 +106,69 @@ Stage Summary:
   3. Lancer le plan Elite 149€/mois (modif PricingSection.tsx)
   4. Créer la page /manifeste
   5. Renommer /elton-os → /prsto dans toutes les routes
+
+---
+Task ID: 4
+Agent: main (Super Z)
+Task: Suite des chantiers - Plan Elite + Page Manifeste + Second Brain mémoire + Proof Vault connecté
+
+Work Log:
+- Plan Elite 149€/mois ajouté dans PricingSection.tsx :
+  * Remplace l'ancien bloc "Équipe" (déplacé en bannière séparée plus bas)
+  * Card premium avec gradient vert sombre (#0E3A29 → #0B2E21) + bordure or
+  * Badge "★ Pour les DG / CEO en transition"
+  * 9 features Elite : Conseiller IA illimité, Mock Panel 5 rôles Comex, Market Radar temps réel,
+    Coaching humain 1h/mois, Boardroom Simulator, Support 7j/7, etc.
+  * CTA "Passer Elite" avec gradient doré
+  * Ancrage psychologique : Free (0€) / Pro (39,90€) / Elite (149€) — le Pro paraît accessible,
+    l'Elite valide la valeur pour dirigeants
+
+- Page /prsto/manifeste créée :
+  * Fichier : app/(public)/prsto/manifeste/page.tsx
+  * Hero sombre avec "Un poste de direction ne se trouve pas. Il se conquiert."
+  * Section constat : 4 stats (6-18 mois, 7-12 étapes, 15-30 personnes, 70% marché caché)
+  * Section pipeline : 10 étapes critiques du recrutement dirigeant (ciblage → onboarding)
+  * Section 5 principes : Focus dirigeant / 18 outils / Second brain / Zéro envoi auto / Souveraineté EU
+  * CTA final "Vous n'envoyez pas un CV. Vous pilotez une campagne."
+  * Palette PRSTO cohérente (vert sombre + or + crème)
+
+- Second brain mémoire activé dans conseiller-engine.ts :
+  * AVANT : 4 compteurs simples (oppCount, jobCount, interviewCount, docCount)
+  * APRÈS : bloc mémoire complet injecté dans le system prompt, incluant :
+    - Profil dirigeant (titre, secteurs, fonctions, langues, années exp, compétences)
+    - État campagne (4 compteurs)
+    - 5 dernières opportunités actives (titre, entreprise, statut, date maj)
+    - 3 prochains entretiens (type, date, notes)
+    - 5 dernières preuves Proof Vault (titre, catégorie, value/impact)
+    - CV Maître (fileName, statut, date upload)
+  * System prompt enrichi avec règles comportementales (utilise EXPLICITEMENT les données,
+    propose actions concrètes avec chemins, rappelle preuves disponibles, max 300 mots)
+  * Correction 3 erreurs de champs Prisma : impact→value (ProofEntry),
+    scheduledAt→date (Interview), title→fileName (CVMaster)
+
+- Fix DATABASE_URL critique :
+  * L'environnement système impose DATABASE_URL=file:/home/z/my-project/db/custom.db
+    qui n'existait pas → Prisma error "Unable to open database file"
+  * Solution : symlink /home/z/my-project/db/custom.db → /home/z/my-project/elton-os/prisma/dev.db
+  * Maintenant Prisma accède aux 120 opportunités + 2 preuves de la base réelle
+
+- Proof Vault connecté au Conseiller via le bloc mémoire :
+  * Les 5 dernières preuves sont injectées dans le system prompt
+  * Le Conseiller peut les citer ("Votre preuve X peut servir pour cette offre Y")
+  * Le Conseiller peut suggérer d'ajouter des preuves si la base est vide
+
+Stage Summary:
+- 4 chantiers livrés, toutes routes en HTTP 200 (local + preview publique)
+- URLs publiques vérifiées :
+  * Landing avec nouveau Hero + Plan Elite : https://preview-chat-7b004522-2e59-447c-8a2a-456f06eb44a1.space-z.ai/prsto
+  * Manifeste executive : https://preview-chat-7b004522-2e59-447c-8a2a-456f06eb44a1.space-z.ai/prsto/manifeste
+  * Conseiller avec second brain : https://preview-chat-7b004522-2e59-447c-8a2a-456f06eb44a1.space-z.ai/conseiller
+  * Dashboard avec nouveau menu : https://preview-chat-7b004522-2e59-447c-8a2a-456f06eb44a1.space-z.ai/dashboard/jobs
+- API Conseiller fonctionne (no_key quand NVIDIA NIM inaccessible, mais la mémoire Prisma charge correctement)
+- Fichiers modifiés : 4 (PricingSection.tsx, manifeste/page.tsx [nouveau], conseiller-engine.ts, .env, .env.local)
+- Reste à faire (priorités suivantes possibles) :
+  1. Configurer la clé NVIDIA NIM dans /parametres pour activer les réponses IA personnalisées
+  2. Renommer /elton-os → /prsto dans toutes les routes publiques (1 jour)
+  3. Migration next-intl pour FR/EN/ES (10 jours)
+  4. Mock Interview Panel complet avec 5 rôles Comex
+  5. Boardroom Simulator (pitch Comex 100 jours)

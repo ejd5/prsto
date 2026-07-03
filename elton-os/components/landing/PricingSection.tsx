@@ -34,6 +34,18 @@ const PRO_FEATURES = [
   "Analyses IA illimitées",
 ];
 
+const ELITE_FEATURES = [
+  "Tout PRSTO+, en illimité",
+  "Conseiller IA — second brain (mémoire longue)",
+  "Mock Interview Panel complet (5 rôles Comex)",
+  "Market Radar temps réel + alertes WhatsApp",
+  "Coaching humain 1h/mois avec un ex-DG",
+  "Accès anticipé nouvelles sources d'offres",
+  "Boardroom Simulator (pitch Comex 100 jours)",
+  "Support prioritaire 7j/7",
+  "Revue de CV par un coach executive",
+];
+
 export default function PricingSection() {
   const [period, setPeriod] = useState<Period>("mois");
   const [showBriefModal, setShowBriefModal] = useState(false);
@@ -171,40 +183,56 @@ export default function PricingSection() {
             </div>
           </Reveal>
 
-          {/* ── Équipe ── */}
+          {/* ── Elite (pour dirigeants) ── */}
           <Reveal variant="up" delay={180}>
-            <div className="rounded-3xl border p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-1 shadow-sm" style={{
-              borderColor: "rgba(16,56,38,0.05)",
-              background: "#FFFFFF",
+            <div className="relative rounded-3xl border-2 p-8 flex flex-col h-full transition-all duration-300 hover:-translate-y-1" style={{
+              borderColor: "#0E3A29",
+              background: "linear-gradient(180deg, #0E3A29 0%, #0B2E21 100%)",
+              boxShadow: "0 24px 70px rgba(14,58,41,0.25)",
             }}>
-              <div className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "#6A8F6D" }}>
-                Équipe
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9.5px] font-bold tracking-wide mb-3 w-fit" style={{
+                background: "rgba(228,177,24,0.18)", border: "1px solid rgba(228,177,24,0.35)", color: "#F2C94C",
+              }}>
+                ★ Pour les DG / CEO en transition
               </div>
-              <div className="text-3xl font-extrabold tracking-[-0.04em] mb-1 text-[#0B1F18]" style={{ fontFamily: "Playfair Display, serif" }}>
-                Sur devis
+
+              <div className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: "#F2C94C" }}>
+                PRSTO Elite
               </div>
-              <p className="text-xs mb-7" style={{ color: "#6A8F6D" }}>
-                Pour les cabinets RH et équipes de recrutement.
+
+              <div className="text-5xl font-extrabold tracking-[-0.04em] mb-1" style={{ fontFamily: "Playfair Display, serif", color: "#FFFDF8" }}>
+                149€
+                <span className="text-xs font-normal uppercase tracking-wider ml-1" style={{ color: "rgba(250,246,239,0.5)" }}>
+                  /mois
+                </span>
+              </div>
+              <p className="text-xs mb-7" style={{ color: "rgba(250,246,239,0.65)" }}>
+                Pour les dirigeants qui pilotent leur campagne comme un projet d'entreprise.
               </p>
-              <div className="h-px mb-6" style={{ background: "rgba(16,56,38,0.06)" }} />
+
+              <div className="h-px mb-6" style={{ background: "rgba(250,246,239,0.1)" }} />
               <ul className="space-y-2.5 mb-7 flex-1">
-                {[
-                  "Tout PRSTO+", "Comptes multiples", "Dashboard consolidé",
-                  "Accès API", "Support prioritaire dédié",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: "#50625A" }}>
+                {ELITE_FEATURES.map((f) => (
+                  <li key={f} className="flex items-center gap-2.5 text-sm" style={{ color: "rgba(250,246,239,0.85)" }}>
                     <span className="w-[18px] h-[18px] rounded-md flex items-center justify-center flex-shrink-0 text-[9px] font-bold" style={{
-                      background: "rgba(16,56,38,0.08)", border: "1px solid rgba(16,56,38,0.12)", color: "#103826",
-                    }}>✓</span>
+                      background: "rgba(228,177,24,0.15)", border: "1px solid rgba(228,177,24,0.3)", color: "#F2C94C",
+                    }}>★</span>
                     {f}
                   </li>
                 ))}
               </ul>
-              <a href="/contact" className="block text-center py-3 px-6 rounded-xl text-sm font-bold transition-all border" style={{
-                borderColor: "rgba(16,56,38,0.15)", color: "#103826", textDecoration: "none",
+
+              <a href="/demarrage?plan=elite" className="block text-center py-3 px-6 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5" style={{
+                background: "linear-gradient(135deg, #E4B118 0%, #F2C94C 100%)", color: "#082E1E",
+                border: "none",
+                textDecoration: "none",
+                boxShadow: "0 4px 16px rgba(228,177,24,0.4)",
               }}>
-                Nous contacter
+                Passer Elite
               </a>
+              <p className="text-[10px] text-center mt-3" style={{ color: "rgba(250,246,239,0.4)" }}>
+                Sans engagement • Résiliable à tout moment
+              </p>
             </div>
           </Reveal>
         </div>
