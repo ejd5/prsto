@@ -85,54 +85,52 @@ export default function MockInterviewPanelPage() {
 
   // ─── Camera ───
   const startCamera = useCallback(async () => {
-    console.log("[visio] startCamera appelé, videoRef:", !!videoRef.current);
+    // Détecter si caméra et micro sont disponibles avant de demander
+    let hasCamera = false;
+    let hasMic = false;
     try {
-      // Demander vidéo + audio en même temps (permissions navigateur combinées)
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480 },
-        audio: true,
-      });
-      streamRef.current = stream;
-      console.log("[visio] Stream obtenu:", stream.getVideoTracks().length, "vidéo,", stream.getAudioTracks().length, "audio");
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      hasCamera = devices.some(d => d.kind === "videoinput");
+      hasMic = devices.some(d => d.kind === "audioinput");
+      console.log("[visio] Devices:", hasCamera ? "caméra OK" : "pas de caméra", hasMic ? "micro OK" : "pas de micro");
+    } catch {
+      console.log("[visio] enumerateDevices non supporté, on essaie quand même");
+      hasCamera = true;
+      hasMic = true;
+    }
 
-      // Attendre que videoRef soit disponible (au cas où)
+    // Si pas de caméra ni micro → mode texte
+    if (!hasCamera && !hasMic) {
+      console.log("[visio] Pas de caméra ni micro → mode texte");
+      setCameraOn(false);
+      setMicOn(false);
+      return;
+    }
+
+    try {
+      const constraints: MediaStreamConstraints = {};
+      if (hasCamera) constraints.video = { width: 640, height: 480 };
+      if (hasMic) constraints.audio = true;
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
       let attempts = 0;
       while (!videoRef.current && attempts < 20) {
         await new Promise(r => setTimeout(r, 100));
         attempts++;
       }
 
-      if (videoRef.current) {
+      if (videoRef.current && hasCamera) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        console.log("[visio] Vidéo en cours de lecture");
-      } else {
-        console.error("[visio] videoRef non disponible après attente");
+        try { await videoRef.current.play(); } catch {}
       }
-      setCameraOn(true);
-      setMicOn(true);
+      setCameraOn(hasCamera);
+      setMicOn(hasMic);
     } catch (err) {
-      console.error("[visio] Camera/mic error:", err);
-      // Fallback : essayer juste la vidéo
-      try {
-        const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        streamRef.current = videoStream;
-        let attempts = 0;
-        while (!videoRef.current && attempts < 20) {
-          await new Promise(r => setTimeout(r, 100));
-          attempts++;
-        }
-        if (videoRef.current) {
-          videoRef.current.srcObject = videoStream;
-          await videoRef.current.play();
-        }
-        setCameraOn(true);
-        setMicOn(false);
-        console.log("[visio] Caméra activée (sans micro)");
-      } catch (err2) {
-        console.error("[visio] Video-only error:", err2);
-        setCameraOn(false);
-      }
+      console.log("[visio] getUserMedia échec:", err);
+      setCameraOn(false);
+      setMicOn(false);
     }
   }, []);
 
@@ -292,17 +290,17 @@ export default function MockInterviewPanelPage() {
       console.log("[visio] Phase call rendue, démarrage caméra...");
 
       (async () => {
-        // 1. Démarrer la caméra (videoRef est maintenant disponible)
+        // 1. Démarrer la caméra (détecte automatiquement si device disponible)
         await startCamera();
 
-        // 2. Démarrer MediaPipe (non bloquant — si échec, on continue)
-        initMediaPipe().catch(err => console.log("[mediapipe] Non bloquant:", err));
+        // 2. Démarrer MediaPipe seulement si streamRef a une vidéo (caméra activée)
+        const hasVideo = streamRef.current?.getVideoTracks().length > 0;
+        if (hasVideo) {
+          initMediaPipe().catch(() => {});
+        }
 
-        // 3. Attendre 1.5s que la caméra soit visible, puis parler la 1ère question
-        setTimeout(() => {
-          console.log("[visio] Démarrage TTS première question");
-          speakQuestion(questions[0]);
-        }, 1500);
+        // 3. Attendre 1.5s puis parler la 1ère question
+        setTimeout(() => speakQuestion(questions[0]), 1500);
       })();
     }
   }, [phase, questions, startCamera, initMediaPipe]);
@@ -597,92 +595,109 @@ export default function MockInterviewPanelPage() {
           </div>
 
           {/* User webcam (right, 35%) — GRANDE fenêtre pleine hauteur */}
-          <div className="relative rounded-2xl overflow-hidden border-2" style={{ flex: "1 1 35%", borderColor: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626", background: "#0d0d1a" }}>
+          <div className="relative rounded-2xl overflow-hidden border-2" style={{ flex: "1 1 35%", borderColor: cameraOn ? (faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626") : "rgba(255,255,255,0.15)", background: "#0d0d1a" }}>
             {cameraOn ? (
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+              <>
+                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+                {/* Face status indicator */}
+                <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
+                    <div className="w-2 h-2 rounded-full" style={{ background: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626" }} />
+                    <span className="text-[10px] text-white font-medium">
+                      {faceStatus.detected ? (faceStatus.looking ? "Contact visuel OK" : "Regard fuyant") : "Visage non détecté"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
+                    <Activity size={10} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
+                    <span className="text-[10px] text-white">{faceStatus.tilt}°</span>
+                  </div>
+                </div>
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <span className="text-xs text-white font-medium" style={{ background: "rgba(0,0,0,0.6)", padding: "4px 10px", borderRadius: 8 }}>Vous</span>
+                  {isListening && (
+                    <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(220,38,38,0.4)", color: "#F87171" }}>
+                      <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#DC2626" }} /> Micro actif
+                    </span>
+                  )}
+                </div>
+              </>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                <VideoOff size={40} className="text-white opacity-20" />
-                <span className="text-xs text-white opacity-30">Caméra désactivée</span>
+              /* Mode texte — pas de caméra */
+              <div className="w-full h-full flex flex-col p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <VideoOff size={16} className="text-white opacity-40" />
+                  <span className="text-xs text-white opacity-40">Mode texte (pas de caméra)</span>
+                </div>
+                <textarea
+                  value={transcript}
+                  onChange={e => setTranscript(e.target.value)}
+                  placeholder="Tapez votre réponse ici..."
+                  className="flex-1 w-full p-3 rounded-xl text-sm text-white resize-none"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}
+                  autoFocus
+                />
+                <div className="mt-2 text-[10px] text-white opacity-30">
+                  {transcript.trim().length} caractères {transcript.trim().length > 10 && "✓"}
+                </div>
               </div>
             )}
-
-            {/* Face status indicator (top) */}
-            <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
-                <div className="w-2 h-2 rounded-full" style={{ background: faceStatus.detected ? (faceStatus.looking ? "#16A34A" : "#E4B118") : "#DC2626" }} />
-                <span className="text-[10px] text-white font-medium">
-                  {faceStatus.detected ? (faceStatus.looking ? "Contact visuel OK" : "Regard fuyant") : "Visage non détecté"}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(0,0,0,0.6)" }}>
-                <Activity size={10} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
-                <span className="text-[10px] text-white">{faceStatus.tilt}°</span>
-              </div>
-            </div>
-
-            {/* Bottom label */}
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-              <span className="text-xs text-white font-medium" style={{ background: "rgba(0,0,0,0.6)", padding: "4px 10px", borderRadius: 8 }}>Vous</span>
-              {isListening && (
-                <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(220,38,38,0.4)", color: "#F87171" }}>
-                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#DC2626" }} />
-                  Micro actif
-                </span>
-              )}
-            </div>
           </div>
         </div>
 
         {/* Bottom: transcript + controls */}
         <div className="px-4 py-3 space-y-2" style={{ background: "rgba(0,0,0,0.6)" }}>
           {error && <div className="px-4 py-2 rounded-xl text-sm" style={{ background: "rgba(220,38,38,0.15)", color: "#F87171" }}>{error}</div>}
-          {transcript && (
+
+          {/* Transcript vocal (seulement si caméra/micro activés) */}
+          {cameraOn && micOn && transcript && (
             <div className="px-4 py-2 rounded-xl text-sm max-h-20 overflow-y-auto" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.8)" }}>
-              <span className="text-[10px] opacity-50">Votre réponse: </span>{transcript}
+              <span className="text-[10px] opacity-50">Votre réponse vocale: </span>{transcript}
             </div>
           )}
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Bouton caméra */}
-              <button onClick={() => { cameraOn ? stopCamera() : startCamera(); }}
-                className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
-                style={{ background: cameraOn ? "rgba(255,255,255,0.1)" : "rgba(220,38,38,0.3)", color: cameraOn ? "white" : "#F87171" }}>
-                {cameraOn ? <Video size={18} /> : <VideoOff size={18} />}
-              </button>
+              {/* Boutons caméra/micro (seulement si devices disponibles) */}
+              {cameraOn && (
+                <button onClick={() => { stopCamera(); }}
+                  className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
+                  style={{ background: "rgba(255,255,255,0.1)", color: "white" }}>
+                  <Video size={18} />
+                </button>
+              )}
 
-              {/* Bouton micro — GROS et visible */}
-              <button
-                onClick={() => {
-                  if (isListening) { stopListening(); setMicOn(false); }
-                  else { startListening(); }
-                }}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: isListening ? "rgba(220,38,38,0.4)" : !micOn ? "rgba(220,38,38,0.2)" : "rgba(16,56,38,0.4)",
-                  color: isListening ? "#F87171" : micOn ? "#16A34A" : "#F87171",
-                  border: `2px solid ${isListening ? "#DC2626" : micOn ? "#16A34A" : "rgba(220,38,38,0.3)"}`,
-                }}>
-                {isListening ? <Mic size={18} /> : <MicOff size={18} />}
-                {isListening ? "PARLEZ MAINTENANT" : micOn ? "Cliquer pour parler" : "Activer le micro"}
-              </button>
+              {micOn && (
+                <button
+                  onClick={() => { if (isListening) { stopListening(); } else { startListening(); } }}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all"
+                  style={{
+                    background: isListening ? "rgba(220,38,38,0.4)" : "rgba(16,56,38,0.4)",
+                    color: isListening ? "#F87171" : "#16A34A",
+                    border: `2px solid ${isListening ? "#DC2626" : "#16A34A"}`,
+                  }}>
+                  {isListening ? <Mic size={18} /> : <MicOff size={18} />}
+                  {isListening ? "PARLEZ MAINTENANT" : "Cliquer pour parler"}
+                </button>
+              )}
 
-              {/* Indicateurs posture */}
-              <div className="flex items-center gap-2 ml-1">
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
-                  <Eye size={12} style={{ color: faceStatus.looking ? "#16A34A" : "#6A8F6D" }} />
-                  <span className="text-[10px] text-white opacity-60">{faceStatus.looking ? "OK" : "—"}</span>
+              {/* Indicateurs posture (seulement si caméra) */}
+              {cameraOn && (
+                <div className="flex items-center gap-2 ml-1">
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
+                    <Eye size={12} style={{ color: faceStatus.looking ? "#16A34A" : "#6A8F6D" }} />
+                    <span className="text-[10px] text-white opacity-60">{faceStatus.looking ? "OK" : "—"}</span>
+                  </div>
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
+                    <Activity size={12} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
+                    <span className="text-[10px] text-white opacity-60">{faceStatus.tilt}°</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.05)" }}>
-                  <Activity size={12} style={{ color: faceStatus.detected ? "#16A34A" : "#DC2626" }} />
-                  <span className="text-[10px] text-white opacity-60">{faceStatus.tilt}°</span>
-                </div>
-              </div>
+              )}
 
               {/* Status message */}
               {!isSpeaking && !thinking && (
                 <span className="text-xs ml-2" style={{ color: hasAnswer ? "#16A34A" : "rgba(255,255,255,0.4)" }}>
-                  {hasAnswer ? "✓ Réponse enregistrée" : isListening ? "Parlez votre réponse..." : ""}
+                  {hasAnswer ? "✓ Réponse enregistrée" : cameraOn && micOn ? (isListening ? "Parlez..." : "Activez le micro") : "Tapez votre réponse →"}
                 </span>
               )}
             </div>
