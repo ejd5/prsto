@@ -28,25 +28,23 @@ import {
 import { ToastProvider } from "@/components/ui/EltonToast";
 import { UxModeProvider } from "@/lib/ux-mode";
 
-// ── Navigation Design PRSTO — matching brand mockup ──
+// ── Navigation PRSTO V2 — 5 sections, vocabulaire "campagne dirigeant" ──
+// Restructurée pour réduire la charge cognitive (4±2 chunks) et affirmer
+// le positionnement executive. Le Conseiller (second brain IA) est mis
+// en avant dans INTELLIGENCE + un CTA bas de sidebar.
 const NAV_SECTIONS = [
   {
-    title: "Principal",
+    title: "Campagne",
     items: [
-      { href: "/", label: "Tableau de bord", icon: LayoutDashboard },
-      { href: "/performance", label: "Performance", icon: BarChart3 },
+      { href: "/", label: "Cockpit", icon: LayoutDashboard },
+      { href: "/opportunites", label: "Pipelines ouverts", icon: Briefcase },
+      { href: "/dashboard/jobs/pipeline", label: "Missions en cours", icon: BarChart3 },
+      { href: "/dashboard/jobs/analytics", label: "Radar marché", icon: TrendingUp },
+      { href: "/performance", label: "Indicateurs", icon: TrendingUp },
     ],
   },
   {
-    title: "Mes Offres",
-    items: [
-      { href: "/opportunites", label: "Opportunités", icon: Briefcase },
-      { href: "/dashboard/jobs/pipeline", label: "Candidatures", icon: BarChart3 },
-      { href: "/dashboard/jobs/analytics", label: "Insights marché", icon: TrendingUp },
-    ],
-  },
-  {
-    title: "Documents & CV",
+    title: "Arsenaux",
     items: [
       { href: "/cv-maitre", label: "CV Maître", icon: FileText },
       { href: "/documents", label: "Documents", icon: FileText },
@@ -54,22 +52,23 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    title: "Préparation",
+    title: "Training Camp",
     items: [
       { href: "/entretiens", label: "Entretiens", icon: Calendar },
-      { href: "/mock-interview", label: "Mock Interview", icon: MessageSquare },
+      { href: "/mock-interview", label: "Mocks", icon: MessageSquare },
     ],
   },
   {
-    title: "IA & Optimisation",
+    title: "Intelligence",
     items: [
-      { href: "/assistant-recherche", label: "Recherche IA", icon: Sparkles },
-      { href: "/ai-optimize", label: "AI CV Optimizer", icon: Zap },
+      { href: "/conseiller", label: "Conseiller IA", icon: Sparkles },
+      { href: "/assistant-recherche", label: "Recherche IA", icon: Search },
+      { href: "/ai-optimize", label: "CV AI", icon: Zap },
       { href: "/linkedin-optimizer", label: "LinkedIn Optimizer", icon: Globe },
     ],
   },
   {
-    title: "Compte",
+    title: "Réglages",
     items: [
       { href: "/profil", label: "Mon Profil", icon: User },
       { href: "/parametres", label: "Paramètres", icon: Settings },
@@ -155,23 +154,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isHome = pathname === "/";
 
   const pageTitle = (() => {
-    if (pathname === "/") return "Tableau de bord";
+    if (pathname === "/") return "Cockpit";
+    if (pathname.startsWith("/conseiller")) return "Conseiller IA";
     if (pathname.startsWith("/assistant-recherche")) return "Recherche IA";
-    if (pathname.startsWith("/ai-optimize")) return "AI CV Optimizer";
+    if (pathname.startsWith("/ai-optimize")) return "CV AI";
     if (pathname.startsWith("/linkedin-optimizer")) return "LinkedIn Optimizer";
-    if (pathname.startsWith("/dashboard/jobs/analytics")) return "Insights Marché";
-    if (pathname.startsWith("/dashboard/jobs/pipeline")) return "Pipeline Candidatures";
-    if (pathname.startsWith("/dashboard/jobs")) return "Suivi Candidatures";
+    if (pathname.startsWith("/dashboard/jobs/analytics")) return "Radar Marché";
+    if (pathname.startsWith("/dashboard/jobs/pipeline")) return "Missions en cours";
+    if (pathname.startsWith("/dashboard/jobs")) return "Missions en cours";
     if (pathname.startsWith("/cv-maitre")) return "CV Maître";
     if (pathname.startsWith("/documents")) return "Documents";
-    if (pathname.startsWith("/entretiens")) return "Préparation Entretiens";
-    if (pathname.startsWith("/opportunites")) return "Mes Opportunités";
+    if (pathname.startsWith("/entretiens")) return "Entretiens";
+    if (pathname.startsWith("/opportunites")) return "Pipelines ouverts";
     if (pathname.startsWith("/profil")) return "Mon Profil";
-    if (pathname.startsWith("/performance")) return "Performance";
+    if (pathname.startsWith("/performance")) return "Indicateurs";
     if (pathname.startsWith("/parametres")) return "Paramètres";
     if (pathname.startsWith("/demarrage")) return "Démarrage";
     if (pathname.startsWith("/guide")) return "Guide PRSTO";
-    if (pathname.startsWith("/mock-interview")) return "Mock Interview";
+    if (pathname.startsWith("/mock-interview")) return "Mocks";
     if (pathname.startsWith("/proof-vault")) return "Proof Vault";
     return "PRSTO";
   })();
@@ -183,7 +183,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* ══ SIDEBAR — Fidèle aux maquettes PRSTO ══ */}
         <aside
-          className="w-[220px] flex-shrink-0 flex flex-col"
+          className="w-[250px] flex-shrink-0 flex flex-col"
           style={{
             background: "#0E3A29",
             borderRight: "1px solid rgba(255,255,255,0.06)",
@@ -262,11 +262,38 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          {/* Bottom — Premium Status + Profile */}
+          {/* Bottom — Conseiller CTA + Premium Status + Profile */}
           <div
             className="px-3 py-4 border-t flex flex-col gap-3"
             style={{ borderColor: "rgba(255,255,255,0.06)" }}
           >
+            {/* Conseiller IA CTA — second brain accessible partout */}
+            <Link
+              href="/conseiller"
+              className="rounded-xl p-3 space-y-1.5 block transition-all duration-200 hover:translate-y-[-1px]"
+              style={{
+                background: "linear-gradient(135deg, rgba(228,177,24,0.18) 0%, rgba(228,177,24,0.06) 100%)",
+                border: "1px solid rgba(228,177,24,0.35)",
+                textDecoration: "none",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles size={14} style={{ color: "#F2C94C" }} />
+                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#F2C94C" }}>
+                  Conseiller IA
+                </span>
+                <span
+                  className="ml-auto text-[8.5px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider"
+                  style={{ background: "rgba(228,177,24,0.25)", color: "#F2C94C" }}
+                >
+                  Nouveau
+                </span>
+              </div>
+              <p className="text-[9.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>
+                Une question sur votre campagne ? Demandez à votre second brain.
+              </p>
+            </Link>
+
             {/* Premium CTA */}
             <div
               className="rounded-xl p-3 space-y-2"
@@ -277,13 +304,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             >
               <div className="flex items-center gap-2">
                 <Crown size={14} style={{ color: "#F2B11A" }} />
-                <span className="text-[10px] font-bold text-[#F2B11A] uppercase tracking-wider">PRSTO Premium</span>
+                <span className="text-[10px] font-bold text-[#F2B11A] uppercase tracking-wider">PRSTO Elite</span>
               </div>
               <p className="text-[9.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-                Accédez aux opportunités et insights exclusifs.
+                Conseiller illimité, Mock Panel, coaching humain.
               </p>
               <Link href="/prsto/executive-brief" className="sidebar-premium-cta w-full">
-                Passer Premium
+                Passer Elite
               </Link>
             </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, Eye, Cpu, Shield, BarChart3, Bell } from "lucide-react";
+import { Sparkles, Eye, Cpu, Shield, BarChart3, Bell, Crown } from "lucide-react";
 import Reveal from "./Reveal";
 
 const FEATURES = [
@@ -27,36 +27,36 @@ export default function HeroSection() {
           style={{ background: "radial-gradient(circle, rgba(106,143,109,0.10), transparent 65%)", filter: "blur(40px)", animationDelay: "-7s" }} />
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-16 w-full relative text-center" style={{ zIndex: 2 }}>
+      <div className="max-w-4xl mx-auto px-6 py-16 w-full relative text-center" style={{ zIndex: 2 }}>
         <Reveal variant="up">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[11px] font-medium mb-6" style={{
             borderColor: "rgba(228,177,24,0.25)", color: "#A38010",
             background: "rgba(228,177,24,0.08)",
           }}>
-            <span className="w-[7px] h-[7px] rounded-full" style={{ background: "#E4B118" }} />
-            Votre prochain poste ne se trouve pas. Il se prépare.
+            <Crown size={11} style={{ color: "#E4B118" }} />
+            Le copilote carrière IA des cadres dirigeants — DG, CEO, COO, CFO, Country Manager
           </div>
         </Reveal>
 
         <Reveal variant="up" delay={80}>
           <h1 className="text-[clamp(2.25rem,5vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.04em] mb-5 font-serif" style={{ fontFamily: "Playfair Display, serif" }}>
             <span className="block text-[#0B1F18]" style={{ textShadow: "0 2px 12px rgba(255,255,255,0.6)" }}>
-              Vous postez depuis 6 mois
+              Votre prochain poste
             </span>
             <span className="block bg-gradient-to-r from-[#E4B118] via-[#F2C94C] to-[#E4B118] bg-clip-text text-transparent" style={{ textShadow: "0 0 30px rgba(228,177,24,0.3)" }}>
-              sans résultat ?
+              de direction se mérite.
             </span>
             <span className="block text-[#0B1F18]" style={{ textShadow: "0 2px 12px rgba(255,255,255,0.6)" }}>
-              Et si le problème n&apos;était pas vous, mais votre méthode&nbsp;?
+              PRSTO vous donne les 18 outils pour le décrocher.
             </span>
           </h1>
         </Reveal>
 
         <Reveal variant="up" delay={160}>
-          <p className="text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto font-medium" style={{ color: "#E4B118", textShadow: "0 0 6px rgba(255,255,255,0.5)" }}>
-            Scoring IA des offres, CV Maître, Préparateur d&apos;entretien,
-            Assistant Recherche, Matching automatique — le copilote carrière
-            qui travaille pendant que vous dormez.
+          <p className="text-base md:text-lg leading-relaxed mb-8 max-w-2xl mx-auto font-medium" style={{ color: "#103826", textShadow: "0 0 6px rgba(255,255,255,0.5)" }}>
+            Un process de recrutement de dirigeant dure <strong style={{ color: "#E4B118" }}>6 à 18 mois</strong>, traverse
+            7 à 12 étapes, mobilise 15 à 30 interlocuteurs. Les outils généralistes ne sont pas calibrés pour ça.
+            PRSTO, si. CV Maître, ATS Scanner, Mock Interview Panel, Conseiller IA, Market Radar, CRM Recruteur — un seul cockpit.
           </p>
         </Reveal>
 
@@ -81,12 +81,12 @@ export default function HeroSection() {
               Voir la démo
             </a>
           </div>
-          <Link href="/recruiters"
+          <Link href="/prsto/executive-brief"
             className="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors"
             style={{ color: "#103826", textShadow: "0 0 4px #fff, 0 0 12px rgba(255,255,255,0.6)", textDecoration: "none" }}
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#E4B118" }} />
-            Zéro candidature en masse. 100% piloté par vos objectifs. →
+            Pour les dirigeants uniquement. Pas pour la masse. →
           </Link>
         </Reveal>
 
