@@ -1,3 +1,4 @@
+import { newArticles } from "./new-articles";
 export type ArticleCategory =
   | "Marché & Tendances"
   | "CV & Personal Branding"
@@ -85,6 +86,7 @@ export function getCategoryGradient(category: ArticleCategory): string {
 }
 
 export const articles: BlogArticle[] = [
+  ...newArticles,
   {
     slug: "marche-cache-cadres-dirigeants-2026",
     title: "2026 : Le marché caché des cadres dirigeants",
@@ -661,10 +663,13 @@ export const articles: BlogArticle[] = [
 ];
 
 export const categories: { name: ArticleCategory; count: number }[] = [
-  { name: "Marché & Tendances", count: 1 },
-  { name: "CV & Personal Branding", count: 1 },
-  { name: "Négociation & Package", count: 1 },
+  { name: "Marché & Tendances", count: 2 },
+  { name: "CV & Personal Branding", count: 2 },
+  { name: "Négociation & Package", count: 3 },
   { name: "Réseau & Chasseurs", count: 1 },
+  { name: "Entretien", count: 2 },
+  { name: "Stratégie", count: 3 },
+  { name: "Transition", count: 2 },
 ];
 
 export const allTags = Array.from(new Set(articles.flatMap((a) => a.tags)));
