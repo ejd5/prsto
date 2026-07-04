@@ -847,3 +847,75 @@ Stage Summary:
 - ✅ Cible: capter trafic organique type Rezi (340K/mois) sur marché FR exec
 - 🔵 Phase B complète — passer à Phase C (Enterprise white-label)
 
+
+---
+Task ID: 22
+Agent: main (Super Z)
+Task: Phase C — Enterprise white-label + dashboard admin + commission 70%
+
+Work Log:
+- Schema Prisma — 3 nouveaux models poussés à Neon PostgreSQL
+  * Organization (id, name, slug, type, status, plan, seatsUsed, seatsLimit,
+    customDomain, primaryColor, logoUrl, defaultLanguage, contactName/Email/Phone,
+    commissionRate, stripeAccountId, totalCommission)
+  * OrganizationMember (organizationId, userId, role: admin/reviewer/member,
+    status: invited/active/removed, invitedAt, joinedAt)
+  * OrganizationInvitation (organizationId, email, role, token, expiresAt, acceptedAt)
+  * User.orgMemberships relation ajoutée
+
+- lib/enterprise/index.ts (320 lignes) — helpers enterprise-grade
+  * ORG_TYPES (5): recruitment, business_school, coach, outplacement, association
+  * ORG_PLANS (3): Starter (499€/20 seats), Growth (1499€/100), Enterprise (sur devis)
+  * generateOrgSlug, ensureUniqueSlug
+  * getCurrentUserOrg, requireOrgAdmin
+  * createOrganization (crée org + ajoute creator comme admin)
+  * createInvitation (token 32 bytes, expire 7 jours)
+  * acceptInvitation (vérifie token, email match, seats dispo)
+  * getOrgStats (members, seats, recentActivity)
+
+- 6 API routes créées:
+  * POST /api/enterprise/create — créer org (1 par user admin)
+  * POST /api/enterprise/invite — inviter member (génère URL accept)
+  * GET /api/enterprise/invite — list invitations en attente
+  * GET /api/enterprise/accept-invite?token=... — accept invitation (redirect)
+  * POST /api/enterprise/accept-invite — accept programmatique
+  * GET /api/enterprise/members — list members (admin only)
+  * PATCH /api/enterprise/members — promote/demote/remove (admin only)
+  * GET /api/enterprise/stats — dashboard stats (admin only)
+  * GET /api/enterprise/by-slug?slug=... — public org info (white-label)
+
+- Landing page /prsto/enterprise (B2B sales page)
+  * Hero avec comparison vs Rezi Enterprise (8 critères)
+  * 6 use cases (cabinets, schools, coaches, outplacement, VC/PE, associations)
+  * 6 features différenciantes (white-label, multi-langue, dashboard, commission, RGPD, 13 outils)
+  * 5 types d'organisations supportées
+  * Pricing 3 plans (Starter 499€, Growth 1499€, Enterprise sur devis)
+  * CTA essai gratuit 14 jours
+
+- Dashboard /enterprise (app authentifiée)
+  * Auto-détection: pas d'org → formulaire création / a une org → dashboard
+  * Stats cards (4): membres actifs, invitations, admins, sièges
+  * Form invitation (email + role) avec génération URL d'accept
+  * Liste invitations en attente (avec expiration)
+  * Liste membres (avec actions promote/demote/remove)
+  * Commission accumulée affichée
+  * Welcome banner si ?welcome=1
+  * Error handling complet
+
+- Build: ✓ Compiled 48s, 340 pages générées (vs 332 avant)
+- Tests réels (compte admin@eltonos.com):
+  * Création org "Cabinet Test Executive" (slug: cabinet-test-executive, plan growth, 100 seats)
+  * Invitation test-candidate@example.com (URL accept générée avec token 32 bytes)
+  * Stats: 1 admin actif, 1/100 sièges, commission 70%, 0€ accumulée
+  * Members list: admin@eltonos.com (admin, active)
+  * Toutes APIs retournent 403 si non admin (sécurité OK)
+
+Stage Summary:
+- ✅ Enterprise white-label complet (schema + lib + 6 APIs + 2 pages)
+- ✅ Dashboard admin fonctionnel (create, invite, members, stats, actions)
+- ✅ Pricing B2B (Starter 499€, Growth 1499€, Enterprise sur devis)
+- ✅ Commission 70% comme Rezi (mais sur tickets 5x plus élevés)
+- ✅ Tests réels OK (create → invite → stats → members)
+- ✅ Build OK 340 pages, daemon stable
+- ✅ Phase C complète — Phases A + B + C terminées
+

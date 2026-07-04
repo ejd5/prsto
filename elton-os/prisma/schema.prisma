@@ -30,6 +30,7 @@ model User {
   candidateDossiers CandidateDossier[]
   candidateNotes    CandidateNote[]
   commissions       Commission[]
+  orgMemberships    OrganizationMember[]
 }
 
 model Session {
@@ -65,6 +66,82 @@ model Account {
   @@unique([provider, providerAccountId])
   @@index([userId])
   @@index([provider])
+}
+
+// ─── Enterprise (Organizations / White-label) ─────────────
+// Permet aux cabinets de recrutement, business schools, coaches
+// de proposer PRSTO en white-label à leurs candidats executives.
+model Organization {
+  id              String   @id @default(uuid())
+  name            String                       // "Cabinet Dupont Executive"
+  slug            String   @unique             // "cabinet-dupont" → subdomain
+  type            String                       // "recruitment" | "business_school" | "coach" | "outplacement" | "association"
+  status          String   @default("trial")   // "trial" | "active" | "suspended" | "cancelled"
+  plan            String   @default("growth")  // "starter" | "growth" | "enterprise"
+  seatsUsed       Int      @default(0)
+  seatsLimit      Int      @default(20)        // 20 for starter, 100 for growth, unlimited for enterprise
+
+  // White-label branding
+  customDomain    String?                      // "cabinet-dupont.com"
+  primaryColor    String?  @default("#1a3a2e") // PRSTO green default
+  logoUrl         String?
+  defaultLanguage String?  @default("fr")      // "fr" | "en" | "es"
+
+  // Contact
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+
+  // Commission (70% default like Rezi)
+  commissionRate  Float    @default(0.70)      // 0.70 = 70% for the org
+  stripeAccountId String?                      // Stripe Connect for payouts
+  totalCommission Float    @default(0)         // Total commission earned (EUR)
+
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  members         OrganizationMember[]
+  invitations     OrganizationInvitation[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model OrganizationMember {
+  id              String   @id @default(uuid())
+  organizationId  String
+  userId          String
+  role            String   @default("member")  // "admin" | "reviewer" | "member"
+  invitedBy       String?
+  invitedAt       DateTime @default(now())
+  joinedAt        DateTime?
+  status          String   @default("invited") // "invited" | "active" | "removed"
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model OrganizationInvitation {
+  id              String   @id @default(uuid())
+  organizationId  String
+  email           String                       // email of invitee
+  role            String   @default("member")
+  token           String   @unique             // secure token for accept URL
+  invitedBy       String                       // userId of inviter
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  createdAt       DateTime @default(now())
+
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@index([token])
 }
 
 // ─── Profil Exécutif ───────────────────────────────────────
