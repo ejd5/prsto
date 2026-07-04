@@ -16,6 +16,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email ou mot de passe incorrect" }, { status: 401 });
     }
 
+    // SSO-only users (no password set) must use their SSO provider
+    if (!user.password) {
+      const accounts = await prisma.account.findMany({ where: { userId: user.id }, select: { provider: true } });
+      const providers = accounts.map((a) => a.provider).join(", ") || "SSO";
+      return NextResponse.json(
+        { error: `Ce compte utilise la connexion ${providers}. Cliquez sur le bouton correspondant ci-dessus.` },
+        { status: 401 }
+      );
+    }
+
     const valid = await verifyPassword(password, user.password);
     if (!valid) {
       return NextResponse.json({ error: "Email ou mot de passe incorrect" }, { status: 401 });

@@ -645,3 +645,67 @@ Stage Summary:
 - ✅ Timer "EN DIRECT" + progress bar + contrôles caméra/micro
 - ✅ Test via preview publique : 200 OK
 - Architecture TTS en cascade : ElevenLabs → Google TTS → Web Speech
+
+---
+Task ID: 19
+Agent: main (Super Z)
+Task: SSO Google + LinkedIn (added alongside existing JWT auth, no breaking changes)
+
+Work Log:
+- Prisma schema (PostgreSQL/Neon) — pushed successfully
+  * User.password now nullable (null = SSO-only user, cannot use email/password)
+  * New User.image field (avatar from SSO)
+  * New Account model: provider, providerAccountId (unique pair), tokens, email, name, image
+- lib/auth/sso.ts (240 lines) — full OAuth 2.0 helper layer
+  * isProviderConfigured() — checks env vars per provider
+  * getBaseUrl() — NEXTAUTH_URL > NEXT_PUBLIC_APP_URL > VERCEL_URL > localhost
+  * State cookie (CSRF, 10min TTL, httpOnly, sameSite=lax)
+  * getGoogleAuthUrl() + exchangeGoogleCode() — Google OAuth 2.0 + userinfo
+  * getLinkedInAuthUrl() + exchangeLinkedInCode() — LinkedIn OpenID Connect (v2/userinfo)
+  * findOrCreateUserFromSso() — 3 cases: existing Account, existing email (link), brand new user
+  * finalizeSsoLogin() — calls existing createSession() from lib/auth/session
+- API routes (4 + 1 status):
+  * GET /api/auth/google            → state cookie + redirect to Google consent
+  * GET /api/auth/google/callback   → verify state, exchange, find-or-create, createSession, redirect /
+  * GET /api/auth/linkedin          → same for LinkedIn
+  * GET /api/auth/linkedin/callback → same for LinkedIn
+  * GET /api/auth/sso-status        → { providers: [...], configured: {google,linkedin}, baseUrl }
+- Login page (app/(public)/login/page.tsx) — full rewrite
+  * Wrapped in Suspense (useSearchParams requires it)
+  * Fetches /api/auth/sso-status on mount
+  * Shows "Continuer avec Google" + "Continuer avec LinkedIn" buttons IF configured
+  * Divider "OU" between SSO and email/password
+  * Real Google SVG + LinkedIn SVG icons
+  * If no providers configured → only email/password form (graceful fallback, no errors)
+  * Picks up ?error=... from callback redirects and shows friendly French messages
+  * New SSO users redirect to /?welcome=1, existing users to /
+- API login route hardened
+  * SSO-only users (password=null) get a friendly error pointing to the SSO button
+  * Existing email/password flow unchanged
+- Build: npm run build → success (TypeScript checks pass, 189 pages generated)
+- Tests:
+  * GET /login → 200 OK (18KB HTML, renders)
+  * GET /api/auth/sso-status → {"providers":[],"configured":{"google":false,"linkedin":false},"baseUrl":"http://localhost:3000"}
+  * GET /api/auth/google → 503 (graceful: provider not configured)
+  * GET /api/auth/linkedin → 503 (graceful: provider not configured)
+- Documentation:
+  * /home/z/my-project/download/PRSTO_SSO_setup.md (6.9KB, complete setup guide)
+    - Architecture diagram
+    - Required env vars
+    - Step-by-step Google Cloud Console setup
+    - Step-by-step LinkedIn Developer portal setup
+    - Test checklist (8 items)
+    - Files reference table
+    - Security notes
+    - Troubleshooting table
+
+Stage Summary:
+- ✅ SSO infrastructure complete (Google + LinkedIn)
+- ✅ No breaking changes — existing email/password auth works unchanged
+- ✅ Build passes, all routes return correct HTTP codes
+- ✅ Graceful fallback — if env vars missing, no errors, just no SSO buttons shown
+- ✅ Schema pushed to Neon PostgreSQL (Account table + nullable password)
+- ✅ Setup guide saved to /home/z/my-project/download/PRSTO_SSO_setup.md
+- 🔵 Waiting on user: provide GOOGLE_CLIENT_ID/SECRET and LINKEDIN_CLIENT_ID/SECRET
+  (instructions in PRSTO_SSO_setup.md), then restart server to activate SSO buttons
+
