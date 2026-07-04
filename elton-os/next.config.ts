@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     "preview-chat-7b004522-2e59-447c-8a2a-456f06eb44a1.space-z.ai",
     "*.space-z.ai",
   ],
-  output: undefined,
+  output: "standalone",
   async redirects() {
     return [
       {
