@@ -96,7 +96,7 @@ export default function CVMaitrePage() {
   };
 
   const handleDelete = async () => {
-    if (!cv || !confirm("Supprimer définitivement ce CV maître ?")) return;
+    if (!cv || !confirm("Supprimer définitivement ce CV candidat ?")) return;
     await deleteCVMaster(cv.profileId);
     setCV(null);
     notify("ok", "CV supprimé");
@@ -116,9 +116,9 @@ export default function CVMaitrePage() {
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>CV Maître</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Importer un CV</h1>
           <p className="text-xs mt-1 font-mono" style={{ color: "var(--texte-tertiaire)" }}>
-            Document source — ne sera jamais modifié automatiquement
+            Document source du candidat — ne sera jamais modifié automatiquement
           </p>
         </div>
         {!cv && (
@@ -143,7 +143,7 @@ export default function CVMaitrePage() {
         <div className="p-5 rounded-lg border text-center" style={{ background: "var(--fond-surface)", borderColor: "var(--avertissement)" }}>
           <AlertTriangle size={20} style={{ color: "var(--avertissement)" }} className="mx-auto mb-2" />
           <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-            Créez d&apos;abord votre profil exécutif avant d&apos;importer votre CV.
+            Créez d&apos;abord le profil exécutif du candidat avant d&apos;importer un CV.
           </p>
         </div>
       )}
@@ -151,9 +151,9 @@ export default function CVMaitrePage() {
       {/* Formulaire d'import */}
       {showForm && profile && (
         <div className="p-5 rounded-lg border space-y-4" style={{ background: "var(--fond-surface)", borderColor: "var(--or)" }}>
-          <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Importer le CV Maître</h3>
+          <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Importer un CV candidat</h3>
           <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
-            Ce document est votre CV source. Il ne sera <strong>jamais</strong> modifié automatiquement.
+            Ce document est le CV source du candidat. Il ne sera <strong>jamais</strong> modifié automatiquement.
             Chaque adaptation pour une offre sera une version séparée.
           </p>
 
@@ -167,7 +167,7 @@ export default function CVMaitrePage() {
           <div>
             <label className="text-xs font-mono uppercase tracking-wider mb-1 block" style={{ color: "var(--texte-secondaire)" }}>Collez le texte intégral du CV</label>
             <textarea value={pasteText} onChange={e => setPasteText(e.target.value)}
-              rows={14} placeholder="Collez ici le contenu complet de votre CV maître..."
+              rows={14} placeholder="Collez ici le contenu complet du CV candidat..."
 
               className="w-full px-3 py-2 text-sm rounded-md border font-mono"
               style={{ background: "var(--fond)", borderColor: "var(--bordure)", color: "var(--texte)", resize: "vertical" }} />
@@ -237,7 +237,7 @@ export default function CVMaitrePage() {
           <div className="p-4 rounded-lg border flex items-center gap-3" style={{ background: "rgba(74,222,128,0.05)", borderColor: "rgba(74,222,128,0.2)" }}>
             <Check size={14} style={{ color: "var(--succes)" }} />
             <span className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
-              Ce CV maître est protégé. Toute adaptation pour une offre sera stockée comme un document séparé lié à l&apos;offre.
+              Ce CV candidat est protégé. Toute adaptation pour une offre sera stockée comme un document séparé lié à l&apos;offre.
             </span>
           </div>
         </div>

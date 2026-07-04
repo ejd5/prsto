@@ -1,4 +1,4 @@
-// ─── ELTON OS – Templates de préparation entretien ───
+// ─── PRSTO – Templates de préparation entretien ───
 // 24 sections. Fonctions pures. Zéro hallucination.
 // Sources : Profil, CV Maître, Proof Vault, Opportunité, Analyse, Documents, Pipeline.
 
@@ -514,7 +514,7 @@ function genChecklist(ctx: InterviewContext): string {
     "",
     "☐ Notes prises immédiatement après (questions posées, points clés, feeling)",
     "☐ Email de remerciement dans les 24h",
-    "☐ Mise à jour du pipeline ELTON OS (colonne et notes)",
+    "☐ Mise à jour du pipeline PRSTO (colonne et notes)",
     "☐ Préparation du prochain tour si applicable",
   ].join("\n");
 }

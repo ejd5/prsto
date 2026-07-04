@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { ensureApplicationDraftForJob } from "@/lib/jobs/application-pipeline";
 
 export async function POST(request: Request) {
   try {
@@ -57,6 +58,9 @@ export async function POST(request: Request) {
         lastSeenAt: new Date(),
       },
     });
+
+    // Auto-créer un ApplicationDraft pour faire apparaître l'offre dans le pipeline
+    await ensureApplicationDraftForJob(job.id);
 
     return NextResponse.json({ success: true, jobId: job.id });
   } catch (e: unknown) {

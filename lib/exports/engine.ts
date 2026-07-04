@@ -56,7 +56,7 @@ export function generateExportFilename(
 }
 
 export function generateDossierZipName(company: string | null, title: string | null): string {
-  const parts = ["ELTON_OS_Candidature"];
+  const parts = ["PRSTO_Candidature"];
   if (company?.trim()) parts.push(safe(company.trim()));
   if (title?.trim()) parts.push(safe(title.trim()));
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -67,7 +67,7 @@ export function generateDossierZipName(company: string | null, title: string | n
 // ─── TXT export ──────────────────────────────────
 
 export function renderTxtExport(content: string, type: string, opts?: { watermark?: boolean }): string {
-  const header = `ELTON OS — ${DOC_LABELS[type] || type}\nGénéré le ${new Date().toLocaleDateString("fr-FR")}\n\n`;
+  const header = `PRSTO — ${DOC_LABELS[type] || type}\nGénéré le ${new Date().toLocaleDateString("fr-FR")}\n\n`;
   let result = header + content;
 
   if (opts?.watermark) {
@@ -179,7 +179,7 @@ export function renderPrintHtml(params: {
     <h1>${label.replace(/_/g, " ")}</h1>
     ${candidateName ? `<p class="meta">Candidat : ${candidateName}</p>` : ""}
     ${offerTitle && offerCompany ? `<p class="meta">Poste : ${offerTitle} — ${offerCompany}</p>` : ""}
-    <p class="meta">Exporté le ${new Date().toLocaleDateString("fr-FR")} via ELTON OS</p>
+    <p class="meta">Exporté le ${new Date().toLocaleDateString("fr-FR")} via PRSTO</p>
   </div>
 
   <div class="content">${safeContent.replace(/<br>/g, "\n")}</div>
@@ -191,7 +191,7 @@ export function renderPrintHtml(params: {
 
 export function renderMarkdownExport(content: string, type: string): string {
   const label = DOC_LABELS[type] || type;
-  return `# ${label.replace(/_/g, " ")}\n\n*Exporté le ${new Date().toLocaleDateString("fr-FR")} via ELTON OS*\n\n${content}`;
+  return `# ${label.replace(/_/g, " ")}\n\n*Exporté le ${new Date().toLocaleDateString("fr-FR")} via PRSTO*\n\n${content}`;
 }
 
 // ─── ZIP dossier structure ───────────────────────
@@ -219,7 +219,7 @@ export function buildDossierFiles(params: {
   const { documents, opportunityTitle, opportunityCompany, analysisText } = params;
 
   // Strategy summary
-  let strategy = `ELTON OS — Dossier de candidature\n`;
+  let strategy = `PRSTO — Dossier de candidature\n`;
   strategy += `=================================\n`;
   strategy += `Poste : ${opportunityTitle}\n`;
   if (opportunityCompany) strategy += `Entreprise : ${opportunityCompany}\n`;
@@ -227,7 +227,7 @@ export function buildDossierFiles(params: {
   strategy += `Documents : ${documents.length}\n`;
   strategy += `Approuvés : ${documents.filter(d => d.status === "APPROVED").length}\n`;
   strategy += `\n`;
-  strategy += `Ce dossier a été généré par ELTON OS.\n`;
+  strategy += `Ce dossier a été généré par PRSTO.\n`;
   strategy += `Tous les documents ont été relus et validés humainement avant export.\n`;
   strategy += `Aucune candidature n'a été envoyée automatiquement.\n`;
 

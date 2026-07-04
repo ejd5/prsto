@@ -48,7 +48,7 @@ export async function getRealUsageStatus(): Promise<{
     approvedDocCount: approvedDocs,
     plannedRelanceCount: relances[0],
     sentRelanceCount: relances[1],
-    pipelineTaskCount: pipelineTasks,
+    pipelineDraftCount: pipelineTasks,
     profileComplete: !!(profileComplete?.fullName && profileComplete?.title),
   });
 

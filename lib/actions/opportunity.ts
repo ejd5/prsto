@@ -48,7 +48,11 @@ export async function getOpportunities(filters?: {
   return prisma.opportunity.findMany({
     where,
     orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
-    include: { jobSource: { select: { name: true } }, _count: { select: { documents: true } } },
+    include: {
+      jobSource: { select: { name: true } },
+      analysis: { select: { scoreGlobal: true } },
+      _count: { select: { documents: true } },
+    },
   });
 }
 
@@ -258,6 +262,14 @@ export async function getPrioritizedOpportunities(filters?: {
   }).sort((a, b) => b.priorityScore - a.priorityScore);
 }
 
+export async function updateOpportunities(ids: string[], data: Partial<OpportunityData>) {
+  await prisma.opportunity.updateMany({
+    where: { id: { in: ids } },
+    data,
+  });
+  revalidatePath("/opportunites");
+}
+
 export async function getDistinctCountries() {
   const rows = await prisma.opportunity.findMany({
     select: { country: true },
@@ -291,7 +303,7 @@ export async function fetchUrlText(url: string): Promise<{
       return { success: false, error: "Cette plateforme bloque l'import automatique. Utilisez le copier-coller." };
     }
     const res = await fetch(url, {
-      headers: { "User-Agent": "ELTON-OS/1.0 (job search helper)" },
+      headers: { "User-Agent": "PRSTO/1.0 (job search helper)" },
       signal: AbortSignal.timeout(8000),
       redirect: "follow",
     });

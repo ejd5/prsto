@@ -8,6 +8,7 @@ import {
   Lightbulb, XCircle, FileText, Loader2, Zap, Star, Award,
 } from "lucide-react";
 import { getPerformanceData, type FullPerformanceData } from "@/lib/actions/performance";
+import { getScoreColor, getScoreBg } from "@/lib/score-colors";
 
 export default function PerformancePage() {
   const router = useRouter();
@@ -67,7 +68,7 @@ export default function PerformancePage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Performance</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Performance Cabinet</h1>
           <p className="text-xs mt-1" style={{ color: "var(--texte-tertiaire)" }}>
             Pilotage stratégique de votre recherche — données calculées localement, sans IA.
           </p>

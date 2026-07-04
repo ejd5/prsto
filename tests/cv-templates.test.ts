@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveTemplate, resolveAccent } from "@/components/cv-templates/cv-template-types";
+import { resolveTemplate, resolveAccent, TEMPLATE_LABELS, TEMPLATE_BADGES } from "@/components/cv-templates/cv-template-types";
 import { cleanMarkdown, formatDateRange } from "@/components/cv-templates/cv-template-utils";
 import { buildCvRenderData } from "@/lib/cv-render/build-data";
 
@@ -9,12 +9,39 @@ describe("resolveTemplate", () => {
     expect(resolveTemplate("modern_executive")).toBe("modern_executive");
     expect(resolveTemplate("premium_leadership")).toBe("premium_leadership");
   });
-  it("falls back to ats_classic for unknown", () => {
-    expect(resolveTemplate("unknown")).toBe("ats_classic");
+  // V2.8.5
+  it("recognizes new V2.8.5 templates", () => {
+    expect(resolveTemplate("executive_bordeaux")).toBe("executive_bordeaux");
+    expect(resolveTemplate("strategic_blue")).toBe("strategic_blue");
+    expect(resolveTemplate("minimal_luxe")).toBe("minimal_luxe");
+  });
+  it("falls back to premium_leadership for unknown", () => {
+    expect(resolveTemplate("unknown")).toBe("premium_leadership");
   });
   it("falls back for null/undefined", () => {
-    expect(resolveTemplate(null)).toBe("ats_classic");
-    expect(resolveTemplate(undefined)).toBe("ats_classic");
+    expect(resolveTemplate(null)).toBe("premium_leadership");
+    expect(resolveTemplate(undefined)).toBe("premium_leadership");
+  });
+});
+
+describe("TEMPLATE_LABELS has all 6 templates", () => {
+  it("has all template labels defined", () => {
+    const ids = Object.keys(TEMPLATE_LABELS);
+    expect(ids).toContain("ats_classic");
+    expect(ids).toContain("modern_executive");
+    expect(ids).toContain("premium_leadership");
+    expect(ids).toContain("executive_bordeaux");
+    expect(ids).toContain("strategic_blue");
+    expect(ids).toContain("minimal_luxe");
+  });
+});
+
+describe("TEMPLATE_BADGES has all 6 templates", () => {
+  it("has badges for all templates", () => {
+    expect(TEMPLATE_BADGES.executive_bordeaux.label).toBe("Executive");
+    expect(TEMPLATE_BADGES.strategic_blue.label).toBe("Business");
+    expect(TEMPLATE_BADGES.minimal_luxe.label).toBe("Premium");
+    expect(TEMPLATE_BADGES.ats_classic.label).toBe("ATS");
   });
 });
 
@@ -100,7 +127,7 @@ describe("buildCvRenderData", () => {
     expect(data.identity.fullName).toBeUndefined();
     expect(data.experiences).toEqual([]);
     expect(data.skills).toEqual([]);
-    expect(data.template).toBe("ats_classic");
+    expect(data.template).toBe("premium_leadership");
   });
 
   it("parses languages correctly", () => {

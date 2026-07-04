@@ -279,7 +279,7 @@ export default function BrowserSettingsPage() {
 
         <p className="text-xs mb-4" style={{ color: "var(--texte-tertiaire)" }}>
           Configurez des URLs de recherche pour que le Browser Agent les explore avec votre session connectée.
-          Les offres trouvées seront importées dans le pipeline ELTON OS.
+          Les offres trouvées seront importées dans le pipeline PRSTO.
         </p>
 
         {showForm && (
@@ -289,7 +289,7 @@ export default function BrowserSettingsPage() {
               <div>
                 <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Plateforme</label>
                 <select value={form.platform} onChange={e => setForm(f => ({ ...f, platform: e.target.value }))}
-                  className="input-elton w-full mt-1">
+                  className="input-prsto w-full mt-1">
                   <option value="linkedin">LinkedIn</option>
                   <option value="indeed">Indeed</option>
                   <option value="apec">APEC</option>
@@ -298,7 +298,7 @@ export default function BrowserSettingsPage() {
               <div>
                 <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Priorité géographique</label>
                 <select value={form.locationPriority} onChange={e => setForm(f => ({ ...f, locationPriority: parseInt(e.target.value) }))}
-                  className="input-elton w-full mt-1">
+                  className="input-prsto w-full mt-1">
                   <option value={1}>PACA</option>
                   <option value={2}>Paris / IDF</option>
                   <option value={3}>France</option>
@@ -309,33 +309,33 @@ export default function BrowserSettingsPage() {
             <div>
               <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Label</label>
               <input type="text" value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
-                className="input-elton w-full mt-1" placeholder="ex: Directeur Commercial PACA" />
+                className="input-prsto w-full mt-1" placeholder="ex: Directeur Commercial PACA" />
             </div>
             <div>
               <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>URL de recherche</label>
               <input type="url" value={form.searchUrl} onChange={e => setForm(f => ({ ...f, searchUrl: e.target.value }))}
-                className="input-elton w-full mt-1" placeholder="https://www.linkedin.com/jobs/search/?keywords=..." />
+                className="input-prsto w-full mt-1" placeholder="https://www.linkedin.com/jobs/search/?keywords=..." />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
                 <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Max résultats/run</label>
                 <input type="number" value={form.maxResultsPerRun} onChange={e => setForm(f => ({ ...f, maxResultsPerRun: parseInt(e.target.value) || 10 }))}
-                  className="input-elton w-full mt-1" min={1} max={20} />
+                  className="input-prsto w-full mt-1" min={1} max={20} />
               </div>
               <div>
                 <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Scroll max</label>
                 <input type="number" value={form.maxScrolls} onChange={e => setForm(f => ({ ...f, maxScrolls: Math.min(parseInt(e.target.value) || 0, 5) }))}
-                  className="input-elton w-full mt-1" min={0} max={5} />
+                  className="input-prsto w-full mt-1" min={0} max={5} />
               </div>
               <div>
                 <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Délai scroll (ms)</label>
                 <input type="number" value={form.scrollDelayMs} onChange={e => setForm(f => ({ ...f, scrollDelayMs: parseInt(e.target.value) || 1000 }))}
-                  className="input-elton w-full mt-1" min={500} max={2000} />
+                  className="input-prsto w-full mt-1" min={500} max={2000} />
               </div>
               <div>
                 <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Détails max</label>
                 <input type="number" value={form.maxDetailsPerRun} onChange={e => setForm(f => ({ ...f, maxDetailsPerRun: Math.min(parseInt(e.target.value) || 0, 5) }))}
-                  className="input-elton w-full mt-1" min={0} max={5} />
+                  className="input-prsto w-full mt-1" min={0} max={5} />
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -378,7 +378,7 @@ export default function BrowserSettingsPage() {
                     <div>
                       <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Plateforme</label>
                       <select value={(editForm as EditFormData).platform as string} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { platform: e.target.value }))}
-                        className="input-elton w-full mt-1">
+                        className="input-prsto w-full mt-1">
                         <option value="linkedin">LinkedIn</option>
                         <option value="indeed">Indeed</option>
                         <option value="apec">APEC</option>
@@ -387,7 +387,7 @@ export default function BrowserSettingsPage() {
                     <div>
                       <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Priorité géographique</label>
                       <select value={(editForm as EditFormData).locationPriority} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { locationPriority: parseInt(e.target.value) }))}
-                        className="input-elton w-full mt-1">
+                        className="input-prsto w-full mt-1">
                         <option value={1}>PACA</option>
                         <option value={2}>Paris / IDF</option>
                         <option value={3}>France</option>
@@ -398,33 +398,33 @@ export default function BrowserSettingsPage() {
                   <div>
                     <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Label</label>
                     <input type="text" value={(editForm as EditFormData).label} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { label: e.target.value }))}
-                      className="input-elton w-full mt-1" />
+                      className="input-prsto w-full mt-1" />
                   </div>
                   <div>
                     <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>URL de recherche</label>
                     <input type="url" value={(editForm as EditFormData).searchUrl} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { searchUrl: e.target.value }))}
-                      className="input-elton w-full mt-1" />
+                      className="input-prsto w-full mt-1" />
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div>
                       <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Max résultats</label>
                       <input type="number" value={(editForm as EditFormData).maxResultsPerRun} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { maxResultsPerRun: parseInt(e.target.value) || 10 }))}
-                        className="input-elton w-full mt-1" min={1} max={20} />
+                        className="input-prsto w-full mt-1" min={1} max={20} />
                     </div>
                     <div>
                       <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Scroll max</label>
                       <input type="number" value={(editForm as EditFormData).maxScrolls} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { maxScrolls: Math.min(parseInt(e.target.value) || 0, 5) }))}
-                        className="input-elton w-full mt-1" min={0} max={5} />
+                        className="input-prsto w-full mt-1" min={0} max={5} />
                     </div>
                     <div>
                       <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Délai scroll (ms)</label>
                       <input type="number" value={(editForm as EditFormData).scrollDelayMs} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { scrollDelayMs: parseInt(e.target.value) || 1000 }))}
-                        className="input-elton w-full mt-1" min={500} max={2000} />
+                        className="input-prsto w-full mt-1" min={500} max={2000} />
                     </div>
                     <div>
                       <label className="text-xs font-mono uppercase" style={{ color: "var(--texte-tertiaire)" }}>Détails max</label>
                       <input type="number" value={(editForm as EditFormData).maxDetailsPerRun} onChange={e => setEditForm(prev => Object.assign({} as EditFormData, prev || {}, { maxDetailsPerRun: Math.min(parseInt(e.target.value) || 0, 5) }))}
-                        className="input-elton w-full mt-1" min={0} max={5} />
+                        className="input-prsto w-full mt-1" min={0} max={5} />
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
@@ -511,7 +511,7 @@ export default function BrowserSettingsPage() {
         <div className="p-4 rounded-lg border text-xs space-y-2" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
           <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Sécurité</h3>
           <ul className="space-y-1" style={{ color: "var(--texte-secondaire)" }}>
-            <li>• ELTON OS ne stocke <strong>aucun mot de passe</strong></li>
+            <li>• PRSTO ne stocke <strong>aucun mot de passe</strong></li>
             <li>• Connexion manuelle dans un navigateur visible</li>
             <li>• Seule la session (cookies) est sauvegardée localement</li>
             <li>• Stockage : <code className="font-mono">~/.elton/browser-sessions/</code></li>

@@ -57,3 +57,6 @@ prisma/dev.db
 
 # Exemple de variables d'environnement (commit autorisé)
 !.env.example
+
+# Chrome extension build artifacts
+browser-extension/**/*.zip

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PILOT — Concept complet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#fafafa; color:#1a1a2e; -webkit-font-smoothing:antialiased; }
+
+/* ─── Shared ─── */
+nav { display:flex; justify-content:space-between; align-items:center; padding:20px 48px; position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(250,250,250,.92); backdrop-filter:blur(14px); border-bottom:1px solid rgba(26,26,46,.06); }
+.logo { font-size:20px; font-weight:800; letter-spacing:-.5px; background:linear-gradient(135deg,#2563eb,#0d9488); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.nav-links { display:flex; gap:28px; align-items:center; }
+.nav-links a { color:rgba(26,26,46,.55); text-decoration:none; font-size:14px; font-weight:500; transition:color .2s; }
+.nav-links a:hover { color:#1a1a2e; }
+.btn-cta { background:linear-gradient(135deg,#2563eb,#0d9488); color:#fff; padding:10px 24px; border-radius:8px; text-decoration:none; font-size:14px; font-weight:600; transition:all .2s; box-shadow:0 4px 14px rgba(37,99,235,.25); }
+.btn-cta:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,99,235,.35); }
+
+/* ─── Section defaults ─── */
+section { padding:120px 48px; max-width:1100px; margin:0 auto; }
+.section-tag { display:inline-block; background:rgba(37,99,235,.08); color:#2563eb; padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }
+.section-title { font-size:clamp(28px,3.2vw,40px); font-weight:800; letter-spacing:-1.5px; line-height:1.2; margin-bottom:16px; }
+.section-sub { color:rgba(26,26,46,.5); font-size:16px; max-width:560px; line-height:1.7; margin-bottom:48px; }
+
+/* ─── HERO ─── */
+.hero { min-height:100vh; display:flex; align-items:center; padding-top:120px; position:relative; overflow:hidden; }
+.hero-bg { position:absolute; top:-40%; right:-15%; width:800px; height:800px; background:radial-gradient(circle,rgba(37,99,235,.07) 0%,rgba(13,148,136,.03) 50%,transparent 70%); pointer-events:none; border-radius:50%; }
+.hero-content { flex:1; }
+.hero-tag { display:inline-flex; align-items:center; gap:6px; background:rgba(37,99,235,.08); color:#2563eb; padding:6px 14px; border-radius:6px; font-size:13px; font-weight:600; margin-bottom:28px; }
+.hero h1 { font-size:clamp(38px,5vw,64px); font-weight:800; letter-spacing:-2.5px; line-height:1.1; max-width:740px; margin-bottom:20px; background:linear-gradient(135deg,#1a1a2e 40%,#2563eb); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero p { font-size:17px; color:rgba(26,26,46,.5); max-width:520px; margin-bottom:36px; line-height:1.7; }
+.hero-actions { display:flex; gap:12px; align-items:center; }
+.btn-primary { background:linear-gradient(135deg,#2563eb,#0d9488); color:#fff; padding:14px 32px; border-radius:8px; text-decoration:none; font-size:15px; font-weight:600; box-shadow:0 4px 14px rgba(37,99,235,.25); transition:all .2s; }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,99,235,.35); }
+.btn-secondary { color:#1a1a2e; padding:14px 32px; border-radius:8px; text-decoration:none; font-size:15px; font-weight:500; border:1px solid rgba(26,26,46,.1); transition:all .2s; }
+.btn-secondary:hover { border-color:rgba(26,26,46,.25); }
+
+/* ─── Dashboard preview ─── */
+.dashboard-preview { margin-top:60px; background:#fff; border-radius:16px; border:1px solid rgba(26,26,46,.06); overflow:hidden; box-shadow:0 20px 60px rgba(26,26,46,.08); width:100%; }
+.dash-bar { display:flex; gap:10px; align-items:center; padding:14px 20px; background:rgba(26,26,46,.02); border-bottom:1px solid rgba(26,26,46,.06); }
+.dash-dot { width:10px; height:10px; border-radius:50%; }
+.dash-dot:nth-child(1) { background:#ff5f57; }
+.dash-dot:nth-child(2) { background:#febc2e; }
+.dash-dot:nth-child(3) { background:#28c840; }
+.dash-content { padding:28px 24px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.dash-card { padding:20px; border-radius:10px; background:rgba(26,26,46,.02); border:1px solid rgba(26,26,46,.04); }
+.dash-card h4 { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:rgba(26,26,46,.35); margin-bottom:8px; }
+.dash-card .value { font-size:28px; font-weight:700; }
+.dash-card .value span { font-size:12px; font-weight:400; color:rgba(26,26,46,.35); }
+.dash-card .bar { height:6px; background:rgba(37,99,235,.1); border-radius:4px; margin-top:12px; overflow:hidden; }
+.dash-card .bar div { height:100%; background:linear-gradient(90deg,#2563eb,#0d9488); border-radius:4px; }
+
+/* ─── Features ─── */
+.features-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.feature-card { display:flex; gap:20px; padding:28px; background:#fff; border-radius:12px; border:1px solid rgba(26,26,46,.06); transition:all .2s; }
+.feature-card:hover { box-shadow:0 8px 30px rgba(26,26,46,.06); transform:translateY(-1px); }
+.f-icon { flex-shrink:0; width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+.f-icon.b1 { background:rgba(37,99,235,.08); } .f-icon.b2 { background:rgba(13,148,136,.08); } .f-icon.b3 { background:rgba(124,58,237,.08); } .f-icon.b4 { background:rgba(245,158,11,.08); }
+.feature-card h3 { font-size:15px; font-weight:600; margin-bottom:6px; }
+.feature-card p { font-size:13px; color:rgba(26,26,46,.5); line-height:1.6; }
+
+/* ─── Trust bar ─── */
+.trust-bar { display:flex; justify-content:center; gap:48px; padding:28px 0; flex-wrap:wrap; }
+.trust-item { font-size:13px; color:rgba(26,26,46,.35); font-weight:500; }
+
+/* ─── Pricing ─── */
+.pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.plan-card { padding:40px 32px; background:#fff; border-radius:12px; border:1px solid rgba(26,26,46,.06); position:relative; transition:all .2s; }
+.plan-card:hover { box-shadow:0 8px 30px rgba(26,26,46,.08); }
+.plan-card.featured { border-color:#2563eb; box-shadow:0 8px 30px rgba(37,99,235,.1); }
+.plan-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#2563eb,#0d9488); color:#fff; padding:4px 16px; border-radius:6px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+.plan-name { font-size:16px; font-weight:700; margin-bottom:4px; }
+.plan-price { font-size:40px; font-weight:800; letter-spacing:-2px; margin-bottom:2px; }
+.plan-price span { font-size:14px; font-weight:400; color:rgba(26,26,46,.35); }
+.plan-desc { font-size:13px; color:rgba(26,26,46,.4); margin-bottom:24px; }
+.plan-features { list-style:none; margin-bottom:28px; }
+.plan-features li { padding:7px 0; font-size:13px; color:rgba(26,26,46,.55); border-bottom:1px solid rgba(26,26,46,.04); }
+.plan-features li::before { content:'✓'; color:#2563eb; margin-right:10px; font-weight:700; }
+.plan-btn { display:block; text-align:center; padding:12px; border-radius:8px; text-decoration:none; font-size:14px; font-weight:600; border:1px solid rgba(26,26,46,.1); color:#1a1a2e; transition:all .2s; }
+.plan-card.featured .plan-btn { background:linear-gradient(135deg,#2563eb,#0d9488); color:#fff; border:none; }
+.plan-btn:hover { border-color:#2563eb; }
+.plan-card.featured .plan-btn:hover { box-shadow:0 4px 14px rgba(37,99,235,.3); }
+
+/* ─── Steps ─── */
+.steps { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+.step { text-align:center; padding:32px 16px; background:#fff; border-radius:12px; border:1px solid rgba(26,26,46,.06); }
+.step-num { width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,#2563eb,#0d9488); color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:14px; font-weight:700; }
+.step h3 { font-size:15px; font-weight:600; margin-bottom:8px; }
+.step p { font-size:13px; color:rgba(26,26,46,.45); line-height:1.5; }
+
+/* ─── Testimonial ─── */
+.testimonials { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.test-card { background:#fff; border-radius:12px; border:1px solid rgba(26,26,46,.06); padding:28px; }
+.test-card blockquote { font-size:14px; color:rgba(26,26,46,.6); line-height:1.7; margin-bottom:16px; font-style:italic; }
+.test-card cite { font-size:13px; font-style:normal; color:rgba(26,26,46,.35); }
+.test-card cite strong { color:#2563eb; font-weight:600; }
+
+/* ─── CTA ─── */
+.cta-block { background:linear-gradient(135deg,#2563eb,#0d9488); border-radius:16px; padding:64px 48px; text-align:center; max-width:1100px; margin:0 auto; }
+.cta-block h2 { color:#fff; font-size:clamp(28px,3.5vw,40px); font-weight:800; letter-spacing:-1.5px; margin-bottom:12px; }
+.cta-block p { color:rgba(255,255,255,.7); margin-bottom:28px; font-size:15px; }
+.cta-block .btn-primary { background:#fff; color:#2563eb; box-shadow:0 4px 14px rgba(0,0,0,.15); }
+.cta-block .btn-primary:hover { transform:translateY(-1px); }
+
+/* ─── Footer ─── */
+footer { padding:48px; text-align:center; border-top:1px solid rgba(26,26,46,.06); margin-top:60px; }
+footer p { font-size:13px; color:rgba(26,26,46,.3); }
+
+/* ─── Section nav ─── */
+.section-nav { display:flex; justify-content:center; gap:8px; margin-bottom:48px; }
+.section-nav a { padding:10px 20px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:500; color:rgba(26,26,46,.4); background:#fff; border:1px solid rgba(26,26,46,.06); transition:all .2s; }
+.section-nav a.active, .section-nav a:hover { color:#2563eb; border-color:rgba(37,99,235,.2); background:rgba(37,99,235,.04); }
+
+@media(max-width:768px) {
+  nav { padding:16px 24px; flex-wrap:wrap; gap:12px; }
+  .hero { padding-top:100px; }
+  .hero h1 { font-size:30px; }
+  section { padding:60px 24px; }
+  .features-grid, .steps, .testimonials, .pricing-grid { grid-template-columns:1fr; }
+  .dash-content { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">eltonos</div>
+  <div class="nav-links">
+    <a href="#">Fonctionnalités</a>
+    <a href="#">Tarifs</a>
+    <a href="#">Connexion</a>
+    <a href="#" class="btn-cta">Démarrer</a>
+  </div>
+</nav>
+
+<!-- ──────────── HERO ──────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Nouveau — Recherche d'emploi augmentée par l'IA</div>
+    <h1>Pilotez votre recherche d'emploi comme un dirigeant.</h1>
+    <p>ATS Scanner, CV Optimizer, LinkedIn Coach, Market Radar, CRM Recruteur — un seul OS pour maîtriser votre carrière.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Essayer gratuitement</a>
+      <a href="#" class="btn-secondary">Voir les fonctionnalités →</a>
+    </div>
+    <div class="dashboard-preview">
+      <div class="dash-bar"><div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div></div>
+      <div class="dash-content">
+        <div class="dash-card"><h4>Score ATS moyen</h4><div class="value">78% <span>+12%</span></div><div class="bar"><div style="width:78%"></div></div></div>
+        <div class="dash-card"><h4>Entretiens programmés</h4><div class="value">4 <span>ce mois</span></div><div class="bar"><div style="width:57%"></div></div></div>
+        <div class="dash-card"><h4>Offres suivies</h4><div class="value">23 <span>actives</span></div><div class="bar"><div style="width:65%"></div></div></div>
+      </div>
+    </div>
+    <div class="trust-bar">
+      <span class="trust-item">✓ Données locales</span>
+      <span class="trust-item">✓ IA modulable</span>
+      <span class="trust-item">✓ Zéro revente</span>
+      <span class="trust-item">✓ Mises à jour hebdo</span>
+      <span class="trust-item">✓ 17 sources ATS</span>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────── FEATURES ──────────── -->
+<section>
+  <div class="section-tag">Fonctionnalités</div>
+  <h2 class="section-title">Un copilote complet pour votre carrière.</h2>
+  <p class="section-sub">6 moteurs d'IA, un CRM recruteur, un pipeline visuel, un market radar — tout ce dont vous avez besoin pour passer de l'opportunité à l'embauche.</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="f-icon b1">🔍</div><div><h3>ATS Scanner</h3><p>Note de compatibilité CV vs offre, mots-clés manquants, suggestions d'amélioration.</p></div></div>
+    <div class="feature-card"><div class="f-icon b2">✏️</div><div><h3>CV Optimizer</h3><p>Analyse complète et recommandations prioritaires pour chaque offre ciblée.</p></div></div>
+    <div class="feature-card"><div class="f-icon b3">📊</div><div><h3>Market Radar</h3><p>Cartographie du marché caché, alertes personnalisées, tendances par secteur.</p></div></div>
+    <div class="feature-card"><div class="f-icon b4">👥</div><div><h3>CRM Recruteur</h3><p>Suivi des interactions, historique, relances automatiques, pipeline relations.</p></div></div>
+    <div class="feature-card"><div class="f-icon b1">🎤</div><div><h3>Interview Studio</h3><p>Simulations d'entretien basées sur l'offre, questions probables, STAR answers.</p></div></div>
+    <div class="feature-card"><div class="f-icon b2">📈</div><div><h3>LinkedIn Optimizer</h3><p>Score LinkedIn, suggestions de mots-clés, optimisation du profil recruteur.</p></div></div>
+  </div>
+</section>
+
+<!-- ──────────── HOW ──────────── -->
+<section>
+  <div class="section-tag">Comment ça marche</div>
+  <h2 class="section-title">Prêt en 5 minutes. Efficace en 24h.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><h3>Importez</h3><p>CV, LinkedIn ou formulaire. ELTON OS structure tout automatiquement.</p></div>
+    <div class="step"><div class="step-num">2</div><h3>Ciblez</h3><p>Postes, secteurs, localisation, salaire — affinez vos critères.</p></div>
+    <div class="step"><div class="step-num">3</div><h3>Optimisez</h3><p>IA scanne, suggère, améliore chaque candidature.</p></div>
+    <div class="step"><div class="step-num">4</div><h3>Pilotez</h3><p>Pipeline, CRM, analytics — vous savez où vous en êtes.</p></div>
+  </div>
+</section>
+
+<!-- ──────────── TESTIMONIALS ──────────── -->
+<section>
+  <div class="section-tag">Témoignages</div>
+  <h2 class="section-title">Ils l'utilisent. Ils le disent.</h2>
+  <div class="testimonials">
+    <div class="test-card"><blockquote>« J'ai structuré ma recherche et multiplié par 3 mes entretiens en 6 semaines. »</blockquote><cite>— <strong>Directeur Commercial</strong>, CAC 40</cite></div>
+    <div class="test-card"><blockquote>« L'ATS Scanner m'a ouvert les yeux sur pourquoi je n'avais pas de réponses. »</blockquote><cite>— <strong>VP Sales</strong>, Scale-up</cite></div>
+    <div class="test-card"><blockquote>« Enfin un outil qui respecte le fait que je veux garder le contrôle. »</blockquote><cite>— <strong>Country Manager</strong>, Retail</cite></div>
+  </div>
+</section>
+
+<!-- ──────────── PRICING ──────────── -->
+<section>
+  <div class="section-tag">Tarifs</div>
+  <h2 class="section-title">Des plans pour tous les profils.</h2>
+  <p class="section-sub">Sans engagement. Résiliable à tout moment. Tous les plans incluent les mises à jour.</p>
+  <div class="pricing-grid">
+    <div class="plan-card">
+      <div class="plan-name">Découverte</div>
+      <div class="plan-price">19€ <span>/mois</span></div>
+      <div class="plan-desc">Pour explorer et valider l'outil.</div>
+      <ul class="plan-features">
+        <li>ATS Scanner illimité</li>
+        <li>Pipeline Kanban</li>
+        <li>CV Optimizer</li>
+        <li>30 analyses IA / mois</li>
+        <li>1 profil</li>
+      </ul>
+      <a href="#" class="plan-btn">Choisir Découverte</a>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-badge">Recommandé</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">49€ <span>/mois</span></div>
+      <div class="plan-desc">Pour une recherche active et complète.</div>
+      <ul class="plan-features">
+        <li>Tout Découverte</li>
+        <li>Market Radar</li>
+        <li>LinkedIn Optimizer</li>
+        <li>Bullet Points Generator</li>
+        <li>Analyses IA illimitées</li>
+        <li>CRM Recruteur</li>
+      </ul>
+      <a href="#" class="plan-btn">Choisir Pro</a>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price">99€ <span>/mois</span></div>
+      <div class="plan-desc">Pour équipes et cabinets de recrutement.</div>
+      <ul class="plan-features">
+        <li>Tout Pro</li>
+        <li>Multi-comptes</li>
+        <li>Interview Studio</li>
+        <li>API & Webhooks</li>
+        <li>Support prioritaire</li>
+        <li>Onboarding dédié</li>
+      </ul>
+      <a href="#" class="plan-btn">Choisir Enterprise</a>
+    </div>
+  </div>
+</section>
+
+<div class="cta-block">
+  <h2>Prêt à reprendre le contrôle de votre carrière ?</h2>
+  <p>14 jours d'essai gratuit. Sans carte bancaire. Sans engagement.</p>
+  <a href="#" class="btn-primary">Commencer l'essai gratuit →</a>
+</div>
+
+<footer>
+  <p>© 2026 ELTON OS — Propulsé par l'IA, conçu pour l'humain.</p>
+</footer>
+
+</body>
+</html>

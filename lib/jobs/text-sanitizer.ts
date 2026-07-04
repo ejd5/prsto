@@ -1,5 +1,5 @@
 /*
- * ELTON OS — Text Sanitizer
+ * PRSTO — Text Sanitizer
  *
  * Pure functions (no DB, no network). Testable unitairement.
  * Nettoie les sorties IA de tout Markdown, placeholders et artefacts.
@@ -283,4 +283,14 @@ export function parseImportedJobText(rawText: string, sourceUrl?: string): Parse
     quality,
     qualityIssues,
   };
+}
+
+/**
+ * Détecte le contenu stale / échec de génération dans un texte.
+ * Les fallbacks locaux (buildLocalResume/buildLocalLetter) ne produisent jamais "Échec",
+ * donc tout texte contenant ces marqueurs est un artefact d'avant V2.7.3.
+ */
+export function isStaleContent(text: string | null | undefined): boolean {
+  if (!text || text.length < 5) return false;
+  return /(?:^|\s)Échec(?:\s|$)/i.test(text);
 }

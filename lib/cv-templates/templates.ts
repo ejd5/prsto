@@ -1,5 +1,5 @@
 /**
- * Templates CV internes ELTON OS — originaux, inspirés des bonnes pratiques ATS/executive.
+ * Templates CV internes PRSTO — originaux, inspirés des bonnes pratiques ATS/executive.
  * Aucun template commercial copié. Toute ressemblance est fortuite.
  */
 
@@ -156,7 +156,7 @@ const corporateFrance: CVTemplate = {
     "Ajoutez une section Divers pour les mandats (CA, board, associations)",
     "Idéal pour postes en entreprise française cotée ou administrations",
   ],
-  previewText: `Jean Dupont\nNé le 15/03/1980 — Nationalité française\nDirecteur Commercial — 15 ans d'expérience\n\nEXPÉRIENCE PROFESSIONNELLE\n2018-Présent : Directeur Commercial, Groupe ABC (Paris)\n• Pilotage d'une équipe de 35 commerciaux...`,
+  previewText: `Jean Dupont\nNé le 15/03/1980 — Nationalité française\nDirecteur Commercial — 15 ans d'expérience\n\nEXPÉRIENCES PROFESSIONNELLES\n2018-Présent : Directeur Commercial, Groupe ABC (Paris)\n• Pilotage d'une équipe de 35 commerciaux...`,
   renderHTML(cv: CVData): string {
     return renderBasicHTML(cv, {
       style: "classic",

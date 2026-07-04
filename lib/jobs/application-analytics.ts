@@ -83,6 +83,14 @@ export interface ByLocationPriority {
   offers: number;
 }
 
+export interface ByRecommendation {
+  recommendation: string;
+  label: string;
+  count: number;
+  interviews: number;
+  offers: number;
+}
+
 export interface ApplicationAnalytics {
   summary: AnalyticsSummary;
   bySource: BySource[];
@@ -93,6 +101,7 @@ export interface ApplicationAnalytics {
   topCompanies: TopCompany[];
   followUpsDue: FollowUpDue[];
   highScoreNoReply: HighScoreNoReply[];
+  byRecommendation: ByRecommendation[];
 }
 
 /* ─── Helpers ────────────────────────────── */
@@ -135,7 +144,7 @@ export async function getApplicationAnalytics(opts?: { demoMode?: boolean }): Pr
       job: {
         include: {
           source: { select: { name: true } },
-          score: { select: { globalScore: true } },
+          score: { select: { globalScore: true, semanticScore: true, recommendation: true } },
         },
       },
     },
@@ -219,7 +228,7 @@ export async function getApplicationAnalytics(opts?: { demoMode?: boolean }): Pr
     { range: "75-100", min: 75, max: 100, sent: 0, replied: 0, interviews: 0, offers: 0 },
   ];
   for (const d of drafts) {
-    const score = d.job.score?.globalScore ?? d.matchScore ?? 0;
+    const score = d.job.score?.semanticScore ?? d.job.score?.globalScore ?? d.matchScore ?? 0;
     const r = scoreRanges.find((r) => score >= r.min && score <= r.max);
     if (!r) continue;
     r.sent++;
@@ -304,7 +313,7 @@ export async function getApplicationAnalytics(opts?: { demoMode?: boolean }): Pr
       followUpDueAt: d.followUpDueAt?.toISOString() || "",
       daysOverdue: d.followUpDueAt ? daysBetween(d.followUpDueAt, now) : 0,
       source: d.job.source?.name || "Inconnue",
-      score: d.job.score?.globalScore ?? d.matchScore ?? null,
+      score: d.job.score?.semanticScore ?? d.job.score?.globalScore ?? d.matchScore ?? null,
     }))
     .sort((a, b) => b.daysOverdue - a.daysOverdue);
 
@@ -312,20 +321,45 @@ export async function getApplicationAnalytics(opts?: { demoMode?: boolean }): Pr
   const highScoreNoReply: HighScoreNoReply[] = drafts
     .filter((d) => {
       if (d.pipelineStatus !== "sent" && d.pipelineStatus !== "followed_up") return false;
-      const score = d.job.score?.globalScore ?? d.matchScore ?? 0;
+      const score = d.job.score?.semanticScore ?? d.job.score?.globalScore ?? d.matchScore ?? 0;
       return score >= 50;
     })
     .map((d) => ({
       draftId: d.id,
       jobTitle: d.job.title,
       company: d.job.company || "Inconnue",
-      score: d.job.score?.globalScore ?? d.matchScore ?? 0,
+      score: d.job.score?.semanticScore ?? d.job.score?.globalScore ?? d.matchScore ?? 0,
       sentAt: d.sentAt?.toISOString() || "",
       daysWaiting: d.sentAt ? daysBetween(d.sentAt, now) : 0,
       source: d.job.source?.name || "Inconnue",
     }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 15);
+
+  // ─── By Recommendation ───
+  const recLabels: Record<string, string> = {
+    highly_recommended: "Hautement recommandé",
+    recommended: "Recommandé",
+    possible: "Possible",
+    low_priority: "Priorité basse",
+    reject: "Rejeté",
+  };
+  const recMap = new Map<string, { count: number; interviews: number; offers: number }>();
+  for (const d of drafts) {
+    const rec = d.job.score?.recommendation || "unknown";
+    if (!recMap.has(rec)) recMap.set(rec, { count: 0, interviews: 0, offers: 0 });
+    const e = recMap.get(rec)!;
+    e.count++;
+    if (d.pipelineStatus === "interview") e.interviews++;
+    if (d.pipelineStatus === "offer") e.offers++;
+  }
+  const byRecommendation: ByRecommendation[] = Array.from(recMap.entries())
+    .map(([recommendation, v]) => ({
+      recommendation,
+      label: recLabels[recommendation] || recommendation,
+      ...v,
+    }))
+    .sort((a, b) => b.count - a.count);
 
   return {
     summary,
@@ -337,5 +371,6 @@ export async function getApplicationAnalytics(opts?: { demoMode?: boolean }): Pr
     topCompanies,
     followUpsDue,
     highScoreNoReply,
+    byRecommendation,
   };
 }

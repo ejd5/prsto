@@ -187,7 +187,7 @@ export default function CVTemplatesPage() {
           <div className="p-3 rounded-md border text-xs flex items-start gap-2" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-eleve)" }}>
             <AlertTriangle size={12} style={{ color: "var(--or)", flexShrink: 0, marginTop: 1 }} />
             <div style={{ color: "var(--texte-secondaire)" }}>
-              <strong style={{ color: "var(--texte)" }}>Preview avec données exemple.</strong> Les templates s&apos;adaptent automatiquement à votre CV Maître et Profil Exécutif. Tous les templates sont originaux ELTON OS — aucun template commercial n&apos;a été copié.
+              <strong style={{ color: "var(--texte)" }}>Preview avec données exemple.</strong> Les templates s&apos;adaptent automatiquement à votre CV Maître et Profil Exécutif. Tous les templates sont originaux PRSTO — aucun template commercial n&apos;a été copié.
             </div>
           </div>
         </div>

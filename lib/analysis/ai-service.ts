@@ -1,4 +1,4 @@
-// ─── ELTON OS – Service IA optionnel DeepSeek ───
+// ─── PRSTO – Service IA optionnel DeepSeek ───
 // S'active uniquement si DEEPSEEK_API_KEY est configuré.
 // Fallback automatique vers l'heuristique locale si indisponible.
 
@@ -48,7 +48,7 @@ export async function runAIAnalysis(
 
   if (!config || !config.apiKey) {
     // Pas de config IA → retourner l'heuristique directement
-    return { ...heuristicReport, aiModel: "ELTON-OS Heuristic (no API key)" };
+    return { ...heuristicReport, aiModel: "PRSTO Heuristic (no API key)" };
   }
 
   const textToAnalyze = config.anonymizeBeforeCall ? anonymizeText(rawText) : rawText;
@@ -81,27 +81,27 @@ export async function runAIAnalysis(
 
     if (!response.ok) {
       console.warn(`DeepSeek API error ${response.status}, fallback heuristique`);
-      return { ...heuristicReport, aiModel: `ELTON-OS Heuristic (API error ${response.status})` };
+      return { ...heuristicReport, aiModel: `PRSTO Heuristic (API error ${response.status})` };
     }
 
     const data = await response.json();
     const aiContent = data.choices?.[0]?.message?.content;
 
     if (!aiContent) {
-      return { ...heuristicReport, aiModel: "ELTON-OS Heuristic (API empty response)" };
+      return { ...heuristicReport, aiModel: "PRSTO Heuristic (API empty response)" };
     }
 
     // Parser la réponse IA et merger avec l'heuristique
     const aiJson = extractJSON(aiContent);
     if (!aiJson) {
-      return { ...heuristicReport, aiModel: "ELTON-OS Heuristic (API parse error)" };
+      return { ...heuristicReport, aiModel: "PRSTO Heuristic (API parse error)" };
     }
 
     return mergeAIWithHeuristic(aiJson, heuristicReport, config.defaultModel);
   } catch (e: unknown) {
     const err = e as Error;
     console.warn(`AI analysis failed: ${err.message}, fallback heuristique`);
-    return { ...heuristicReport, aiModel: `ELTON-OS Heuristic (${err.message?.slice(0, 50) || "error"})` };
+    return { ...heuristicReport, aiModel: `PRSTO Heuristic (${err.message?.slice(0, 50) || "error"})` };
   }
 }
 
@@ -143,7 +143,7 @@ function mergeAIWithHeuristic(
       globalScore: typeof aiJson.globalScore === "number" ? aiJson.globalScore as number : heuristic.score.globalScore,
     },
     matchDetails: { ...heuristic.matchDetails, aiEnhanced: true },
-    aiModel: `DeepSeek ${model} + ELTON-OS Heuristic`,
+    aiModel: `DeepSeek ${model} + PRSTO Heuristic`,
   };
 }
 

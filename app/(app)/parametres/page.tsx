@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useToast } from "@/components/ui/EltonToast";
 import {
   Loader2, Save, Eye, EyeOff, RotateCcw, ToggleLeft, ToggleRight,
   Shield, Cpu, FileText, Database, Settings2, AlertTriangle, Download,
+  Heart, CheckCircle2, XCircle,
 } from "lucide-react";
 import { getSettings, updateSettings, seedDefaultPrompts, testConnection } from "@/lib/actions/settings";
 import { getAIPrompts, togglePromptActive, resetPromptToDefault, upsertAIPrompt } from "@/lib/actions/settings";
@@ -49,14 +51,34 @@ interface PromptData {
 
 const TABS = [
   { key: "general", label: "Général", icon: Settings2 },
-  { key: "deepseek", label: "DeepSeek", icon: Cpu },
+  { key: "deepseek", label: "IA / OpenRouter", icon: Cpu },
   { key: "confidentialite", label: "Confidentialité", icon: Shield },
   { key: "prompts", label: "Prompts IA", icon: FileText },
   { key: "donnees", label: "Données", icon: Database },
+  { key: "sante", label: "Santé", icon: Heart },
 ] as const;
 
 export default function ParametresPage() {
+  const toast = useToast();
   const [tab, setTab] = useState<string>("general");
+  const [stats, setStats] = useState({ opportunités: 0, drafts: 0, documents: 0, sources: 0 });
+  const [aiStatus, setAiStatus] = useState<"ok" | "info" | "warning">("info");
+  const [aiDetail, setAiDetail] = useState("Non configuré");
+
+  useEffect(() => {
+    fetch("/api/elton-os/health").then(r => r.json()).then(d => {
+      if (d.status === "ok") {
+        setStats({
+          opportunités: d.stats?.opportunities || 0,
+          drafts: d.stats?.drafts || 0,
+          documents: d.stats?.documents || 0,
+          sources: d.stats?.sources || 0,
+        });
+        setAiStatus(d.ai?.configured ? "ok" : "info");
+        setAiDetail(d.ai?.configured ? `${d.ai.provider} (configuré)` : "Non configuré");
+      }
+    }).catch(() => {});
+  }, []);
   const [settings, setSettings] = useState<SettingsData>(null);
   const [prompts, setPrompts] = useState<PromptData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,7 +186,7 @@ export default function ParametresPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `elton-os-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `prsto-export-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       notify("ok", "Export JSON téléchargé");
@@ -183,16 +205,16 @@ export default function ParametresPage() {
   const hasApiKey = settings?.hasApiKey;
 
   const handleAISuggestion = (_target: string, _item: SuggestionItem) => {
-    alert(`Suggestion : ${_item.name} — ${_item.reason}`);
+    toast.info(`Suggestion : ${_item.name} — ${_item.reason}`);
   };
 
   return (
     <>
     <div className="p-6 max-w-5xl mx-auto space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>Paramètres</h1>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>Paramètres Cabinet</h1>
         <p className="text-sm mt-1" style={{ color: "var(--texte-secondaire)" }}>
-          Configuration ELTON OS — toutes les données restent locales
+          Configuration PRSTO — toutes les données restent locales
         </p>
       </div>
 
@@ -222,31 +244,39 @@ export default function ParametresPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>Provider IA</label>
-              <select value={settings?.aiProvider || "none"} onChange={e => handleSave({ aiProvider: e.target.value })}
-                className="input-elton text-xs w-full">
+              <select value={settings?.aiProvider || "none"} onChange={e => {
+                const provider = e.target.value;
+                if (provider === "openrouter") {
+                  handleSave({ aiProvider: provider, baseUrl: "https://openrouter.ai/api", defaultModel: "google/gemma-4-26b-a4b-it:free" });
+                } else if (provider === "deepseek") {
+                  handleSave({ aiProvider: provider, baseUrl: "https://api.deepseek.com", defaultModel: "deepseek-chat" });
+                } else {
+                  handleSave({ aiProvider: provider });
+                }
+              }}
+                className="input-prsto text-xs w-full">
                 <option value="none">Aucun (local templates)</option>
+                <option value="openrouter">OpenRouter (gratuit)</option>
                 <option value="deepseek">DeepSeek</option>
-                <option value="openai">OpenAI</option>
-                <option value="anthropic">Anthropic</option>
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>Modèle par défaut</label>
               <input type="text" defaultValue={settings?.defaultModel || ""}
                 onBlur={e => handleSave({ defaultModel: e.target.value })}
-                className="input-elton text-xs w-full" placeholder="deepseek-chat" />
+                className="input-prsto text-xs w-full" placeholder={settings?.aiProvider === "openrouter" ? "google/gemma-4-26b-a4b-it:free" : "deepseek-chat"} />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>Timeout (s)</label>
               <input type="number" defaultValue={settings?.timeout ?? 25}
                 onBlur={e => handleSave({ timeout: parseInt(e.target.value) || 25 })}
-                className="input-elton text-xs w-full" min={5} max={120} />
+                className="input-prsto text-xs w-full" min={5} max={120} />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>Température</label>
               <input type="number" defaultValue={settings?.temperature ?? 0.4}
                 onBlur={e => handleSave({ temperature: parseFloat(e.target.value) || 0.4 })}
-                className="input-elton text-xs w-full" min={0} max={2} step={0.1} />
+                className="input-prsto text-xs w-full" min={0} max={2} step={0.1} />
             </div>
           </div>
         </div>
@@ -257,11 +287,15 @@ export default function ParametresPage() {
         <div className="space-y-4 p-5 rounded-lg border" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
           <div className="flex items-center gap-2">
             <Cpu size={16} style={{ color: "var(--or)" }} />
-            <h3 className="text-sm font-bold" style={{ color: "var(--texte)" }}>DeepSeek</h3>
+            <h3 className="text-sm font-bold" style={{ color: "var(--texte)" }}>Fournisseur IA</h3>
           </div>
 
           <div className="p-3 rounded-md border text-xs" style={{ background: "var(--fond-eleve)", borderColor: "var(--bordure-douce)", color: "var(--texte-secondaire)" }}>
-            DeepSeek est optionnel. ELTON OS fonctionne entièrement sans clé API avec les templates locaux.
+            {settings?.aiProvider === "openrouter"
+              ? "OpenRouter : modèles gratuits (Qwen 3.6 Plus, Llama 3.3 70B). OpenAI-compatible."
+              : settings?.aiProvider === "deepseek"
+                ? "DeepSeek : payant par usage. Performant pour le code et l'analyse."
+                : "Aucun fournisseur configuré. Activez OpenRouter (gratuit) ou DeepSeek pour l'IA."}
           </div>
 
           <div className="space-y-1">
@@ -270,7 +304,7 @@ export default function ParametresPage() {
               <div className="relative flex-1">
                 <input type={showKey ? "text" : "password"} value={apiKey}
                   onChange={e => setApiKey(e.target.value)}
-                  className="input-elton text-xs w-full pr-8" placeholder={hasApiKey ? "••••••••••••••••" : "sk-..."} />
+                  className="input-prsto text-xs w-full pr-8" placeholder={hasApiKey ? "••••••••••••••••" : "sk-..."} />
                 <button onClick={() => setShowKey(!showKey)}
                   className="absolute right-2 top-1/2 -translate-y-1/2" style={{ color: "var(--texte-tertiaire)" }}>
                   {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -290,9 +324,10 @@ export default function ParametresPage() {
 
           <div className="space-y-1">
             <label className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>URL de base</label>
-            <input type="text" defaultValue={settings?.baseUrl || "https://api.deepseek.com"}
+            <input type="text" defaultValue={settings?.baseUrl || (settings?.aiProvider === "openrouter" ? "https://openrouter.ai/api" : "https://api.deepseek.com")}
               onBlur={e => handleSave({ baseUrl: e.target.value })}
-              className="input-elton text-xs w-full" />
+              className="input-prsto text-xs w-full"
+              placeholder={settings?.aiProvider === "openrouter" ? "https://openrouter.ai/api" : "https://api.deepseek.com"} />
           </div>
 
           <div className="pt-2 border-t" style={{ borderColor: "var(--bordure-douce)" }}>
@@ -302,11 +337,11 @@ export default function ParametresPage() {
               onMouseEnter={e => { e.currentTarget.style.background = "var(--or-faible)"; }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent" }}>
               {testing ? <Loader2 size={12} className="animate-spin" /> : <Cpu size={12} />}
-              {testing ? "Test en cours..." : "Tester la connexion DeepSeek"}
+              {testing ? "Test en cours..." : `Tester la connexion ${settings?.aiProvider === "openrouter" ? "OpenRouter" : "DeepSeek"}`}
             </button>
 
             {connectionResult && (
-              <div className={connectionResult.success ? "connexion-ok-elton" : "connexion-err-elton"}
+              <div className={connectionResult.success ? "connexion-ok-prsto" : "connexion-err-prsto"}
                 style={{
                   marginTop: 12, padding: "10px 14px", borderRadius: 6, border: "1px solid",
                   borderColor: connectionResult.success ? "var(--succes)" : "var(--erreur)",
@@ -402,18 +437,18 @@ export default function ParametresPage() {
               <h4 className="text-xs font-mono uppercase" style={{ color: "var(--or)" }}>Édition : {promptForm.name}</h4>
               <div className="space-y-2">
                 <input type="text" value={promptForm.label} onChange={e => setPromptForm({ ...promptForm, label: e.target.value })}
-                  className="input-elton text-xs w-full" placeholder="Label" />
+                  className="input-prsto text-xs w-full" placeholder="Label" />
                 <input type="text" value={promptForm.description || ""} onChange={e => setPromptForm({ ...promptForm, description: e.target.value })}
-                  className="input-elton text-xs w-full" placeholder="Description" />
+                  className="input-prsto text-xs w-full" placeholder="Description" />
                 <textarea value={promptForm.systemPrompt || ""} onChange={e => setPromptForm({ ...promptForm, systemPrompt: e.target.value })}
-                  className="input-elton text-xs w-full font-mono resize-y" rows={3} placeholder="System prompt" />
+                  className="input-prsto text-xs w-full font-mono resize-y" rows={3} placeholder="System prompt" />
                 <textarea value={promptForm.content || ""} onChange={e => setPromptForm({ ...promptForm, content: e.target.value })}
-                  className="input-elton text-xs w-full font-mono resize-y" rows={4} placeholder="User prompt template" />
+                  className="input-prsto text-xs w-full font-mono resize-y" rows={4} placeholder="User prompt template" />
                 <div className="flex gap-4">
                   <input type="text" value={promptForm.variables || ""} onChange={e => setPromptForm({ ...promptForm, variables: e.target.value })}
-                    className="input-elton text-xs flex-1" placeholder='Variables: ["offer","profile"]' />
+                    className="input-prsto text-xs flex-1" placeholder='Variables: ["offer","profile"]' />
                   <input type="number" value={promptForm.temperature ?? 0.5} onChange={e => setPromptForm({ ...promptForm, temperature: parseFloat(e.target.value) })}
-                    className="input-elton text-xs w-24" min={0} max={2} step={0.1} placeholder="Temp" />
+                    className="input-prsto text-xs w-24" min={0} max={2} step={0.1} placeholder="Temp" />
                 </div>
               </div>
               <div className="flex gap-2 justify-end">
@@ -478,16 +513,24 @@ export default function ParametresPage() {
               <Database size={16} style={{ color: "var(--or)" }} />
               <h3 className="text-sm font-bold" style={{ color: "var(--texte)" }}>Données locales</h3>
             </div>
-            <button onClick={handleExport} disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md"
-              style={{ background: "var(--or)", color: "var(--fond)" }}>
-              {saving ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-              Exporter tout (JSON)
-            </button>
+            <div className="flex gap-2">
+              <button onClick={handleExport} disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md"
+                style={{ background: "var(--or)", color: "var(--fond)" }}>
+                {saving ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
+                Exporter tout (JSON)
+              </button>
+              <a href="/api/elton-os/export"
+                className="flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md"
+                style={{ background: "#22c55e", color: "#000", textDecoration: "none" }}>
+                <Download size={12} />
+                Export ZIP (Backup)
+              </a>
+            </div>
           </div>
 
           <div className="p-3 rounded-md border text-xs" style={{ background: "var(--fond-eleve)", borderColor: "var(--bordure-douce)", color: "var(--texte-secondaire)" }}>
-            Toutes les données ELTON OS sont stockées localement dans une base SQLite. Aucune donnée ne quitte votre machine sans votre action explicite. L&apos;export JSON inclut toutes vos données (profil, CV, preuves, offres, analyses, documents, pipeline, relances, entretiens) — <strong>sans la clé API</strong>.
+            Toutes les données PRSTO sont stockées localement dans une base SQLite. Aucune donnée ne quitte votre machine sans votre action explicite. L&apos;export JSON inclut toutes vos données (profil, CV, preuves, offres, analyses, documents, pipeline, relances, entretiens) — <strong>sans la clé API</strong>.
           </div>
 
           <div className="space-y-3">
@@ -570,8 +613,110 @@ export default function ParametresPage() {
           </div>
         </div>
       )}
+
+      {tab === "sante" && (
+        <div className="space-y-4 p-5 rounded-lg border" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Heart size={16} style={{ color: "var(--or)" }} />
+            <h3 className="text-sm font-bold" style={{ color: "var(--texte)" }}>Santé système</h3>
+          </div>
+          <p className="text-xs mb-4" style={{ color: "var(--texte-secondaire)" }}>
+            Vérification rapide de votre configuration PRSTO. Aucune donnée sensible affichée.
+          </p>
+
+          <HealthCard
+            label="Base de données locale"
+            status="ok"
+            detail="SQLite"
+            icon={<Database size={14} />}
+          />
+
+          <HealthCard
+            label="Offres importées"
+            status="ok"
+            detail={`${stats.opportunités} offres`}
+            icon={<Database size={14} />}
+          />
+
+          <HealthCard
+            label="Candidatures"
+            status={stats.drafts > 0 ? "ok" : "info"}
+            detail={stats.drafts > 0 ? `${stats.drafts} dossier(s)` : "Aucune candidature pour l'instant"}
+            icon={<FileText size={14} />}
+          />
+
+          <HealthCard
+            label="Documents générés"
+            status={stats.documents > 0 ? "ok" : "info"}
+            detail={`${stats.documents} document(s)`}
+            icon={<FileText size={14} />}
+          />
+
+          <HealthCard
+            label="Sources d'emploi"
+            status={stats.sources > 0 ? "ok" : "warning"}
+            detail={`${stats.sources} source(s)`}
+            icon={<Database size={14} />}
+          />
+
+          <HealthCard
+            label="AI Provider"
+            status={aiStatus}
+            detail={aiDetail}
+            icon={<Cpu size={14} />}
+          />
+
+          <HealthCard
+            label="Fallback local"
+            status={settings?.localFallbackEnabled !== false ? "ok" : "info"}
+            detail={settings?.localFallbackEnabled !== false ? "Activé — génération sans IA disponible" : "Désactivé"}
+            icon={<Settings2 size={14} />}
+          />
+
+          <HealthCard
+            label="Export ZIP disponible"
+            status="ok"
+            detail={<span>GET /api/elton-os/export <a href="/api/elton-os/export" className="underline" style={{ color: "var(--or)" }}>Télécharger</a></span>}
+            icon={<Download size={14} />}
+          />
+
+          <button onClick={() => window.location.href = "/?checklist=1"}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-mono rounded-md mt-4"
+            style={{ background: "var(--or)", color: "#000", border: "none", cursor: "pointer" }}>
+            <CheckCircle2 size={12} />
+            Voir la checklist release
+          </button>
+        </div>
+      )}
     </div>
       <AIAssistant onApply={handleAISuggestion} />
     </>
+  );
+}
+
+/* ── HealthCard ───────────────────────────── */
+
+function HealthCard({ label, status, detail, icon }: {
+  label: string; status: "ok" | "warning" | "info"; detail: string | React.ReactNode; icon: React.ReactNode;
+}) {
+  const colors = {
+    ok: { bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.2)", icon: "#22c55e", text: "var(--succes)" },
+    warning: { bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", icon: "#f59e0b", text: "var(--avertissement)" },
+    info: { bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.2)", icon: "#3b82f6", text: "var(--info)" },
+  };
+  const c = colors[status];
+  return (
+    <div className="flex items-center justify-between p-3 rounded-md border text-xs" style={{ background: c.bg, borderColor: c.border }}>
+      <div className="flex items-center gap-2">
+        <span style={{ color: c.icon }}>{icon}</span>
+        <span style={{ color: "var(--texte)" }}>{label}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span style={{ color: c.text }}>{detail}</span>
+        {status === "ok" && <CheckCircle2 size={12} style={{ color: "#22c55e" }} />}
+        {status === "warning" && <AlertTriangle size={12} style={{ color: "#f59e0b" }} />}
+        {status === "info" && <XCircle size={12} style={{ color: "#3b82f6" }} />}
+      </div>
+    </div>
   );
 }

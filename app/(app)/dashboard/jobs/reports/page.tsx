@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Loader2, FileText, Sun, Moon, RefreshCw, MapPin, Building2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+import { getScoreColor } from "@/lib/score-colors";
 
 interface JobBrief { id: string; title: string; company: string | null; location: string | null; priorityLabel: string; score: number | null; sourceName: string | null; sourceUrl: string | null; }
 interface ReportData {
@@ -110,7 +111,7 @@ export default function JobsReportsPage() {
                     {j.company && <span className="ml-1" style={{ color: "var(--texte-secondaire)" }}>— {j.company}</span>}
                     {j.location && <span className="ml-1" style={{ color: "var(--texte-tertiaire)" }}>({j.location})</span>}
                   </div>
-                  {j.score != null && <span className="font-mono" style={{ color: j.score >= 75 ? "#22c55e" : j.score >= 50 ? "#f59e0b" : "#808080" }}>{j.score}</span>}
+                  {j.score != null && <span className="font-mono" style={{ color: getScoreColor(j.score) }}>{j.score}</span>}
                 </div>
               ))}
             </div>
@@ -127,7 +128,7 @@ export default function JobsReportsPage() {
                     <span style={{ color: "var(--texte)" }}>{j.title}</span>
                     {j.company && <span className="ml-1" style={{ color: "var(--texte-secondaire)" }}>— {j.company}</span>}
                   </div>
-                  {j.score != null && <span className="font-mono" style={{ color: j.score >= 75 ? "#22c55e" : j.score >= 50 ? "#f59e0b" : "#808080" }}>{j.score}</span>}
+                  {j.score != null && <span className="font-mono" style={{ color: getScoreColor(j.score) }}>{j.score}</span>}
                 </div>
               ))}
             </div>
@@ -218,6 +219,21 @@ export default function JobsReportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {renderReport(morningReport, loadingMorning, "morning")}
         {renderReport(eveningReport, loadingEvening, "evening")}
+      </div>
+
+      {/* Safe Sources daily report */}
+      <div className="rounded-lg border p-4 space-y-2" style={{ borderColor: "rgba(59,130,246,0.2)", background: "var(--fond-surface)" }}>
+        <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "#3b82f6" }}>Rapport quotidien Safe Sources</h3>
+        <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
+          Rapport des sources publiques autorisées (Firecrawl Safe) avec top offres, scores sémantiques, sources en erreur, refus par motif.
+        </p>
+        <a
+          href="/dashboard/jobs/sources"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-mono border transition-colors"
+          style={{ borderColor: "#3b82f6", color: "#3b82f6", background: "rgba(59,130,246,0.05)", textDecoration: "none" }}
+        >
+          <FileText size={12} /> Voir le rapport Safe Sources
+        </a>
       </div>
 
       {/* Documentation cron */}

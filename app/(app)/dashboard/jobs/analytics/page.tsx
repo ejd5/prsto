@@ -7,6 +7,7 @@ import {
   TrendingUp, Clock, BarChart3, Eye, AlertTriangle, Star, Sparkles,
 } from "lucide-react";
 import { isDemoFromParams, DEMO_BADGE_TEXT, withDemoParam } from "@/lib/jobs/demo-data";
+import { getScoreColor } from "@/lib/score-colors";
 
 interface AnalyticsSummary {
   totalSent: number; sentThisWeek: number; toFollowUp: number; followedUp: number;
@@ -397,7 +398,7 @@ export default function AnalyticsPage() {
                           <p style={{ color: "var(--texte-secondaire)" }}>{h.company} · {h.source} · il y a {h.daysWaiting}j</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                          <span className="text-xs font-mono font-bold" style={{ color: h.score >= 75 ? "#22c55e" : "#f59e0b" }}>{h.score}%</span>
+                          <span className="text-xs font-mono font-bold" style={{ color: getScoreColor(h.score) }}>{h.score}%</span>
                           <button onClick={() => router.push(withDemoParam(`/dashboard/jobs/applications/${h.draftId}`, demoActive))}
                             className="flex items-center gap-0.5 px-2 py-1 rounded text-[10px] font-mono border" style={{ borderColor: "var(--or)", color: "var(--or)" }}>
                             <Eye size={9} /> Dossier

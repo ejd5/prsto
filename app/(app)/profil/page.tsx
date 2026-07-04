@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { User, Plus, Trash2, Save, Briefcase, Award, Edit3 } from "lucide-react";
+import { User, Plus, Trash2, Save, Briefcase, Award, Edit3, X } from "lucide-react";
+import { normalizeCompensationTarget } from "@/lib/cv-render/normalize-compensation";
 import {
   getProfile, upsertProfile,
   type ProfileData,
@@ -227,9 +228,9 @@ export default function ProfilPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Profil Exécutif</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Profil Cabinet</h1>
           <p className="text-xs mt-1 font-mono" style={{ color: "var(--texte-tertiaire)" }}>
-            {profileId ? "Modifiez vos informations" : "Créez votre profil"}
+            {profileId ? "Gérez votre cabinet" : "Créez votre cabinet"}
           </p>
         </div>
         <button onClick={saveProfile}
@@ -307,12 +308,15 @@ export default function ProfilPage() {
               <Field label="Années d'expérience" type="number" value={String(profile.yearsExp)} onChange={v => setProfile({ ...profile, yearsExp: Number(v) || 0 })} inputClass={inputClass} inputStyle={inputStyle} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field label="Rôles ciblés (JSON)" value={profile.functions} onChange={v => setProfile({ ...profile, functions: v })} inputClass={inputClass} inputStyle={inputStyle} placeholder='["Directeur Commercial", "Country Manager"]' />
-              <Field label="Secteurs ciblés (JSON)" value={profile.sectors} onChange={v => setProfile({ ...profile, sectors: v })} inputClass={inputClass} inputStyle={inputStyle} placeholder='["SaaS", "Retail", "Industrie"]' />
+              <ChipField label="Rôles ciblés" items={safeParseList(profile.functions)} onChange={items => setProfile({ ...profile, functions: JSON.stringify(items) })} placeholder="Ajouter un rôle…" />
+              <ChipField label="Secteurs ciblés" items={safeParseList(profile.sectors)} onChange={items => setProfile({ ...profile, sectors: JSON.stringify(items) })} placeholder="Ajouter un secteur…" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field label="Mobilité (pays, JSON)" value={profile.mobility} onChange={v => setProfile({ ...profile, mobility: v })} inputClass={inputClass} inputStyle={inputStyle} placeholder='["France", "Suisse", "Belgique"]' />
-              <Field label="Rémunération cible" value={profile.targetSalary} onChange={v => setProfile({ ...profile, targetSalary: v })} inputClass={inputClass} inputStyle={inputStyle} placeholder="ex: 120-150k€ fixe + variable" />
+              <ChipField label="Mobilité (pays)" items={safeParseList(profile.mobility)} onChange={items => setProfile({ ...profile, mobility: JSON.stringify(items) })} placeholder="Ajouter un pays…" />
+              <div>
+                <Field label="Rémunération cible" value={profile.targetSalary} onChange={v => setProfile({ ...profile, targetSalary: v })} inputClass={inputClass} inputStyle={inputStyle} placeholder="ex: 120-180K€ + variable 30%" />
+                {profile.targetSalary && (() => { const n = normalizeCompensationTarget(profile.targetSalary); return !n.isValid ? <p className="text-[10px] mt-1" style={{ color: "#f59e0b" }}>⚠ {n.warning}</p> : null; })()}
+              </div>
             </div>
             <div>
               <label style={labelStyle}>Langues parlées</label>
@@ -351,11 +355,11 @@ export default function ProfilPage() {
 
           {/* Résumé + Formation */}
           <div className="p-5 rounded-lg border space-y-4" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
-            <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Résumé exécutif</h3>
+            <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Résumé Cabinet</h3>
             <textarea value={profile.summary}
               onChange={e => setProfile({ ...profile, summary: e.target.value })}
               rows={5} className={inputClass} style={{ ...inputStyle, resize: "vertical" }}
-              placeholder="Rédigez un résumé exécutif percutant..." />
+              placeholder="Rédigez un résumé cabinet percutant..." />
           </div>
           <div className="p-5 rounded-lg border space-y-4" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)" }}>
             <h3 className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--or)" }}>Formation & Certifications</h3>
@@ -533,7 +537,7 @@ export default function ProfilPage() {
           <select value={profile.cvDefaultTemplate} onChange={v => setProfile({ ...profile, cvDefaultTemplate: v.target.value })}
             className={inputClass} style={inputStyle}>
             <option value="ats_classic">ATS Classique</option>
-            <option value="modern_executive">Moderne Exécutif</option>
+            <option value="modern_executive">Moderne Cabinet</option>
             <option value="premium_leadership">Premium Leadership</option>
           </select>
         </div>
@@ -568,6 +572,13 @@ export default function ProfilPage() {
   );
 }
 
+/* ─── Helpers ────────────────────────────── */
+
+function safeParseList(raw: string): string[] {
+  if (!raw) return [];
+  try { const arr = JSON.parse(raw); return Array.isArray(arr) ? arr.filter(Boolean).map(String) : []; } catch { return raw.split(",").map(s => s.trim()).filter(Boolean); }
+}
+
 /* ─── Composant Field réutilisable ─── */
 function Field({ label, value, onChange, inputClass, inputStyle, placeholder, type = "text", textarea }: {
   label: string; value: string; onChange: (v: string) => void; inputClass: string;
@@ -584,6 +595,49 @@ function Field({ label, value, onChange, inputClass, inputStyle, placeholder, ty
         <input type={type} value={value} onChange={e => onChange(e.target.value)} className={inputClass}
           style={inputStyle} placeholder={placeholder} />
       )}
+    </div>
+  );
+}
+
+/* ─── Composant ChipField ────────────────── */
+
+function ChipField({ label, items, onChange, placeholder }: {
+  label: string; items: string[]; onChange: (items: string[]) => void; placeholder: string;
+}) {
+  const [input, setInput] = useState("");
+
+  const addItem = () => {
+    const val = input.trim();
+    if (!val) return;
+    if (!items.includes(val)) onChange([...items, val]);
+    setInput("");
+  };
+
+  const removeItem = (idx: number) => {
+    onChange(items.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div>
+      <label style={{ color: "var(--texte-secondaire)", fontSize: "0.67rem", fontFamily: "var(--font-mono)", textTransform: "uppercase" as const, letterSpacing: "0.15em", marginBottom: "4px", display: "block" }}>{label}</label>
+      <div className="flex flex-wrap gap-1.5 mb-2" style={{ minHeight: 28 }}>
+        {items.map((item, i) => (
+          <span key={i} className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono"
+            style={{ background: "var(--or-faible)", color: "var(--or)", border: "1px solid var(--or)" }}>
+            {item}
+            <button onClick={() => removeItem(i)} style={{ color: "var(--or)", cursor: "pointer", background: "none", border: "none", padding: 0, fontSize: 12, lineHeight: 1 }}><X size={12} /></button>
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-1">
+        <input type="text" value={input} onChange={e => setInput(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addItem(); } }}
+          placeholder={placeholder}
+          className="flex-1 px-2 py-1.5 rounded text-xs font-mono border"
+          style={{ background: "var(--fond)", borderColor: "var(--bordure)", color: "var(--texte)", outline: "none" }} />
+        <button onClick={addItem} className="px-2 py-1 rounded text-xs font-mono border"
+          style={{ borderColor: "var(--or)", color: "var(--or)", background: "transparent" }}>+</button>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
+function mapColumnToJobStatus(column: string): string {
+  const map: Record<string, string> = {
+    nouveau: "new",
+    a_analyser: "enriched",
+    analyse: "enriched",
+    a_preparer: "enriched",
+    document_a_valider: "enriched",
+    pret_a_envoyer: "shortlisted",
+    envoye: "applied",
+    relance_1: "applied",
+    relance_2: "applied",
+    entretien_rh: "applied",
+    entretien_direction: "applied",
+    offre: "applied",
+    refus: "rejected",
+    archive: "expired",
+  };
+  return map[column] ?? "new";
+}
+
 export async function getPipelineTasks(filters?: {
   column?: string;
   country?: string;
@@ -39,6 +59,7 @@ export async function getPipelineTasks(filters?: {
   if (filters?.country || filters?.sourceName || filters?.priority !== undefined || filters?.docApprouved || filters?.search) {
     result = tasks.filter((t) => {
       const opp = t.opportunity;
+      if (!opp) return false;
       if (filters.country && opp.country !== filters.country) return false;
       if (filters.sourceName && opp.sourceName !== filters.sourceName) return false;
       if (filters.priority !== undefined && opp.priority !== filters.priority) return false;
@@ -87,26 +108,36 @@ export async function getPipelineTaskByOpportunity(opportunityId: string) {
   });
 }
 
-export async function addToPipeline(opportunityId: string) {
-  const existing = await prisma.pipelineTask.findUnique({ where: { opportunityId } });
+export async function addToPipeline(opportunityId: string, jobId?: string) {
+  const existing = jobId
+    ? await prisma.pipelineTask.findFirst({ where: { OR: [{ opportunityId }, { jobId }] } })
+    : await prisma.pipelineTask.findFirst({ where: { opportunityId } });
   if (existing) return existing;
 
   const task = await prisma.pipelineTask.create({
     data: {
-      opportunityId,
+      opportunityId: opportunityId || undefined,
+      jobId: jobId || undefined,
       column: "nouveau",
       lastStatusChange: new Date(),
     },
   });
 
-  // Mettre à jour le statut de l'opp si besoin
-  await prisma.opportunity.update({
-    where: { id: opportunityId },
-    data: { status: "nouveau" },
-  });
+  if (opportunityId) {
+    await prisma.opportunity.update({
+      where: { id: opportunityId },
+      data: { status: "nouveau" },
+    });
+  }
+  if (jobId) {
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { status: "new" },
+    });
+  }
 
-  revalidatePath("/pipeline");
-  revalidatePath(`/opportunites/${opportunityId}`);
+  revalidatePath("/dashboard/jobs/pipeline");
+  if (opportunityId) revalidatePath(`/opportunites/${opportunityId}`);
   return task;
 }
 
@@ -119,17 +150,28 @@ export async function updatePipelineColumn(id: string, column: string) {
     },
   });
 
-  // Synchroniser le statut de l'opportunité
-  await prisma.opportunity.update({
-    where: { id: task.opportunityId },
-    data: {
-      status: column,
-      ...(column === "envoye" ? { appliedAt: new Date() } : {}),
-    },
-  });
+  // Synchroniser le statut
+  if (task.opportunityId) {
+    await prisma.opportunity.update({
+      where: { id: task.opportunityId },
+      data: {
+        status: column,
+        ...(column === "envoye" ? { appliedAt: new Date() } : {}),
+      },
+    });
+  }
+  if (task.jobId) {
+    await prisma.job.update({
+      where: { id: task.jobId },
+      data: {
+        status: mapColumnToJobStatus(column),
+        ...(column === "envoye" ? { appliedAt: new Date() } : {}),
+      },
+    });
+  }
 
-  revalidatePath("/pipeline");
-  revalidatePath(`/opportunites/${task.opportunityId}`);
+  revalidatePath("/dashboard/jobs/pipeline");
+  if (task.opportunityId) revalidatePath(`/opportunites/${task.opportunityId}`);
   return task;
 }
 
@@ -155,7 +197,7 @@ export async function updatePipelineTask(id: string, data: {
     },
   });
 
-  revalidatePath("/pipeline");
+  revalidatePath("/dashboard/jobs/pipeline");
   return task;
 }
 
@@ -163,10 +205,10 @@ export async function removeFromPipeline(id: string) {
   const task = await prisma.pipelineTask.findUnique({ where: { id } });
   await prisma.pipelineTask.delete({ where: { id } });
 
-  if (task) {
+  if (task?.opportunityId) {
     revalidatePath(`/opportunites/${task.opportunityId}`);
   }
-  revalidatePath("/pipeline");
+  revalidatePath("/dashboard/jobs/pipeline");
 }
 
 export async function getPipelineStats() {

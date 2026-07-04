@@ -1,5 +1,5 @@
 /**
- * Moteur de déduplication d'offres — ELTON OS
+ * Moteur de déduplication d'offres — PRSTO
  * Détection de doublons basée sur similarité textuelle et structurelle.
  * Aucune suppression/fusion automatique — validation humaine obligatoire.
  */

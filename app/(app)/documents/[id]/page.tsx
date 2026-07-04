@@ -57,6 +57,9 @@ const STATUT_LABELS: Record<string, { label: string; color: string; bg: string; 
   REJECTED: { label: "Refusé", color: "var(--erreur)", bg: "rgba(239,68,68,0.1)", icon: XCircle },
 };
 
+import { resolveTemplate, resolveAccent, TEMPLATE_LABELS, type CvTemplateId } from "@/components/cv-templates/cv-template-types";
+import CvTemplateRenderer from "@/components/cv-templates/CvTemplateRenderer";
+
 export default function DocumentEditorPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -66,7 +69,7 @@ export default function DocumentEditorPage() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
-  const [tab, setTab] = useState<"editor" | "changelog" | "source">("editor");
+  const [tab, setTab] = useState<"editor" | "preview" | "changelog" | "source">("editor");
   const [exporting, setExporting] = useState<string | null>(null); // format en cours d'export
   const [improvingAI, setImprovingAI] = useState(false);
   const [comparingAI, setComparingAI] = useState(false);
@@ -78,6 +81,12 @@ export default function DocumentEditorPage() {
   const [iaAlerts, setIaAlerts] = useState<Array<{ type: string; reason: string; excerpt: string }>>([]);
   const [showStylePicker, setShowStylePicker] = useState(false);
 
+  // Preview CV state
+  const [selectedTemplate, setSelectedTemplate] = useState<CvTemplateId>("premium_leadership");
+  const [isCvAdaptedMode, setIsCvAdaptedMode] = useState(true);
+  const [cvRenderData, setCvRenderData] = useState<any>(null);
+  const [baseCvRenderData, setBaseCvRenderData] = useState<any>(null);
+
   const notify = (type: "ok" | "err", text: string) => {
     setMsg({ type, text });
     setTimeout(() => setMsg(null), 4000);
@@ -88,6 +97,76 @@ export default function DocumentEditorPage() {
     const data = await getDocument(id);
     setDoc(data as DocDetail | null);
     setContent(data?.content || "");
+
+    if (data && data.type.startsWith("cv")) {
+      try {
+        const [profRes, draftRes] = await Promise.all([
+          fetch("/api/profile"),
+          fetch(`/api/application-drafts/${data.opportunityId}`),
+        ]);
+        const prof = (await profRes.json()).profile;
+        const draft = (await draftRes.json()).draft;
+        const profileId = prof?.id;
+
+        let experiences: any[] = [];
+        let skills: any[] = [];
+
+        if (profileId) {
+          try {
+            const [expRes, skillRes] = await Promise.all([
+              fetch(`/api/experiences?profileId=${profileId}`).catch(() => null),
+              fetch(`/api/skills?profileId=${profileId}`).catch(() => null),
+            ]);
+            if (expRes?.ok) experiences = await expRes.json();
+            if (skillRes?.ok) skills = await skillRes.json();
+          } catch { /* ignore */ }
+        }
+
+        const { buildCvRenderData } = await import("@/lib/cv-render/build-data");
+        const baseRendered = buildCvRenderData({
+          profile: prof,
+          experiences: experiences.length > 0 ? experiences : undefined,
+          skills: skills.length > 0 ? skills : undefined,
+          targetJob: draft?.job ? { title: draft.job.title, company: draft.job.company || undefined } : undefined,
+        });
+
+        let adaptedRendered: any = null;
+        if (draft?.tailoredResumeContent) {
+          try {
+            const parsed = JSON.parse(draft.tailoredResumeContent);
+            if (parsed && parsed.identity && parsed.experiences) {
+              adaptedRendered = parsed;
+            }
+          } catch {
+            adaptedRendered = buildCvRenderData({
+              profile: prof,
+              generatedCvContent: draft.tailoredResumeContent,
+              experiences: experiences.length > 0 ? experiences : undefined,
+              skills: skills.length > 0 ? skills : undefined,
+              targetJob: draft?.job ? { title: draft.job.title, company: draft.job.company || undefined } : undefined,
+            });
+          }
+        }
+
+        const tplToUse = resolveTemplate(prof?.cvDefaultTemplate) || "ats_classic";
+        setSelectedTemplate(tplToUse);
+
+        baseRendered.template = tplToUse;
+        if (adaptedRendered) {
+          adaptedRendered.template = tplToUse;
+          adaptedRendered.options = {
+            ...baseRendered.options,
+            ...(adaptedRendered.options || {}),
+          };
+        }
+
+        setBaseCvRenderData(baseRendered);
+        setCvRenderData(adaptedRendered || baseRendered);
+      } catch (err) {
+        console.error("Failed to build CV render data:", err);
+      }
+    }
+
     setLoading(false);
   }, [id]);
 
@@ -153,13 +232,9 @@ export default function DocumentEditorPage() {
   };
 
   const handleExportPdf = async () => {
-    setExporting("pdf");
-    const r = await exportPrintHtml(id);
-    setExporting(null);
-    if (!r.success) { notify("err", r.error); return; }
-    const w = window.open("", "_blank");
-    if (w) { w.document.write(r.html); w.document.close(); setTimeout(() => w.print(), 500); }
-    notify("ok", "PDF ouvert — enregistrez via Imprimer > Enregistrer en PDF");
+    // Open print-cv directly for pixel-perfect React rendering
+    window.open(`/documents/${id}/print-cv?template=${selectedTemplate}`, "_blank");
+    notify("ok", "Aperçu avant impression ouvert — enregistrez sous format PDF");
   };
 
   const handleExportDocx = async () => {
@@ -603,11 +678,11 @@ export default function DocumentEditorPage() {
 
       {/* Onglets d'info */}
       <div className="flex gap-1 border-b" style={{ borderColor: "var(--bordure)" }}>
-        {(["editor", "changelog", "source"] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)}
+        {(doc.type.startsWith("cv") ? ["editor", "preview", "changelog", "source"] : ["editor", "changelog", "source"]).map(t => (
+          <button key={t} onClick={() => setTab(t as any)}
             className="px-4 py-2 text-xs font-mono uppercase tracking-wider"
             style={{ color: tab === t ? "var(--or)" : "var(--texte-tertiaire)", borderBottom: tab === t ? "2px solid var(--or)" : "2px solid transparent", marginBottom: -1 }}>
-            {t === "editor" ? "Contenu" : t === "changelog" ? "Historique" : "Source"}
+            {t === "editor" ? "Contenu" : t === "preview" ? "Preview CV" : t === "changelog" ? "Historique" : "Source"}
           </button>
         ))}
       </div>
@@ -629,6 +704,70 @@ export default function DocumentEditorPage() {
               {content as string}
             </pre>
           )}
+        </div>
+      )}
+
+      {/* Preview CV Interactif */}
+      {tab === "preview" && doc.type.startsWith("cv") && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-lg border bg-[var(--fond-surface)]" style={{ borderColor: "var(--bordure)" }}>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-mono" style={{ color: "var(--texte-secondaire)" }}>Mode :</span>
+              <button
+                onClick={() => {
+                  setIsCvAdaptedMode(!isCvAdaptedMode);
+                  if (cvRenderData) {
+                    setCvRenderData((prev: any) => ({ ...prev, template: selectedTemplate }));
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono border transition-colors bg-[var(--fond)]"
+                style={{
+                  color: isCvAdaptedMode ? "var(--succes)" : "var(--texte-secondaire)",
+                  borderColor: isCvAdaptedMode ? "var(--succes)" : "var(--bordure)",
+                }}
+              >
+                {isCvAdaptedMode ? "✓ CV Adapté (Tailored)" : "CV Maître (Master)"}
+              </button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1">
+              <span className="text-[10px] font-mono px-2" style={{ color: "var(--texte-tertiaire)" }}>Template :</span>
+              {(Object.keys(TEMPLATE_LABELS) as CvTemplateId[]).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => {
+                    setSelectedTemplate(t);
+                    if (cvRenderData) setCvRenderData((prev: any) => ({ ...prev, template: t }));
+                    if (baseCvRenderData) setBaseCvRenderData((prev: any) => ({ ...prev, template: t }));
+                  }}
+                  className="px-2 py-1.5 rounded text-xs font-mono border transition-colors bg-[var(--fond)]"
+                  style={{
+                    borderColor: selectedTemplate === t ? "var(--or)" : "var(--bordure)",
+                    color: selectedTemplate === t ? "var(--or)" : "var(--texte-secondaire)",
+                  }}
+                >
+                  {TEMPLATE_LABELS[t]}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => window.open(`/documents/${id}/print-cv?template=${selectedTemplate}`, "_blank")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono bg-[var(--or)] text-[var(--fond)] border-0"
+            >
+              <Globe size={12} /> Imprimer / PDF
+            </button>
+          </div>
+
+          <div className="p-4 rounded-lg border bg-white overflow-auto max-h-[80vh]" style={{ borderColor: "var(--bordure)" }}>
+            {isCvAdaptedMode && cvRenderData ? (
+              <CvTemplateRenderer data={{ ...cvRenderData, template: selectedTemplate }} />
+            ) : baseCvRenderData ? (
+              <CvTemplateRenderer data={{ ...baseCvRenderData, template: selectedTemplate }} />
+            ) : (
+              <div className="text-center p-8 text-sm text-gray-500 font-mono">Données de preview non disponibles. Veuillez générer le document de nouveau.</div>
+            )}
+          </div>
         </div>
       )}
 
@@ -802,7 +941,7 @@ function PipelineBlock({ doc, isApproved, router, onRefresh }: {
             {adding ? <Loader2 size={12} className="animate-spin" /> : <TrendingUp size={12} />}
             Associer au pipeline
           </button>
-          <button onClick={() => router.push("/pipeline")}
+          <button onClick={() => router.push("/dashboard/jobs/pipeline")}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-md border"
             style={{ borderColor: "var(--bordure)", color: "var(--texte-secondaire)" }}>
             Voir pipeline →
@@ -833,7 +972,7 @@ function PipelineBlock({ doc, isApproved, router, onRefresh }: {
             Document approuvé — Pipeline actif
           </h3>
         </div>
-        <button onClick={() => router.push("/pipeline")}
+        <button onClick={() => router.push("/dashboard/jobs/pipeline")}
           className="text-xs font-mono underline" style={{ color: "var(--or)" }}>
           Voir pipeline →
         </button>

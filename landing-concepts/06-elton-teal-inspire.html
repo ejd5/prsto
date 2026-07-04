@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ELTON OS — L'OS de votre carrière</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a2e;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ─── Colors ─── */
+:root{--teal:#2a7a7a;--teal-light:#e8f4f4;--teal-bg:#f5fafa;--ink:#1a1a2e;--dim:rgba(26,26,46,.5);--border:rgba(26,26,46,.08);--stone:#f0efed}
+
+/* ─── Nav ─── */
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 56px;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--teal)}
+.logo span{font-weight:400;color:var(--dim)}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.btn-cta{background:var(--teal);color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;transition:all .2s}
+.btn-cta:hover{background:#1e5f5f;transform:translateY(-1px)}
+
+/* ─── Hero ─── */
+.hero{min-height:90vh;display:flex;flex-direction:column;justify-content:center;padding:140px 56px 80px;max-width:1200px;margin:0 auto;position:relative}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hero h1{font-size:clamp(36px,4.2vw,54px);font-weight:800;letter-spacing:-2px;line-height:1.08;margin-bottom:20px}
+.hero h1 .teal{color:var(--teal)}
+.hero p{font-size:17px;color:var(--dim);line-height:1.7;margin-bottom:32px;max-width:480px}
+.hero-actions{display:flex;gap:12px}
+.btn-primary{background:var(--teal);color:#fff;padding:14px 32px;border-radius:6px;text-decoration:none;font-size:15px;font-weight:600;transition:all .2s}
+.btn-primary:hover{background:#1e5f5f;transform:translateY(-1px)}
+.btn-outline{color:var(--ink);padding:14px 32px;border-radius:6px;text-decoration:none;font-size:15px;font-weight:500;border:1px solid var(--border);transition:all .2s}
+.btn-outline:hover{border-color:var(--teal);color:var(--teal)}
+.hero-right{background:var(--teal-bg);border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:20px}
+.hero-feat{display:flex;align-items:center;gap:16px;padding:16px;background:#fff;border-radius:10px;border:1px solid var(--border)}
+.hero-feat-icon{width:40px;height:40px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hero-feat-text h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.hero-feat-text p{font-size:13px;color:var(--dim);margin:0}
+
+/* ─── Trust bar ─── */
+.trust-bar{display:flex;justify-content:center;gap:40px;padding:24px 56px;max-width:1200px;margin:0 auto;border-top:1px solid var(--border);flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);font-weight:500}
+
+/* ─── Section defaults ─── */
+section{padding:120px 56px;max-width:1200px;margin:0 auto}
+.section-tag{display:inline-block;background:var(--teal-light);color:var(--teal);padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px}
+.section-title{font-size:clamp(28px,3vw,40px);font-weight:800;letter-spacing:-1.5px;line-height:1.15;margin-bottom:16px}
+.section-sub{color:var(--dim);font-size:16px;max-width:540px;line-height:1.7;margin-bottom:56px}
+
+/* ─── Features ─── */
+.features{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.feat-card{background:var(--teal-bg);border-radius:12px;padding:36px 32px;transition:all .2s}
+.feat-card:hover{box-shadow:0 8px 30px rgba(42,122,122,.08)}
+.feat-icon{width:44px;height:44px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px}
+.feat-card h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.feat-card p{font-size:14px;color:var(--dim);line-height:1.7}
+.feat-card .feat-link{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:13px;font-weight:600;color:var(--teal);text-decoration:none}
+
+/* ─── Steps ─── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.step{text-align:center;padding:32px 20px}
+.step-num{width:48px;height:48px;border-radius:50%;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:18px;font-weight:700}
+.step h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.step p{font-size:14px;color:var(--dim);line-height:1.6;max-width:280px;margin:0 auto}
+
+/* ─── Video testimonial ─── */
+.video-section{background:var(--teal-bg);border-radius:16px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:0}
+.video-text{padding:56px 48px}
+.video-text .tag{font-size:12px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.video-text h2{font-size:clamp(24px,2.5vw,34px);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:12px}
+.video-text p{font-size:14px;color:var(--dim);line-height:1.7;margin-bottom:24px}
+.video-text .author{display:flex;align-items:center;gap:12px}
+.video-text .author-avatar{width:44px;height:44px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+.video-text .author-info strong{display:block;font-size:14px}
+.video-text .author-info span{font-size:12px;color:var(--dim)}
+.video-placeholder{background:var(--stone);display:flex;align-items:center;justify-content:center;min-height:320px;position:relative;cursor:pointer}
+.video-play{width:60px;height:60px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.video-play::after{content:'▶';color:#fff;font-size:18px;margin-left:3px}
+.video-placeholder:hover .video-play{transform:scale(1.08)}
+
+/* ─── Resume examples ─── */
+.examples-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.example-card{background:var(--teal-bg);border-radius:12px;padding:32px;text-align:center;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--border);transition:all .2s}
+.example-card:hover{border-color:var(--teal);background:#fff}
+.example-card .icon{font-size:36px;margin-bottom:16px}
+.example-card h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.example-card p{font-size:13px;color:var(--dim)}
+
+/* ─── Pricing ─── */
+.pricing{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:800px;margin:48px auto 0}
+.plan{padding:40px 36px;border-radius:12px;border:1px solid var(--border);position:relative}
+.plan.featured{border-color:var(--teal);background:var(--teal-bg)}
+.plan-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.plan-price{font-size:40px;font-weight:800;letter-spacing:-2px;margin-bottom:4px}
+.plan-price span{font-size:14px;font-weight:400;color:var(--dim)}
+.plan-desc{font-size:13px;color:var(--dim);margin-bottom:24px;line-height:1.5}
+.plan-features{list-style:none;margin-bottom:28px}
+.plan-features li{padding:8px 0;font-size:14px;color:rgba(26,26,46,.55);border-bottom:1px solid var(--border)}
+.plan-features li:last-child{border-bottom:none}
+.plan-features li::before{content:'✓';color:var(--teal);margin-right:10px;font-weight:700}
+.plan-btn{display:block;text-align:center;padding:14px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;background:var(--teal);color:#fff;transition:all .2s}
+.plan-btn:hover{background:#1e5f5f;transform:translateY(-1px)}
+.plan.featured .plan-btn{background:var(--teal);color:#fff}
+.plan-footnote{text-align:center;margin-top:24px;font-size:13px;color:var(--dim)}
+
+/* ─── Testimonials row ─── */
+.testimonials-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.test-card{padding:28px;border:1px solid var(--border);border-radius:12px}
+.test-card blockquote{font-size:14px;color:var(--dim);line-height:1.7;margin-bottom:20px}
+.test-card footer{display:flex;align-items:center;gap:12px;border:none;padding:0}
+.test-avatar{width:40px;height:40px;border-radius:50%;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.test-card cite{font-size:13px;font-style:normal}
+.test-card cite strong{display:block;color:var(--ink);font-weight:600}
+.test-card cite span{color:var(--dim);font-size:12px}
+
+/* ─── FAQ ─── */
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.faq-item{border:1px solid var(--border);border-radius:10px;padding:20px 24px;cursor:pointer;transition:all .2s}
+.faq-item:hover{border-color:var(--teal)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:500}
+.faq-q .icon{font-size:18px;color:var(--teal);transition:transform .2s}
+.faq-a{font-size:14px;color:var(--dim);line-height:1.7;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:none}
+
+/* ─── CTA ─── */
+.cta-section{background:var(--teal);border-radius:16px;padding:80px 48px;text-align:center;color:#fff}
+.cta-section h2{font-size:clamp(28px,3vw,38px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px}
+.cta-section p{opacity:.8;margin-bottom:32px;font-size:15px}
+.cta-section .btn-primary{background:#fff;color:var(--teal);display:inline-block;padding:16px 40px}
+.cta-section .btn-primary:hover{background:var(--teal-light);transform:translateY(-1px)}
+
+/* ─── Footer ─── */
+footer{display:flex;justify-content:space-between;align-items:center;padding:40px 56px;max-width:1200px;margin:60px auto 0;border-top:1px solid var(--border)}
+footer p{font-size:13px;color:var(--dim)}
+
+@media(max-width:768px){
+  nav{padding:16px 24px;flex-wrap:wrap;gap:12px}
+  .hero-grid,.video-section{grid-template-columns:1fr;gap:32px}
+  .hero{padding:100px 24px 60px}
+  .hero h1{font-size:30px}
+  .hero-right{padding:24px}
+  .trust-bar{gap:20px;padding:16px 24px}
+  section{padding:60px 24px}
+  .features,.testimonials-row,.faq{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr;gap:0}
+  .examples-grid{grid-template-columns:1fr}
+  .pricing{grid-template-columns:1fr}
+  .video-text{padding:32px 24px}
+  .cta-section{padding:48px 24px;margin:0 16px}
+  footer{flex-direction:column;gap:12px;padding:24px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ELTON <span>OS</span></div>
+  <div class="nav-links">
+    <a href="#">Fonctionnalités</a>
+    <a href="#">Tarifs</a>
+    <a href="#">Connexion</a>
+    <a href="#" class="btn-cta">Essai gratuit</a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <h1>Décrochez votre<br>prochain poste de<br><span class="teal">direction.</span></h1>
+      <p>ATS Scanner, CV Optimizer, LinkedIn Coach, Market Radar, CRM Recruteur, Interview Studio — le premier OS pensé pour les cadres dirigeants.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary">Commencer — c'est gratuit</a>
+        <a href="#" class="btn-outline">Voir comment ça marche</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-feat">
+        <div class="hero-feat-icon">🔍</div>
+        <div class="hero-feat-text"><h4>ATS Scanner</h4><p>Score de compatibilité CV / offre en 30 secondes</p></div>
+      </div>
+      <div class="hero-feat">
+        <div class="hero-feat-icon">📝</div>
+        <div class="hero-feat-text"><h4>CV Optimizer</h4><p>Recommandations IA pour chaque candidature</p></div>
+      </div>
+      <div class="hero-feat">
+        <div class="hero-feat-icon">📊</div>
+        <div class="hero-feat-text"><h4>Market Radar</h4><p>Alertes personnalisées sur le marché caché</p></div>
+      </div>
+      <div class="hero-feat">
+        <div class="hero-feat-icon">👥</div>
+        <div class="hero-feat-text"><h4>CRM Recruteur</h4><p>Suivi de vos 15+ chasseurs en parallèle</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TRUST ─── -->
+<div class="trust-bar">
+  <span class="trust-item">✓ 6 moteurs d'IA</span>
+  <span class="trust-item">✓ 17 systèmes ATS supportés</span>
+  <span class="trust-item">✓ Données local-first & chiffrées</span>
+  <span class="trust-item">✓ Zéro auto-submit</span>
+  <span class="trust-item">✓ 14 jours d'essai gratuit</span>
+</div>
+
+<!-- ─── FEATURES ─── -->
+<section>
+  <div class="section-tag">Fonctionnalités</div>
+  <h2 class="section-title">Tout ce dont vous avez besoin<br>pour passer de l'offre à l'embauche.</h2>
+  <p class="section-sub">6 modules complémentaires qui couvrent chaque étape de votre recherche, de l'analyse ATS à la préparation d'entretien.</p>
+  <div class="features">
+    <div class="feat-card">
+      <div class="feat-icon">🔍</div>
+      <h3>ATS Scanner</h3>
+      <p>Analysez votre CV face à n'importe quelle offre. Obtenez un score détaillé, les mots-clés manquants et les actions prioritaires pour passer les filtres.</p>
+      <a href="#" class="feat-link">En savoir plus →</a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📝</div>
+      <h3>CV Optimizer</h3>
+      <p>Analyse complète de votre CV par l'IA : structure, contenu, mots-clés. Suggestions prioritaires pour chaque section.</p>
+      <a href="#" class="feat-link">En savoir plus →</a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <h3>Market Radar</h3>
+      <p>Cartographiez le marché caché de l'emploi cadre. Alertes personnalisées, tendances par secteur et zone géographique.</p>
+      <a href="#" class="feat-link">En savoir plus →</a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">👥</div>
+      <h3>CRM Recruteur</h3>
+      <p>Suivez chaque interaction avec vos recruteurs et chasseurs de têtes. Relances automatiques, historique complet.</p>
+      <a href="#" class="feat-link">En savoir plus →</a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎤</div>
+      <h3>Interview Studio</h3>
+      <p>Simulations d'entretien basées sur l'offre et votre profil. Questions probables, réponses STAR, coaching IA.</p>
+      <a href="#" class="feat-link">En savoir plus →</a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📈</div>
+      <h3>LinkedIn Optimizer</h3>
+      <p>Score et optimisation de votre profil LinkedIn pour maximiser votre visibilité auprès des recruteurs.</p>
+      <a href="#" class="feat-link">En savoir plus →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW ─── -->
+<section>
+  <div class="section-tag">Comment ça marche</div>
+  <h2 class="section-title">Prêt en 5 minutes.<br>Efficace en 24h.</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Importez votre profil</h3>
+      <p>CV, LinkedIn ou formulaire. ELTON OS structure et analyse tout automatiquement.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Définissez votre cible</h3>
+      <p>Postes visés, secteurs, localisation, prétentions — ELTON OS adapte sa stratégie.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Laissez l'IA travailler</h3>
+      <p>Scannez des offres, optimisez votre CV, générez bullet points et lettres personnalisées.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── VIDEO TESTIMONIAL ─── -->
+<section>
+  <div class="video-section">
+    <div class="video-text">
+      <div class="tag">Témoignage client</div>
+      <h2>« Je suis passé de 0 à 4 entretiens en 3 semaines. »</h2>
+      <p>L'ATS Scanner m'a ouvert les yeux : mes CV n'étaient pas optimisés pour les systèmes de filtrage. En 3 semaines, j'ai structuré ma recherche, optimisé mes candidatures et multiplié mes entretiens.</p>
+      <div class="author">
+        <div class="author-avatar">FD</div>
+        <div class="author-info">
+          <strong>Frédéric D.</strong>
+          <span>Directeur Commercial, CAC 40</span>
+        </div>
+      </div>
+    </div>
+    <div class="video-placeholder">
+      <div class="video-play"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXAMPLES ─── -->
+<section>
+  <div class="section-tag">Exemples</div>
+  <h2 class="section-title">Des CV qui passent<br>les filtres ATS.</h2>
+  <p class="section-sub">2 000+ templates et exemples de CV adaptés à chaque secteur, rôle et niveau d'expérience.</p>
+  <div class="examples-grid">
+    <div class="example-card"><div class="icon">📄</div><h4>Directeur Commercial</h4><p>15 exemples sectoriels</p></div>
+    <div class="example-card"><div class="icon">📄</div><h4>VP Sales</h4><p>12 exemples sectoriels</p></div>
+    <div class="example-card"><div class="icon">📄</div><h4>Country Manager</h4><p>10 exemples sectoriels</p></div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─── -->
+<section>
+  <div class="section-tag">Tarifs</div>
+  <h2 class="section-title">Un investissement<br>pour votre carrière.</h2>
+  <p class="section-sub">Pas de surprise. Pas d'engagement. Résiliez à tout moment.</p>
+  <div class="pricing">
+    <div class="plan">
+      <div class="plan-name">Gratuit</div>
+      <div class="plan-price">0€</div>
+      <div class="plan-desc">Pour découvrir l'outil et valider son efficacité.</div>
+      <ul class="plan-features">
+        <li>ATS Scanner (10 analyses / mois)</li>
+        <li>Pipeline Kanban</li>
+        <li>CV Optimizer (5 analyses / mois)</li>
+        <li>1 profil</li>
+        <li>Market Radar (lecture seule)</li>
+      </ul>
+      <a href="#" class="plan-btn">Commencer gratuitement</a>
+    </div>
+    <div class="plan featured">
+      <div class="plan-name">ELTON+</div>
+      <div class="plan-price">59€ <span>/mois</span></div>
+      <div class="plan-desc">L'arsenal complet du cadre dirigeant.</div>
+      <ul class="plan-features">
+        <li>ATS Scanner illimité</li>
+        <li>CV Optimizer illimité</li>
+        <li>LinkedIn Optimizer</li>
+        <li>Interview Studio</li>
+        <li>CRM Recruteur complet</li>
+        <li>Analyses IA illimitées</li>
+        <li>Market Radar en temps réel</li>
+      </ul>
+      <a href="#" class="plan-btn">Souscrire à ELTON+</a>
+    </div>
+  </div>
+  <p class="plan-footnote">Besoin de plusieurs comptes ? <a href="#" style="color:var(--teal)">Découvrez notre offre équipe →</a></p>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section>
+  <div class="section-tag">Ils nous recommandent</div>
+  <h2 class="section-title">Rejoint par des centaines<br>de cadres dirigeants.</h2>
+  <div class="testimonials-row">
+    <div class="test-card">
+      <blockquote>« Le CRM Recruteur est un game changer. Je ne perds plus le fil de mes échanges avec les chasseurs. »</blockquote>
+      <footer>
+        <div class="test-avatar">SM</div>
+        <cite><strong>Sébastien M.</strong><span>VP Sales, Scale-up</span></cite>
+      </footer>
+    </div>
+    <div class="test-card">
+      <blockquote>« Enfin un outil complet. Avant j'utilisais 4 outils différents. Maintenant tout est dans ELTON OS. »</blockquote>
+      <footer>
+        <div class="test-avatar">CL</div>
+        <cite><strong>Caroline L.</strong><span>Country Manager, Retail</span></cite>
+      </footer>
+    </div>
+    <div class="test-card">
+      <blockquote>« L'Interview Studio m'a préparé à des questions que je n'aurais jamais anticipées. »</blockquote>
+      <footer>
+        <div class="test-avatar">PB</div>
+        <cite><strong>Pierre B.</strong><span>Directeur Commercial, Industrie</span></cite>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section>
+  <div class="section-tag">FAQ</div>
+  <h2 class="section-title">Des questions ?<br>Des réponses.</h2>
+  <div class="faq">
+    <div class="faq-item"><div class="faq-q">ELTON OS postule-t-il à ma place ? <span class="icon">+</span></div><div class="faq-a">Non. ELTON OS n'envoie jamais de candidature, d'email ou de message LinkedIn sans votre action directe. Vous générez, vous copiez, vous postez. L'IA vous assiste, elle ne vous remplace pas.</div></div>
+    <div class="faq-item"><div class="faq-q">Mes données sont-elles sécurisées ? <span class="icon">+</span></div><div class="faq-a">Oui. Architecture local-first. Chiffrement AES-256. Appels IA anonymisés. Aucune revente de données, aucun tracking tiers.</div></div>
+    <div class="faq-item"><div class="faq-q">Puis-je résilier à tout moment ? <span class="icon">+</span></div><div class="faq-a">Oui. Depuis votre compte, sans justification, sans frais. Vous conservez l'intégralité de vos données.</div></div>
+    <div class="faq-item"><div class="faq-q">Quel est le prérequis technique ? <span class="icon">+</span></div><div class="faq-a">Aucun. C'est une application web. Créez votre compte, importez votre CV, commencez. L'IA est optionnelle.</div></div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<div class="cta-section">
+  <h2>Prêt à reprendre le contrôle<br>de votre carrière ?</h2>
+  <p>14 jours d'essai gratuit. Sans carte bancaire. Sans engagement.</p>
+  <a href="#" class="btn-primary">Commencer gratuitement →</a>
+</div>
+
+<footer>
+  <p>© 2026 ELTON OS</p>
+  <p>Conçu pour les décideurs. Pas pour le bullshit.</p>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-item').forEach(item => {
+  const a = item.querySelector('.faq-a');
+  const i = item.querySelector('.icon');
+  item.addEventListener('click', () => {
+    const open = a.style.display === 'block';
+    a.style.display = open ? 'none' : 'block';
+    i.textContent = open ? '+' : '−';
+  });
+});
+</script>
+
+</body>
+</html>

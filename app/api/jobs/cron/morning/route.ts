@@ -14,7 +14,7 @@ function checkAuth(request: Request): "ok" | "missing" | "invalid" {
 // GET : statut uniquement, jamais d'import
 export async function GET() {
   return NextResponse.json({
-    endpoint: "Rapport matin ELTON OS",
+    endpoint: "Rapport matin PRSTO",
     method: "POST pour déclencher l'import et le rapport",
     status: "ok",
     auth: process.env.SOURCING_CRON_TOKEN ? "Token configuré" : "Token non configuré",

@@ -1,4 +1,4 @@
-// ─── Types partagés ELTON OS ─────────────────────
+// ─── Types partagés PRSTO ─────────────────────
 // Types réutilisables dans les libs, actions, et composants.
 // Évite les Record<string, unknown> éparpillés et les doublons.
 

@@ -5,9 +5,14 @@ export async function GET() {
   try {
     const profile = await prisma.profile.findFirst({
       select: {
+        id: true,
         fullName: true, title: true, summary: true,
         phone: true, email: true, linkedin: true, location: true,
         photoUrl: true,
+        languages: true, education: true, certifications: true,
+        sectors: true, functions: true, yearsExp: true,
+        cvDefaultTemplate: true, cvIncludePhoto: true,
+        cvIncludeLinkedIn: true, cvAccentColor: true,
       },
     });
     return NextResponse.json({ profile: profile || null });

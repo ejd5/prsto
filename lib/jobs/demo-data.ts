@@ -1,5 +1,5 @@
 /*
- * ELTON OS — Mode Démo
+ * PRSTO — Mode Démo
  *
  * CONVENTION DE FILTRAGE :
  *   Une donnée est "démo" si son champ title, jobSummary, externalId,
@@ -60,7 +60,14 @@ export function getDraftDemoFilter(demoMode: boolean): Record<string, unknown> {
   if (demoMode) {
     return { jobSummary: { startsWith: DEMO_TAG } };
   }
-  return { NOT: { jobSummary: { startsWith: DEMO_TAG } } };
+  // Inclure les drafts sans jobSummary (null) + ceux dont le jobSummary ne commence pas par [DEMO]
+  // Le simple NOT { startsWith } exclut les NULL en SQL
+  return {
+    OR: [
+      { jobSummary: null },
+      { NOT: { jobSummary: { startsWith: DEMO_TAG } } },
+    ],
+  };
 }
 
 /**

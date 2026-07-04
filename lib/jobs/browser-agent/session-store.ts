@@ -69,6 +69,6 @@ export function ensureGitIgnore(): void {
   }
   const content = fs.readFileSync(gitignorePath, "utf-8");
   if (!content.includes(".elton/")) {
-    fs.appendFileSync(gitignorePath, "\n# Sessions navigateur ELTON OS\n.elton/\n");
+    fs.appendFileSync(gitignorePath, "\n# Sessions navigateur PRSTO\n.elton/\n");
   }
 }

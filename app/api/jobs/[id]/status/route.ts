@@ -6,7 +6,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   const body = await _request.json();
   const { status } = body;
 
-  const validStatuses = ["new", "enriched", "shortlisted", "rejected", "applied", "expired", "duplicate"];
+  const validStatuses = ["new", "enriched", "shortlisted", "rejected", "applied", "expired", "duplicate", "archived"];
   if (!validStatuses.includes(status)) {
     return NextResponse.json({ error: `Statut invalide. Valides: ${validStatuses.join(", ")}` }, { status: 400 });
   }

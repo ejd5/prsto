@@ -171,9 +171,9 @@ export async function exportDocx(id: string): Promise<{
     });
 
     const docx = new Document({
-      creator: profile?.fullName || "ELTON OS",
+      creator: profile?.fullName || "PRSTO",
       title: `${label} — ${doc.opportunity?.title || ""}`,
-      description: `Généré par ELTON OS le ${new Date().toLocaleDateString("fr-FR")}`,
+      description: `Généré par PRSTO le ${new Date().toLocaleDateString("fr-FR")}`,
       sections: [{
         properties: {
           page: {
@@ -200,7 +200,7 @@ export async function exportDocx(id: string): Promise<{
             spacing: { after: 40 },
           }),
           new Paragraph({
-            children: [new TextRun({ text: `Exporté le ${new Date().toLocaleDateString("fr-FR")} via ELTON OS`, size: 18, color: "aaaaaa" })],
+            children: [new TextRun({ text: `Exporté le ${new Date().toLocaleDateString("fr-FR")} via PRSTO`, size: 18, color: "aaaaaa" })],
             spacing: { after: 200 },
           }),
           ...paragraphs,

@@ -7,13 +7,23 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
     "app/generated/**",
+    "e2e/**",
+    "browser-extension/**",
   ]),
+  {
+    rules: {
+      // Baselines acceptées intentionnellement.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+      "react/no-unescaped-entities": "warn",
+      "react/no-unstable-nested-components": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

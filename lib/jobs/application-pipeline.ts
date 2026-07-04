@@ -24,10 +24,16 @@ export interface PipelineItem {
   jobLocation: string | null;
   sourceUrl: string | null;
   sourceName: string | null;
+  sourceType: string | null;
   globalScore: number | null;
+  contact?: { id: string; fullName: string; contactType: string; firmName?: string | null; companyName?: string | null } | null;
+  hasInterviewPrep: boolean;
+  interviewPrepId?: string | null;
+  interviewPrepStatus?: string | null;
 }
 
 export interface PipelineStats {
+  imported: number;
   sent: number;
   toFollowUp: number;
   followedUp: number;
@@ -48,7 +54,7 @@ export interface FollowUpMessages {
 
 /*
  * pipelineStatus — valeurs stockées en base (ApplicationDraft.pipelineStatus) :
- *   sent, followed_up, recruiter_replied, interview, offer, rejected, archived
+ *   imported, sent, followed_up, recruiter_replied, interview, offer, rejected, archived
  *
  * "follow_up_due" et "toFollowUp" NE SONT JAMAIS stockés en base.
  * La colonne Kanban "À relancer" est calculée dynamiquement :
@@ -74,8 +80,15 @@ export async function getApplicationPipeline(opts?: { demoMode?: boolean }): Pro
       job: {
         include: {
           score: { select: { globalScore: true } },
-          source: { select: { name: true } },
+          source: { select: { name: true, type: true } },
         },
+      },
+      contact: { select: { id: true, fullName: true, contactType: true, firmName: true, companyName: true } },
+      interviewPreps: {
+        where: { prepStatus: { in: ["draft", "ready_to_review", "approved"] } },
+        select: { id: true, prepStatus: true },
+        take: 1,
+        orderBy: { createdAt: "desc" },
       },
     },
     orderBy: { lastPipelineActionAt: "desc" },
@@ -98,11 +111,17 @@ export async function getApplicationPipeline(opts?: { demoMode?: boolean }): Pro
     jobLocation: d.job.location,
     sourceUrl: d.job.sourceUrl,
     sourceName: d.job.source?.name ?? null,
+    sourceType: d.job.source?.type ?? null,
     globalScore: d.job.score?.globalScore ?? d.matchScore ?? null,
+    contact: d.contact ? { id: d.contact.id, fullName: d.contact.fullName, contactType: d.contact.contactType, firmName: d.contact.firmName, companyName: d.contact.companyName } : null,
+    hasInterviewPrep: d.interviewPreps.length > 0,
+    interviewPrepId: d.interviewPreps[0]?.id ?? null,
+    interviewPrepStatus: d.interviewPreps[0]?.prepStatus ?? null,
   }));
 
   const now = new Date();
   const stats: PipelineStats = {
+    imported: items.filter((i) => i.pipelineStatus === "imported").length,
     sent: items.filter((i) => i.pipelineStatus === "sent" && (!i.followUpDueAt || new Date(i.followUpDueAt) > now)).length,
     toFollowUp: items.filter((i) => {
       if (i.pipelineStatus === "sent" && i.followUpDueAt && new Date(i.followUpDueAt) <= now) return true;
@@ -118,6 +137,29 @@ export async function getApplicationPipeline(opts?: { demoMode?: boolean }): Pro
   };
 
   return { items, stats };
+}
+
+/* ─── Auto-création de draft à l'import ────── */
+
+export async function ensureApplicationDraftForJob(jobId: string) {
+  return prisma.applicationDraft.upsert({
+    where: { jobId },
+    create: {
+      jobId,
+      status: "draft",
+      pipelineStatus: "imported",
+      lastPipelineActionAt: new Date(),
+    },
+    update: {}, // no-op : préserve le contenu existant si un draft existe déjà
+  });
+}
+
+/* ─── Actions pipeline ────────────────────── */
+
+export async function markSent(draftId: string) {
+  const now = new Date();
+  const followUpDue = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  return updatePipeline(draftId, "sent", { status: "sent", sentAt: now, followUpDueAt: followUpDue });
 }
 
 /* ─── Helpers ────────────────────────────── */
@@ -288,8 +330,15 @@ export async function getPipelineItem(draftId: string): Promise<PipelineItem | n
       job: {
         include: {
           score: { select: { globalScore: true } },
-          source: { select: { name: true } },
+          source: { select: { name: true, type: true } },
         },
+      },
+      contact: { select: { id: true, fullName: true, contactType: true, firmName: true, companyName: true } },
+      interviewPreps: {
+        where: { prepStatus: { in: ["draft", "ready_to_review", "approved"] } },
+        select: { id: true, prepStatus: true },
+        take: 1,
+        orderBy: { createdAt: "desc" },
       },
     },
   });
@@ -312,6 +361,11 @@ export async function getPipelineItem(draftId: string): Promise<PipelineItem | n
     jobLocation: draft.job.location,
     sourceUrl: draft.job.sourceUrl,
     sourceName: draft.job.source?.name ?? null,
+    sourceType: draft.job.source?.type ?? null,
     globalScore: draft.job.score?.globalScore ?? draft.matchScore ?? null,
+    contact: draft.contact ? { id: draft.contact.id, fullName: draft.contact.fullName, contactType: draft.contact.contactType, firmName: draft.contact.firmName, companyName: draft.contact.companyName } : null,
+    hasInterviewPrep: draft.interviewPreps.length > 0,
+    interviewPrepId: draft.interviewPreps[0]?.id ?? null,
+    interviewPrepStatus: draft.interviewPreps[0]?.prepStatus ?? null,
   };
 }

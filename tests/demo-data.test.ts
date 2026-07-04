@@ -81,9 +81,9 @@ describe("getDraftDemoFilter", () => {
     expect(f).toEqual({ jobSummary: { startsWith: DEMO_TAG } });
   });
 
-  it("demoMode=false returns NOT filter on jobSummary", () => {
+  it("demoMode=false returns OR(null + NOT) filter on jobSummary", () => {
     const f = getDraftDemoFilter(false);
-    expect(f).toEqual({ NOT: { jobSummary: { startsWith: DEMO_TAG } } });
+    expect(f).toEqual({ OR: [{ jobSummary: null }, { NOT: { jobSummary: { startsWith: DEMO_TAG } } }] });
   });
 });
 

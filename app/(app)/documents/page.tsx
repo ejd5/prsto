@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/EltonToast";
 import {
   FileText, Plus, Filter, Loader2, Eye, Trash2,
   CheckCircle2, Clock, XCircle, AlertTriangle, Briefcase, Sparkles,
@@ -46,6 +47,7 @@ const DOC_TYPE_COLORS: Record<string, string> = {
 
 export default function DocumentsPage() {
   const router = useRouter();
+  const toast = useToast();
   const [documents, setDocuments] = useState<DocItem[]>([]);
   const [opportunities, setOpportunities] = useState<OppItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +103,7 @@ export default function DocumentsPage() {
   const typeCounts = documents.reduce((acc: Record<string, number>, d) => { acc[d.type] = (acc[d.type] || 0) + 1; return acc; }, {} as Record<string, number>);
 
   const handleAISuggestion = (_target: string, _item: SuggestionItem) => {
-    alert(`Suggestion : ${_item.name} — ${_item.reason}`);
+    toast.info(`Suggestion : ${_item.name} — ${_item.reason}`);
   };
 
   return (
@@ -110,7 +112,7 @@ export default function DocumentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Documents</h1>
+          <h1 className="text-xl font-bold" style={{ color: "var(--texte)" }}>Dossiers Candidats</h1>
           <p className="text-xs mt-1 font-mono" style={{ color: "var(--texte-tertiaire)" }}>
             {documents.length} document{documents.length !== 1 ? "s" : ""}
             · {documents.filter(d => d.status === "APPROVED").length} approuvé{documents.filter(d => d.status === "APPROVED").length !== 1 ? "s" : ""}
@@ -140,7 +142,7 @@ export default function DocumentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="label-xs">Opportunité</label>
-              <select value={selOpp} onChange={e => setSelOpp(e.target.value)} className="input-elton">
+              <select value={selOpp} onChange={e => setSelOpp(e.target.value)} className="input-prsto">
                 <option value="">Sélectionner une offre analysée...</option>
                 {opportunities.map(o => (
                   <option key={o.id} value={o.id}>{o.title} — {o.company} ({o.score || "?"}/100)</option>
@@ -149,7 +151,7 @@ export default function DocumentsPage() {
             </div>
             <div>
               <label className="label-xs">Type de document</label>
-              <select value={selType} onChange={e => setSelType(e.target.value as DocumentType)} className="input-elton">
+              <select value={selType} onChange={e => setSelType(e.target.value as DocumentType)} className="input-prsto">
                 <optgroup label="CV">
                   <option value="cv_fr">CV adapté — Français</option>
                   <option value="cv_en">CV adapted — English</option>
@@ -227,7 +229,7 @@ export default function DocumentsPage() {
         <div className="p-12 text-center rounded-lg border" style={{ background: "var(--fond-surface)", borderColor: "var(--bordure)", borderStyle: "dashed" }}>
           <FileText size={28} className="mx-auto mb-3 opacity-25" style={{ color: "var(--or)" }} />
           <p className="text-sm font-mono" style={{ color: "var(--texte-tertiaire)" }}>
-            Aucun document. Générez votre première candidature.
+            Aucun dossier candidat. Générez votre première candidature.
           </p>
           <button onClick={() => setShowGenerator(true)}
             className="mt-3 text-xs font-mono underline" style={{ color: "var(--or)" }}>

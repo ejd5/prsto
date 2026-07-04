@@ -13,7 +13,7 @@ function checkAuth(request: Request): "ok" | "missing" | "invalid" {
 
 export async function GET() {
   return NextResponse.json({
-    endpoint: "Import automatique ELTON OS",
+    endpoint: "Import automatique PRSTO",
     method: "POST pour lancer un import",
     dryRun: "POST avec {\"dryRun\": true} pour tester sans API",
     params: "maxPages (1-5), maxJobsPerRun (max 500), source, mode",

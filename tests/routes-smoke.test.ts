@@ -15,7 +15,7 @@ const STATIC_ROUTES = [
   "/analyse",
   "/documents",
   "/documents/templates",
-  "/pipeline",
+  "/dashboard/jobs/pipeline",
   "/entretiens",
   "/parametres",
   "/test-flow",
@@ -51,7 +51,7 @@ describe("Déclaration des routes", () => {
     expect(STATIC_ROUTES).toContain("/");
     expect(STATIC_ROUTES).toContain("/profil");
     expect(STATIC_ROUTES).toContain("/opportunites");
-    expect(STATIC_ROUTES).toContain("/pipeline");
+    expect(STATIC_ROUTES).toContain("/dashboard/jobs/pipeline");
     expect(STATIC_ROUTES).toContain("/entretiens");
     expect(STATIC_ROUTES).toContain("/test-flow");
     expect(STATIC_ROUTES).toContain("/parametres");

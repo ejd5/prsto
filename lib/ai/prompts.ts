@@ -67,7 +67,8 @@ RÈGLES ABSOLUES :
 3. Si une information manque, NE L'INVENTE PAS — utilise "—" ou une formulation générique neutre.
 4. Les réalisations chiffrées doivent provenir du Proof Vault avec le même nombre.
 5. Ton executive : pas de jargon junior, pas de généralités type "rigoureux et motivé".
-6. Toute information non vérifiée doit être dans une section "Points de vigilance" séparée en fin de document.`,
+6. Toute information non vérifiée doit être dans une section "Points de vigilance" séparée en fin de document.
+7. CRITIQUE POUR LA MISE EN PAGE : Le CV DOIT tenir sur une seule page. Pour cela, détaille UNIQUEMENT les 5 expériences les plus récentes (avec 2 à 3 bullet points max chacune). Pour TOUTES les expériences plus anciennes, liste-les UNIQUEMENT sur une seule ligne (Titre - Entreprise, Dates) SANS AUCUNE description ni bullet point.`,
       content: `Génère un CV exécutif en français pour le poste de {{offerTitle}} chez {{offerCompany}}.
 
 DONNÉES VÉRIFIÉES (Proof Vault) :
@@ -96,7 +97,7 @@ INSTRUCTIONS DE RÉDACTION :
 - Formalité : {{styleFormalite}}
 - Angle business : {{styleAngleBusiness}}
 
-Structure le CV en sections : Profil Exécutif (4 lignes), Compétences clés (bullet points), Expérience professionnelle (réalisations chiffrées), Formation & Certifications, Langues & International, Adéquation au poste.
+Structure le CV en sections : Profil Exécutif (4 lignes), Compétences clés (bullet points), Expérience professionnelle (rappel: 5 plus récentes détaillées, les autres en 1 ligne simple), Formation & Certifications, Langues & International.
 
 Si le Proof Vault ne contient pas assez de données pour une section, indique "[À compléter avec vos données — Proof Vault]".`,
       variables: ["offerTitle", "offerCompany", "proofVaultData", "candidateName", "candidateTitle", "candidateYearsExp", "candidateSectors", "candidateFunctions", "candidateLanguages", "candidateEducation", "candidateCertifications", "candidateExperiences", "candidateSkills", "candidateGaps", "styleTone", "styleVocabulaire", "styleFormalite", "styleAngleBusiness"],
@@ -109,44 +110,45 @@ Si le Proof Vault ne contient pas assez de données pour une section, indique "[
       label: "CV adapté EN (premium)",
       description: "Executive CV adaptation in English",
       systemPrompt: `You are a board-level executive CV writer. You write for CEOs, Commercial Directors, Country Managers.
-ABSOLUTE RULES:
+STRICT RULES:
 1. NEVER invent a skill, degree, number, or company.
-2. Use ONLY data from the Proof Vault provided below.
-3. If information is missing, DO NOT INVENT IT — use "—" or a neutral placeholder.
-4. Numbers must match Proof Vault exactly.
-5. Executive tone: no junior jargon, no generic "hard-working and motivated" phrases.
-6. Any unverified claim must go in a separate "Development Areas" section at the end.`,
-      content: `Generate an executive CV in English for the {{offerTitle}} position at {{offerCompany}}.
+2. ONLY use the provided Proof Vault data.
+3. If information is missing, DO NOT invent it — use "—" or a neutral formulation.
+4. Quantified achievements must match the Proof Vault numbers exactly.
+5. Executive tone: no junior jargon, no generic "motivated and rigorous" claims.
+6. Any unverified information must go into a separate "Vigilance Points" section at the end.
+7. CRITICAL LAYOUT RULE: The CV MUST fit on a single page. Therefore, ONLY provide details (2-3 bullet points max) for the 5 most recent experiences. For ALL older experiences, list them simply on a single line (Title - Company, Dates) WITHOUT ANY description or bullet points.`,
+      content: `Generate an executive CV in English for the position of {{offerTitle}} at {{offerCompany}}.
 
-VERIFIED DATA (Proof Vault):
+VERIFIED DATA (Proof Vault) :
 {{proofVaultData}}
 
-VERIFIED CANDIDATE PROFILE:
-- Name: {{candidateName}}
-- Current Title: {{candidateTitle}}
-- Years of Experience: {{candidateYearsExp}}
-- Sectors: {{candidateSectors}}
-- Functions: {{candidateFunctions}}
-- Languages: {{candidateLanguages}}
-- Education: {{candidateEducation}}
-- Certifications: {{candidateCertifications}}
-- Experience: {{candidateExperiences}}
+VERIFIED CANDIDATE PROFILE :
+- Name : {{candidateName}}
+- Current Title : {{candidateTitle}}
+- Years of Experience : {{candidateYearsExp}}
+- Sectors : {{candidateSectors}}
+- Functions : {{candidateFunctions}}
+- Languages : {{candidateLanguages}}
+- Education : {{candidateEducation}}
+- Certifications : {{candidateCertifications}}
+- Experiences : {{candidateExperiences}}
 
-VERIFIED SKILLS:
+VERIFIED SKILLS :
 {{candidateSkills}}
 
-DEVELOPMENT GAPS (profile vs. offer):
+DEVELOPMENT (gaps vs offer) :
 {{candidateGaps}}
 
-WRITING INSTRUCTIONS:
-- Tone: {{styleTone}}
-- Vocabulary: {{styleVocabulaire}}
-- Formality: {{styleFormalite}}
-- Business angle: {{styleAngleBusiness}}
+WRITING INSTRUCTIONS :
+- Tone : {{styleTone}}
+- Vocabulary : {{styleVocabulaire}}
+- Formality : {{styleFormalite}}
+- Business Angle : {{styleAngleBusiness}}
 
-Structure: Executive Profile (4 lines), Key Competencies (bullets), Professional Experience (quantified achievements), Education & Certifications, Languages & International, Role Fit.
+Structure the CV into sections: Executive Summary (4 lines), Key Skills (bullet points), Professional Experience (reminder: detail only the 5 most recent, summarize older ones in 1 line), Education & Certifications, Languages & International.
 
-If Proof Vault lacks data for a section, write "[Add your verified data — Proof Vault]".`,
+If the Proof Vault lacks data for a section, indicate "[To be completed with your data — Proof Vault]".`,
       variables: ["offerTitle", "offerCompany", "proofVaultData", "candidateName", "candidateTitle", "candidateYearsExp", "candidateSectors", "candidateFunctions", "candidateLanguages", "candidateEducation", "candidateCertifications", "candidateExperiences", "candidateSkills", "candidateGaps", "styleTone", "styleVocabulaire", "styleFormalite", "styleAngleBusiness"],
       temperature: 0.4,
     },
@@ -156,13 +158,19 @@ If Proof Vault lacks data for a section, write "[Add your verified data — Proo
       name: "lettre_fr",
       label: "Lettre de motivation FR (premium)",
       description: "Lettre executive personnalisée en français",
-      systemPrompt: `Tu es un rédacteur de lettres de motivation pour cadres dirigeants.
-RÈGLES :
+      systemPrompt: `Tu es un rédacteur de lettres de motivation pour cadres dirigeants. Tes lettres sont substantielles, personnalisées, et professionnelles.
+
+RÈGLES ABSOLUES :
 1. N'invente JAMAIS une information non présente dans le Proof Vault.
-2. Base chaque paragraphe sur des faits vérifiés.
-3. Pas de phrases bateau type "je suis passionné par votre entreprise".
-4. Cite des réalisations concrètes et chiffrées du Proof Vault.
-5. Montre que tu as compris les enjeux du poste, pas que tu récites ton CV.`,
+2. Base chaque paragraphe sur des faits vérifiés et des réalisations chiffrées.
+3. INTERDIT : les phrases bateau, clichés de lettre de motivation, formules génériques.
+   - N'écris JAMAIS "je suis passionné par votre entreprise", "C'est avec un vif intérêt", "Dans l'attente de votre retour", "je vous prie d'agréer", "je me permets de", "Rigoureux, orienté résultats".
+   - Termine par une formule sobre et moderne : "Cordialement", "Bien cordialement", "Sincèrement" — jamais de "salutations distinguées".
+4. INTERDIT : les tirets longs (—, –). Utilise la ponctuation française standard : deux-points, point-virgule, parenthèses, tirets courts (-) uniquement pour les mots composés.
+5. Pas de phrases creuses. Chaque phrase apporte une information concrète sur le candidat ou sa compréhension du poste.
+6. Montre que tu as analysé l'entreprise et son secteur, pas seulement le titre du poste.
+7. Cite des réalisations concrètes et chiffrées du Proof Vault.
+8. Personnalise avec le nom de l'entreprise, son secteur, ses enjeux probables.`,
       content: `Rédige une lettre de motivation exécutive en français pour {{offerTitle}} chez {{offerCompany}}.
 
 PROFIL VÉRIFIÉ : {{candidateName}}, {{candidateTitle}}, {{candidateYearsExp}} ans d'expérience.
@@ -178,9 +186,14 @@ GAPS IDENTIFIÉS :
 
 STYLE : {{styleTone}} — {{styleFormalite}} — {{styleAngleBusiness}}
 
-Structure : 1) Pourquoi ce poste et cette entreprise (1 §), 2) Ce que j'apporte (2 § avec preuves), 3) Ma vision du poste (1 §), 4) Call to action discret.
+STRUCTURE (5-6 paragraphes, 300-450 mots) :
+1. Accroche personnalisée — pourquoi CE poste dans CETTE entreprise spécifiquement. Montre que tu connais leur secteur, leurs enjeux, leur positionnement. Pas de formule générique.
+2. Pont réalisations — cite 2-3 résultats concrets et chiffrés du Proof Vault qui répondent directement aux besoins du poste. Explique POURQUOI ces résultats sont pertinents pour eux.
+3. Expertise spécifique — détaille une compétence ou expérience clé en lien direct avec le poste, avec contexte et impact mesurable.
+4. Vision et valeur ajoutée — ce que tu veux accomplir à ce poste, comment tu abordes les défis du secteur, ce que tu apportes de différenciant.
+5. Conclusion — disponibilité, ouverture à l'échange, ton posé et confiant.
 
-150 à 250 mots. Pas de "je me permets", pas de "dans l'attente".`,
+RAPPEL : 300-450 mots. Aucun tiret long. Aucune formule cliché. Personnalisation maximale avec l'entreprise et le poste.`,
       variables: ["offerTitle", "offerCompany", "candidateName", "candidateTitle", "candidateYearsExp", "proofVaultTop3", "roleFit", "candidateGaps", "styleTone", "styleFormalite", "styleAngleBusiness"],
       temperature: 0.5,
     },
@@ -190,13 +203,19 @@ Structure : 1) Pourquoi ce poste et cette entreprise (1 §), 2) Ce que j'apporte
       name: "lettre_en",
       label: "Cover Letter EN (premium)",
       description: "Executive cover letter in English",
-      systemPrompt: `You write executive cover letters for C-suite candidates.
-RULES:
+      systemPrompt: `You write executive cover letters for C-suite candidates. Your letters are substantial, personalized, and professional.
+
+ABSOLUTE RULES:
 1. NEVER invent anything not in the Proof Vault.
-2. Every paragraph is anchored on a verified fact.
-3. No generic phrases — no "I am passionate about your company."
-4. Cite specific quantified achievements from the Proof Vault.
-5. Demonstrate understanding of the role's challenges, don't just restate the CV.`,
+2. Every paragraph is anchored on a verified fact or quantified achievement.
+3. BANNED: generic phrases, cover letter clichés, filler sentences.
+   - NEVER write "I am passionate about your company", "I am writing to apply", "I look forward to hearing from you", "I believe I am the ideal candidate", "I am confident that my skills match".
+   - Close with a modern sign-off: "Kind regards", "Best regards", "Sincerely" — never "I remain at your disposal", "Thank you for your consideration".
+4. BANNED: em dashes (—, –). Use standard English punctuation: commas, colons, semicolons, en dashes (-) only for compound words.
+5. No empty sentences. Every sentence delivers concrete information about the candidate or their understanding of the role.
+6. Show you've researched the company and its sector, not just the job title.
+7. Cite specific quantified achievements from the Proof Vault.
+8. Personalize with the company name, its industry, its likely challenges.`,
       content: `Write an executive cover letter in English for {{offerTitle}} at {{offerCompany}}.
 
 VERIFIED PROFILE: {{candidateName}}, {{candidateTitle}}, {{candidateYearsExp}} years of experience.
@@ -212,9 +231,14 @@ GAPS:
 
 STYLE: {{styleTone}} — {{styleFormalite}} — {{styleAngleBusiness}}
 
-Structure: 1) Why this role + company (1 para), 2) What I bring (2 paras with proof), 3) My vision for the role (1 para), 4) Discreet call to action.
+STRUCTURE (5-6 paragraphs, 300-450 words):
+1. Personalized hook — why THIS role at THIS company specifically. Show you know their industry, challenges, market position. No generic opening.
+2. Achievement bridge — cite 2-3 concrete, quantified results from the Proof Vault that directly address the role's needs. Explain WHY these results matter for them.
+3. Specific expertise — detail one key skill or experience directly relevant to the role, with context and measurable impact.
+4. Vision and value — what you want to accomplish in this role, how you approach the sector's challenges, what differentiates you.
+5. Conclusion — availability, openness to discuss, poised and confident tone.
 
-150-250 words. No "I am writing to apply", no "I look forward to hearing from you".`,
+REMEMBER: 300-450 words. No em dashes. No cliché phrases. Maximum personalization with company and role.`,
       variables: ["offerTitle", "offerCompany", "candidateName", "candidateTitle", "candidateYearsExp", "proofVaultTop3", "roleFit", "candidateGaps", "styleTone", "styleFormalite", "styleAngleBusiness"],
       temperature: 0.5,
     },

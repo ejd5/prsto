@@ -2,12 +2,15 @@
 
 import { prisma } from "@/lib/prisma";
 import { generateJsonWithDeepSeek, generateWithDeepSeek } from "@/lib/ai/deepseek";
+import { sanitizeExperienceLine, normalizeDateRangeForCv } from "@/lib/jobs/cv-content-sanitizer";
+import { normalizeLanguages, renderLanguages } from "@/lib/jobs/languages-normalizer";
 import { cleanGeneratedApplicationText, isCabinetRecrutement } from "@/lib/jobs/text-sanitizer";
+import { chooseSummarySectionTitle, sanitizeExecutiveSummary } from "@/lib/jobs/cv-summary-builder";
 import { revalidatePath } from "next/cache";
 
 /* ─── Types ─────────────────────────────── */
 
-interface CandidateSummary {
+export interface CandidateSummary {
   profileId: string;
   fullName: string; title: string; summary: string; location: string | null;
   email: string | null; phone: string | null;
@@ -29,7 +32,7 @@ interface PrepareOutput {
 /* ─── Helpers ───────────────────────────── */
 
 async function getCandidate(): Promise<CandidateSummary | null> {
-  const p = await prisma.profile.findFirst({ include: { skills: true, experiences: { orderBy: { startDate: "desc" }, take: 10 }, cvMaster: true } });
+  const p = await prisma.profile.findFirst({ include: { skills: true, experiences: { orderBy: { startDate: "desc" }, take: 10 }, cvMaster: true, proofEntries: { take: 10 } } });
   if (!p) return null;
   const proofs = await prisma.proofEntry.findMany({ where: { profileId: p.id }, take: 10 });
   return {
@@ -53,9 +56,19 @@ function buildCandidateText(c: CandidateSummary): string {
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1);
 
-  return `Nom : ${c.fullName}\nTitre : ${c.title}\n${c.summary ? `Résumé : ${c.summary.slice(0, 1000)}\n` : ""}\nCompétences :\n${c.skills.map(s => `  - ${s.name} (${s.category}, ${s.level})`).join("\n")}\n\nExpériences :\n${c.experiences.map(e => {
+  // Parse profile languages pour les injecter dans le prompt
+  let languageList = "";
+  try {
+    const parsed = JSON.parse(c.languages || "[]");
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      languageList = `\nLangues (source de vérité — TOUTES doivent apparaître) : ${parsed.join(", ")}`;
+    }
+  } catch {
+    if (c.languages) languageList = `\nLangues : ${c.languages}`;
+  }
+
+  return `Nom : ${c.fullName}\nTitre : ${c.title}\n${c.summary ? `Résumé : ${c.summary.slice(0, 1000)}\n` : ""}\nCompétences :\n${c.skills.map(s => `  - ${s.name} (${s.category}, ${s.level})`).join("\n")}${languageList}\n\nExpériences :\n${c.experiences.map(e => {
     const hasRealEnd = e.endDate && e.endDate.trim() !== "";
-    // Si endDate existe et est dans le passé → poste TERMINÉ
     const isEnded = hasRealEnd && e.endDate! <= now.toISOString().slice(0, 7);
     const statusLabel = isEnded ? " (POSTE TERMINÉ)" : (hasRealEnd ? "" : " (poste actuel)");
     return `  - ${e.title} chez ${e.company} (${e.startDate} - ${e.endDate || "présent"})${statusLabel}\n    ${(e.description || "").slice(0, 300)}\n    Réalisations : ${(e.achievements || "").slice(0, 300)}`;
@@ -73,83 +86,251 @@ function buildChangelog(draftId: string, parts: string[]): string {
 
 /* ─── Générations ───────────────────────── */
 
-async function generateResume(offer: string, candidate: string, gaps: string[] = [], atsKw: string[] = [], confirmed: string[] = []): Promise<string> {
+async function generateResume(offer: string, candidate: string, gaps: string[] = [], atsKw: string[] = [], confirmed: string[] = [], cvAngle?: string, c?: CandidateSummary): Promise<string> {
+  const angleHint = cvAngle ? `\nANGLE DE CANDIDATURE SUGGÉRÉ : ${cvAngle}\nAdapte le CV pour mettre en avant ces angles sans rien inventer.\n` : "";
+  
+  // Fetch custom prompt from settings
+  const aiPrompt = await prisma.aIPrompt.findUnique({ where: { name: "cv_tailor_fr" } });
+  
+  // Combine the DB prompt with dynamic context
+  const systemPrompt = aiPrompt?.systemPrompt 
+    ? `${aiPrompt.systemPrompt}\n\n${angleHint}\n\nCompétences matching: ${confirmed.join(", ")}.\nGaps: ${gaps.join(", ")}.\nMots-clés ATS: ${atsKw.join(", ")}.`
+    : `Tu es un rédacteur CV expert pour cadres dirigeants. Génère un CV adapté COMPLET pour cette offre.\n${angleHint}\nCompétences matching: ${confirmed.join(", ")}.\nGaps: ${gaps.join(", ")}.\nMots-clés ATS: ${atsKw.join(", ")}.`;
+
+  const userPromptTemplate = aiPrompt?.content || `Offre : {{offer}}\n\nProfil complet : {{profile}}`;
+  
+  // Mock proofVault for now by taking verified skills/proofs
+  const proofVaultStr = c ? c.proofEntries.map(p => `- ${p.category}: ${p.title} = ${p.value}`).join("\n") : candidate.slice(0, 2000);
+  
+  const offerTitleMatch = offer.match(/Titre\s*:\s*(.+)/i);
+  const offerCompanyMatch = offer.match(/Entreprise\s*:\s*(.+)/i);
+
+  const userPrompt = userPromptTemplate
+    .replace(/\{\{cv_master\}\}/g, candidate)
+    .replace(/\{\{profile\}\}/g, candidate)
+    .replace(/\{\{offer\}\}/g, offer.slice(0, 1500))
+    .replace(/\{\{proof_vault\}\}/g, proofVaultStr)
+    // Nouveaux marqueurs Premium
+    .replace(/\{\{proofVaultData\}\}/g, proofVaultStr)
+    .replace(/\{\{offerTitle\}\}/g, offerTitleMatch ? offerTitleMatch[1] : "Poste cible")
+    .replace(/\{\{offerCompany\}\}/g, offerCompanyMatch ? offerCompanyMatch[1] : "L'entreprise")
+    .replace(/\{\{candidateName\}\}/g, c?.fullName || "Candidat")
+    .replace(/\{\{candidateTitle\}\}/g, c?.title || "Directeur")
+    .replace(/\{\{candidateYearsExp\}\}/g, String(c?.yearsExp || 15))
+    .replace(/\{\{candidateSectors\}\}/g, c?.sectors || "Secteurs variés")
+    .replace(/\{\{candidateFunctions\}\}/g, c?.functions || "Direction")
+    .replace(/\{\{candidateLanguages\}\}/g, c?.languages || "Non spécifié")
+    .replace(/\{\{candidateEducation\}\}/g, c?.education || "Non spécifié")
+    .replace(/\{\{candidateCertifications\}\}/g, c?.certifications || "Aucune")
+    .replace(/\{\{candidateExperiences\}\}/g, c ? c.experiences.map(e => `- ${e.title} chez ${e.company} (${e.startDate} - ${e.endDate || "présent"})`).join("\n") : "")
+    .replace(/\{\{candidateSkills\}\}/g, c ? c.skills.map(s => `- ${s.name}`).join("\n") : "")
+    .replace(/\{\{candidateGaps\}\}/g, gaps.length > 0 ? gaps.join(", ") : "Aucun")
+    .replace(/\{\{styleTone\}\}/g, "exécutif, direct, stratégique")
+    .replace(/\{\{styleVocabulaire\}\}/g, "orienté résultats, P&L, croissance")
+    .replace(/\{\{styleFormalite\}\}/g, "très formel, niveau board")
+    .replace(/\{\{styleAngleBusiness\}\}/g, cvAngle || "Croissance et transformation");
+
   const r = await generateWithDeepSeek({
-    systemPrompt: `Tu es un rédacteur CV expert. Génère un CV adapté COMPLET pour cette offre.
-
-RÈGLES ABSOLUES — si tu les violes, le CV est inutilisable :
-
-1. N'invente JAMAIS une expérience, un diplôme, une certification, une compétence ou un chiffre.
-2. Respecte STRICTEMENT les dates de début et de FIN de chaque expérience. Si une expérience a une date de fin dans le passé, n'écris JAMAIS "actuellement", "en poste", "depuis" ou quoi que ce soit qui suggère que la personne y travaille encore. Écris les dates exactes et utilise le passé.
-3. Si une section n'a AUCUNE donnée réelle (pas de formation, pas de certification, pas de langue), SUPPRIME complètement la section. N'écris JAMAIS "Non renseigné", "Aucune certification mentionnée", "N/A" ou tout autre texte d'absence. Une section vide = elle disparaît du CV.
-4. Conserve TOUTES les expériences importantes du CV maître. Ne supprime pas d'expérience.
-5. Reformule les expériences pour matcher l'offre, mais reste FIDÈLE aux faits.
-
-Compétences matching: ${confirmed.join(", ")}.
-Gaps à NE PAS inventer: ${gaps.join(", ")}.
-Mots-clés ATS à intégrer naturellement (si vrais): ${atsKw.join(", ")}.
-
-STRUCTURE (sans Markdown, sans **, sans ---) :
-
-NOM PRÉNOM
-Titre professionnel
-Coordonnées si disponibles
-
-RÉSUMÉ EXÉCUTIF
-[3-5 lignes adaptées au poste — utilise le PASSÉ pour les expériences terminées]
-
-EXPÉRIENCE PROFESSIONNELLE
-[Pour chaque expérience :]
-Entreprise — Dates exactes (AAAA-MM à AAAA-MM ou AAAA-MM à présent si poste actuel)
-Titre du poste
-[2-4 lignes de responsabilités et réalisations — au PASSÉ si le poste est terminé, au PRÉSENT si en cours]
-
-COMPÉTENCES CLÉS
-[• liste à puces, uniquement les compétences réelles]
-
-FORMATION
-[Diplômes réels uniquement. Si aucune formation dans le profil, SUPPRIMER cette section entièrement.]
-
-LANGUES
-[Langues réelles uniquement. Si pas de données, SUPPRIMER.]
-
-CERTIFICATIONS
-[Certifications réelles uniquement. Si aucune, SUPPRIMER.]`,
-    userPrompt: `Offre : ${offer.slice(0, 1500)}\n\nProfil complet : ${candidate.slice(0, 6000)}`,
-    temperature: 0.3, maxTokens: 5000,
+    systemPrompt,
+    userPrompt,
+    temperature: aiPrompt?.temperature ?? 0.3, 
+    maxTokens: 5000,
   });
-  return r.success && r.content ? r.content : "Échec génération CV";
+  if (r.success && r.content) return r.content;
+
+  // Local fallback: build a basic CV from profile data
+  return await buildLocalResume(candidate, offer);
 }
 
-async function generateLetters(offerTitle: string, company: string, c: CandidateSummary, confirmed: string[] = [], isCabinet = false): Promise<{ long: string; short: string }> {
+async function generateLetters(offerTitle: string, company: string, c: CandidateSummary, confirmed: string[] = [], isCabinet = false, letterAngle?: string): Promise<{ long: string; short: string }> {
   const safe = (confirmed || []);
   const cabinetNote = isCabinet
     ? `ATTENTION : L'annonce semble publiée par un cabinet de recrutement. Utilise "le poste que vous accompagnez", "votre client", "cette opportunité" plutôt que "votre entreprise". Ne présuppose pas le nom de l'employeur final.`
     : "";
+  const angleHint = letterAngle ? `ANGLE DE LETTRE SUGGÉRÉ : ${letterAngle}\n` : "";
+
+  const aiLetter = await prisma.aIPrompt.findUnique({ where: { name: "lettre_fr" } });
+  const aiEmail = await prisma.aIPrompt.findUnique({ where: { name: "email_fr" } });
+
+  const realExperiencesStr = c.experiences.slice(0, 6).map(e => 
+    `- ${e.title} chez ${e.company} (du ${e.startDate} au ${e.endDate || "Présent"}) : ${e.description || ""}`
+  ).join("\n");
+
+  const antiHallucinationSystemInstruction = `
+CONSIGNE ANTI-HALLUCINATION CRITIQUE :
+1. Tu ne dois JAMAIS mentionner d'entreprises où le candidat n'a pas travaillé. Les seules entreprises autorisées dans son parcours sont : ${c.experiences.map(e => e.company).join(", ")}.
+2. Tu ne devez pas inventer de chiffres, de pourcentages ou de budgets (par exemple ne mentionne pas "+35% de croissance", "4.2 millions d'euros", "portefeuille de 15 clients" ou "équipe de 45 personnes" sauf si ces chiffres exacts sont explicitement listés dans ses expériences réelles fournies ci-dessous).
+3. Reste strictement fidèle aux faits fournis. Si aucun chiffre n'est présent pour une expérience, parle des missions de manière qualitative (ex: restructuration commerciale, management d'équipes, négociation d'accords nationaux, pilotage de P&L) sans ajouter de métrique inventée.
+`;
+
+  const letterSystem = (aiLetter?.systemPrompt 
+    ? `${aiLetter.systemPrompt}\n\nEntreprise: ${company}.\n${cabinetNote}\n${angleHint}\nPoints forts réels : ${safe.join(", ")}.`
+    : `Génère une lettre de motivation personnalisée pour ${c.fullName} — ${offerTitle}.\nEntreprise: ${company}.\n${cabinetNote}\n${angleHint}`) + antiHallucinationSystemInstruction;
+
+  const proofVaultTop3 = [
+    "EXPÉRIENCES RÉELLES DU CANDIDAT (Ne cite ou n'utilise aucun autre employeur, chiffre ou projet) :",
+    realExperiencesStr,
+    "",
+    "Preuves spécifiques additionnelles :",
+    safe.length > 0 ? safe.join("\n") : "Aucune."
+  ].join("\n");
+  const proofVaultTop2 = proofVaultTop3;
+  const roleFit = `Le candidat est un ${c.title || "cadre dirigeant"} expérimenté avec une expertise en ${c.functions || "direction commerciale/marketing"}. Son profil correspond aux exigences du poste de ${offerTitle}.`;
+
+  const letterUser = (aiLetter?.content || `Profil : {{profile}}`)
+    .replace(/\{\{profile\}\}/g, (c.summary || "").slice(0, 800))
+    .replace(/\{\{cv_master\}\}/g, c.experiences.slice(0, 4).map((e) => `${e.title} chez ${e.company}`).join(", "))
+    .replace(/\{\{offer\}\}/g, offerTitle)
+    .replace(/\{\{offerTitle\}\}/g, offerTitle)
+    .replace(/\{\{offerCompany\}\}/g, company)
+    .replace(/\{\{candidateName\}\}/g, c.fullName || "Candidat")
+    .replace(/\{\{candidateTitle\}\}/g, c.title || "Directeur")
+    .replace(/\{\{candidateYearsExp\}\}/g, String(c.yearsExp || 15))
+    .replace(/\{\{proofVaultTop3\}\}/g, proofVaultTop3)
+    .replace(/\{\{proof_vault\}\}/g, safe.join(", "))
+    .replace(/\{\{roleFit\}\}/g, roleFit)
+    .replace(/\{\{candidateGaps\}\}/g, "Aucun écart critique identifié.")
+    .replace(/\{\{styleTone\}\}/g, "exécutif, direct, stratégique")
+    .replace(/\{\{styleFormalite\}\}/g, "très formel, niveau board")
+    .replace(/\{\{styleAngleBusiness\}\}/g, letterAngle || "Croissance et transformation");
+
+  const emailSystem = (aiEmail?.systemPrompt 
+    ? `${aiEmail.systemPrompt}\n\nEntreprise: ${company}.`
+    : `Génère UN paragraphe de motivation (3-5 lignes) pour ${c.fullName} — ${offerTitle} chez ${company}.`) + antiHallucinationSystemInstruction;
+  const emailUser = (aiEmail?.content || `Profil : {{profile}}`)
+    .replace(/\{\{profile\}\}/g, (c.summary || "").slice(0, 800))
+    .replace(/\{\{cv_master\}\}/g, "")
+    .replace(/\{\{offer_title\}\}/g, offerTitle)
+    .replace(/\{\{offerTitle\}\}/g, offerTitle)
+    .replace(/\{\{offer_company\}\}/g, company)
+    .replace(/\{\{offerCompany\}\}/g, company)
+    .replace(/\{\{candidateName\}\}/g, c.fullName || "Candidat")
+    .replace(/\{\{candidateTitle\}\}/g, c.title || "Directeur")
+    .replace(/\{\{candidateYearsExp\}\}/g, String(c.yearsExp || 15))
+    .replace(/\{\{proofVaultTop2\}\}/g, proofVaultTop2)
+    .replace(/\{\{proof_vault\}\}/g, safe.join(", "))
+    .replace(/\{\{styleTone\}\}/g, "exécutif, direct, stratégique")
+    .replace(/\{\{styleFormalite\}\}/g, "très formel, niveau board");
 
   const [l, s] = await Promise.all([
     generateWithDeepSeek({
-      systemPrompt: `Génère une lettre de motivation personnalisée pour ${c.fullName} — ${offerTitle}.
-
-Entreprise: ${company}.
-${cabinetNote}
-
-RÈGLES :
-- N'invente JAMAIS une expérience, un diplôme, une certification ou un chiffre.
-- Points forts réels à mentionner : ${safe.join(", ")}.
-- Si le secteur n'est pas couvert par le CV, utilise des formulations de transférabilité ("mon expérience est transférable à...", "mon parcours m'a habitué à...").
-- Structure : 3-4 paragraphes. Pas de Markdown, pas de **, pas de ---.
-- Format : Objet, Madame/Monsieur, corps, formule de politesse, signature.
-- Texte propre, prêt à envoyer.`,
-      userPrompt: `Profil : ${(c.summary || "").slice(0, 800)}\n\nExpériences clés : ${c.experiences.slice(0, 4).map((e) => `${e.title} chez ${e.company}`).join(", ")}`,
-      temperature: 0.3, maxTokens: 3000,
+      systemPrompt: letterSystem,
+      userPrompt: letterUser,
+      temperature: aiLetter?.temperature ?? 0.3, maxTokens: 3000,
     }),
     generateWithDeepSeek({
-      systemPrompt: `Génère UN paragraphe de motivation (3-5 lignes) pour ${c.fullName} — ${offerTitle} chez ${company}. Court, percutant, pas de Markdown.`,
-      userPrompt: "", temperature: 0.3, maxTokens: 1000,
+      systemPrompt: emailSystem,
+      userPrompt: emailUser,
+      temperature: aiEmail?.temperature ?? 0.3, maxTokens: 1000,
     }),
   ]);
-  return { long: l.success && l.content ? l.content : "Échec", short: s.success && s.content ? s.content : "" };
+  const long = l.success && l.content ? l.content : await buildLocalLetter(c, offerTitle, company, "long");
+  const short = s.success && s.content ? s.content : await buildLocalLetter(c, offerTitle, company, "short");
+  return { long, short };
+}
+
+/* ─── Fallbacks locaux (si DeepSeek indisponible) ── */
+
+export async function buildLocalResume(candidateText: string, offerText: string): Promise<string> {
+  // Parse key info from candidate text
+  const getName = () => {
+    const m = candidateText.match(/^Nom : (.+)$/m);
+    return m ? m[1].trim() : "Candidat";
+  };
+  const getTitle = () => {
+    const m = candidateText.match(/^Titre : (.+)$/m);
+    return m ? m[1].trim() : "";
+  };
+  const getLocation = () => {
+    const m = candidateText.match(/Localisation : (.+)/);
+    return m ? m[1].trim() : "";
+  };
+  const getLanguages = () => {
+    const m = candidateText.match(/Langues[^:]*: (.+)$/m);
+    return m ? m[1].trim() : "";
+  };
+  const getJobTitle = () => {
+    const m = offerText.match(/^Titre : (.+)$/m);
+    return m ? m[1].trim() : "ce poste";
+  };
+
+  const name = getName();
+  const title = getTitle();
+  const loc = getLocation();
+  const langs = getLanguages();
+  const jobTitle = getJobTitle();
+
+  // Extract experience blocks
+  const expMatch = candidateText.match(/Expériences :\n([\s\S]*?)(?:\n\nPreuves|\n\nCV|\n\nCompétences|\n*$)/);
+  const expLines = expMatch ? expMatch[1].trim().split("\n").filter((l) => l.trim().startsWith("-")) : [];
+
+  // Extract skills
+  const skillsMatch = candidateText.match(/Compétences :\n([\s\S]*?)(?:\n\n|\n*$)/);
+  const skillLines = skillsMatch ? skillsMatch[1].trim().split("\n").filter((l) => l.trim().startsWith("-")) : [];
+
+  let resume = `${name}\n${title}\n${loc ? loc + "\n" : ""}`;
+  const sectionTitle = getResumeSectionTitle(jobTitle);
+  resume += `\n${sectionTitle}\n${title} avec ${getYearsExp(candidateText)} d'experience, candidat pour le poste de ${jobTitle}. Parcours aligné avec les exigences du poste : expertise en management, croissance et transformation commerciale.\n`;
+  resume += `\nEXPÉRIENCES PROFESSIONNELLES\n`;
+  if (expLines.length > 0) {
+    for (const line of expLines.slice(0, 6)) resume += line.trim() + "\n";
+  } else {
+    resume += `${title} : Expérience professionnelle détaillée dans le CV maître.\n`;
+  }
+  // Savoir-faire stratégique section
+  resume += `\nSAVOIR-FAIRE STRATÉGIQUE\n`;
+  if (skillLines.length > 0) {
+    const skills = skillLines.slice(0, 12).map(l => l.replace(/^[•\-]\s*/, "").replace(/\(.*?\)/g, "").trim()).filter(Boolean);
+    const grouped: Record<string, string[]> = {};
+    for (const s of skills) {
+      const cat = /management|direction|pilotage|leadership|équipe|equipe/i.test(s) ? "Management & Leadership" :
+                  /négociation|nego|vente|commercial|business|client|account/i.test(s) ? "Commercial & Business" :
+                  /crm|salesforce|pipeline|forecast|kpi|reporting|data/i.test(s) ? "CRM & Pilotage" :
+                  /international|export|global|pays|country|region/i.test(s) ? "International" :
+                  /stratégie|strategie|go-to-market|gtm|plan/i.test(s) ? "Stratégie" : "Expertise";
+      if (!grouped[cat]) grouped[cat] = [];
+      if (!grouped[cat].includes(s)) grouped[cat].push(s);
+    }
+    for (const [cat, items] of Object.entries(grouped)) {
+      resume += `• ${cat} : ${items.slice(0, 4).join(", ")}\n`;
+    }
+  } else {
+    resume += "• Expertise professionnelle détaillée dans le CV maître\n";
+  }
+  // Savoir-être section
+  resume += `\nSAVOIR-ÊTRE EXÉCUTIF\n• Leadership d'équipes commerciales\n• Culture du résultat et de la performance\n• Décision et priorisation en contexte exigeant\n`;
+
+  // Deduplicate languages
+  if (langs) {
+    
+    try {
+      const items = langs.split(",").map(s => s.trim()).filter(Boolean);
+      const parsed = normalizeLanguages(items);
+      if (parsed.length > 0) resume += `\nLANGUES\n${renderLanguages(parsed)}\n`;
+    } catch {
+      resume += `\nLANGUES\n${langs}\n`;
+    }
+  }
+
+  return resume;
+}
+
+function getResumeSectionTitle(jobTitle: string): string {
+  return chooseSummarySectionTitle(jobTitle);
+}
+
+function getYearsExp(text: string): string {
+  const m = text.match(/(\d+)\s*ans/);
+  return m ? `${m[1]} ans` : "plusieurs années";
+}
+
+export async function buildLocalLetter(_c: CandidateSummary, offerTitle: string, company: string, mode: "long" | "short"): Promise<string> {
+  const name = _c.fullName || "Candidat";
+  const title = _c.title || "";
+  if (mode === "short") {
+    return `Madame, Monsieur,\n\nVotre recherche d'un ${offerTitle}${company ? ` pour ${company}` : ""} a retenu mon attention. Mon parcours en ${title || "direction commerciale"} et mes réalisations correspondent aux exigences du poste. Je suis disponible pour un échange.\n\nCordialement,\n${name}`;
+  }
+  return `Objet : Candidature au poste de ${offerTitle}${company ? ` chez ${company}` : ""}\n\nMadame, Monsieur,\n\nLe poste de ${offerTitle}${company ? ` au sein de ${company}` : ""} correspond à mon expertise en ${title || "direction commerciale"} et à mes réalisations en matière de pilotage d'équipes, de croissance des revenus et de développement commercial.\n\nMon parcours de plusieurs années m'a permis de structurer des organisations commerciales performantes, d'ouvrir de nouveaux marchés et d'atteindre des objectifs de croissance ambitieux. Les résultats obtenus dans mes précédentes fonctions démontrent ma capacité à répondre aux exigences de ce poste.\n\nJe suis disponible pour vous rencontrer et vous détailler ma vision du poste ainsi que les résultats concrets que je peux apporter à votre organisation.\n\nCordialement,\n${name}\n${_c.location || ""}\n${_c.phone || ""}`;
 }
 
 /* ─── Génération email ──────────────────── */
@@ -211,7 +392,7 @@ function buildLocalAnalysis(job: { title: string; company: string | null; descri
     confirmedMatches: confirmedMatches.slice(0, 8),
     gaps: skills.filter((sk) => !desc.includes(sk)).slice(0, 5).map((g) => `${g} (non détecté dans l'offre)`),
     risks: [],
-    applicationEmail: `Objet : Candidature — ${job.title}\n\nMadame, Monsieur,\n\nJe vous adresse ma candidature pour le poste de ${job.title}${job.company ? ` au sein de ${job.company}` : ""}.\n\nFort de ${c.yearsExp || "plus de 15"} ans d'expérience en ${c.functions || "direction commerciale"}, j'ai piloté des équipes et des budgets significatifs, avec des résultats mesurables en croissance, rentabilité et développement de nouveaux marchés.\n\nLes responsabilités décrites dans votre annonce correspondent à mon parcours et à mes réalisations professionnelles.\n\nJe suis disponible pour un échange à votre convenance afin de détailler ma candidature.\n\nCordialement,\n${c.fullName}\n${c.location || ""}\n${c.phone || ""}`,
+    applicationEmail: `Objet : Candidature au poste de ${job.title}\n\nMadame, Monsieur,\n\nJe vous adresse ma candidature pour le poste de ${job.title}${job.company ? ` au sein de ${job.company}` : ""}.\n\nFort de ${c.yearsExp || "plus de 15"} ans d'expérience en ${c.functions || "direction commerciale"}, j'ai piloté des équipes et des budgets significatifs, avec des résultats mesurables en croissance, rentabilité et développement de nouveaux marchés.\n\nLes responsabilités décrites dans votre annonce correspondent à mon parcours et à mes réalisations professionnelles.\n\nJe suis disponible pour un échange à votre convenance afin de détailler ma candidature.\n\nCordialement,\n${c.fullName}\n${c.location || ""}\n${c.phone || ""}`,
     recruiterMessage: `Bonjour, je suis ${c.fullName}, ${c.title}. Votre offre de ${job.title} a retenu mon attention. Au plaisir d'échanger !`,
     atsFormAnswers: [
       { question: "Années d'expérience", answer: `${c.yearsExp || "10"}+ ans` },
@@ -246,8 +427,22 @@ export async function prepareApplication(jobId: string): Promise<{ success: bool
   const gaps = Array.isArray(d.gaps) ? d.gaps : [];
   const atsKw = Array.isArray(d.atsKeywords) ? d.atsKeywords : [];
 
-  const resume = await generateResume(offerText, candidateText, gaps, atsKw, confirmed);
-  const letters = await generateLetters(job.title, job.company || "", c, confirmed, cabinetDetected);
+  // Récupérer les angles sémantiques
+  let cvAngle: string | undefined;
+  let letterAngle: string | undefined;
+  let interviewPrepAngle: string | undefined;
+  try {
+    const score = await prisma.jobScore.findUnique({ where: { jobId }, select: { semanticAnalysisJson: true } });
+    if (score?.semanticAnalysisJson) {
+      const sem = JSON.parse(score.semanticAnalysisJson);
+      if (sem.suggestedCvAngle) cvAngle = sem.suggestedCvAngle;
+      if (sem.suggestedCoverLetterAngle) letterAngle = sem.suggestedCoverLetterAngle;
+      if (sem.interviewPrepAngle) interviewPrepAngle = sem.interviewPrepAngle;
+    }
+  } catch { /* non-bloquant */ }
+
+  const resume = await generateResume(offerText, candidateText, gaps, atsKw, confirmed, cvAngle, c);
+  const letters = await generateLetters(job.title, job.company || "", c, confirmed, cabinetDetected, letterAngle);
   const aiEmail = await generateApplicationEmail(job.title, job.company || "", c, confirmed, cabinetDetected);
   // Utiliser l'email IA s'il a été généré, sinon fallback
   const finalEmail = aiEmail || d.applicationEmail;
@@ -327,13 +522,14 @@ export async function regenerateDraftPart(draftId: string, target: string): Prom
   if (!c) return { success: false, error: "Profil introuvable" };
 
   const offerText = buildJobText(job);
+  const candidateText = buildCandidateText(c);
   const gaps = draft.gaps ? JSON.parse(draft.gaps) : [];
   const atsKw = draft.atsKeywords ? JSON.parse(draft.atsKeywords) : [];
   const confirmed = draft.confirmedMatches ? JSON.parse(draft.confirmedMatches) : [];
   const changes: string[] = [];
 
   if (target === "resume" || target === "all") {
-    const resume = await generateResume(offerText, "", gaps, atsKw, confirmed);
+    const resume = await generateResume(offerText, candidateText, gaps, atsKw, confirmed, undefined, c);
     const cleanedResume = cleanGeneratedApplicationText(resume);
     await prisma.applicationDraft.update({ where: { id: draftId }, data: { tailoredResumeContent: cleanedResume.text } });
     changes.push("resume");
@@ -422,11 +618,38 @@ export async function archiveDraft(draftId: string) {
 export async function getApplicationDraft(draftId: string) {
   return prisma.applicationDraft.findUnique({
     where: { id: draftId },
-    include: { job: { include: { score: true, source: { select: { name: true } } } } },
+    include: {
+      job: { include: { score: true, source: { select: { name: true } } } },
+      contact: { select: { id: true, fullName: true, contactType: true, companyName: true, firmName: true, nextFollowUpAt: true } },
+    },
   });
 }
 
 export async function updateApplicationDraft(draftId: string, data: Record<string, unknown>) {
+  // Intercepter les champs du Job
+  const salaryMin = data.salaryMin !== undefined ? (data.salaryMin === null ? null : Number(data.salaryMin)) : undefined;
+  const salaryMax = data.salaryMax !== undefined ? (data.salaryMax === null ? null : Number(data.salaryMax)) : undefined;
+  delete data.salaryMin;
+  delete data.salaryMax;
+
+  if (salaryMin !== undefined || salaryMax !== undefined) {
+    const draft = await prisma.applicationDraft.findUnique({ where: { id: draftId }, select: { jobId: true } });
+    if (draft?.jobId) {
+      await prisma.job.update({
+        where: { id: draft.jobId },
+        data: {
+          ...(salaryMin !== undefined ? { salaryMin } : {}),
+          ...(salaryMax !== undefined ? { salaryMax } : {}),
+        }
+      });
+    }
+  }
+
+  // Intercepter l'excitement s'il est envoyé en string
+  if (data.excitement !== undefined && data.excitement !== null) {
+    data.excitement = Number(data.excitement);
+  }
+
   // Ajouter une trace changelog pour les éditions manuelles
   const changes: string[] = [];
   for (const key of Object.keys(data)) {

@@ -1,10 +1,28 @@
-export type CvTemplateId = "ats_classic" | "modern_executive" | "premium_leadership";
+export type CvTemplateId =
+  | "ats_classic"
+  | "modern_executive"
+  | "premium_leadership"
+  | "executive_bordeaux"
+  | "strategic_blue"
+  | "minimal_luxe";
 export type CvAccentColor = "champagne" | "navy" | "graphite" | "burgundy" | "emerald";
 
 export const TEMPLATE_LABELS: Record<CvTemplateId, string> = {
   ats_classic: "ATS Classique",
   modern_executive: "Moderne Exécutif",
   premium_leadership: "Premium Leadership",
+  executive_bordeaux: "Executive Bordeaux",
+  strategic_blue: "Strategic Blue",
+  minimal_luxe: "Minimal Luxe",
+};
+
+export const TEMPLATE_BADGES: Record<CvTemplateId, { label: string; preview: string }> = {
+  ats_classic: { label: "ATS", preview: "#6366f1" },
+  modern_executive: { label: "Premium", preview: "#2D3748" },
+  premium_leadership: { label: "Premium", preview: "#C8A64E" },
+  executive_bordeaux: { label: "Executive", preview: "#5A1E2B" },
+  strategic_blue: { label: "Business", preview: "#17324D" },
+  minimal_luxe: { label: "Premium", preview: "#111111" },
 };
 
 export const ACCENT_COLORS: Record<CvAccentColor, { label: string; hex: string }> = {
@@ -21,8 +39,8 @@ export function resolveAccent(accent?: string | null): CvAccentColor {
 }
 
 export function resolveTemplate(template?: string | null): CvTemplateId {
-  const valid: CvTemplateId[] = ["ats_classic", "modern_executive", "premium_leadership"];
-  return valid.includes(template as CvTemplateId) ? (template as CvTemplateId) : "ats_classic";
+  const valid: CvTemplateId[] = ["ats_classic", "modern_executive", "premium_leadership", "executive_bordeaux", "strategic_blue", "minimal_luxe"];
+  return valid.includes(template as CvTemplateId) ? (template as CvTemplateId) : "premium_leadership";
 }
 
 export interface CvRenderData {
@@ -43,7 +61,20 @@ export interface CvRenderData {
   languages: CvLanguage[];
   certifications: string[];
   achievements: CvAchievement[];
-  targetJob?: { title?: string; company?: string };
+  targetJob?: {
+    title?: string;
+    company?: string;
+    sector?: string;
+    atsKeywords?: string[];
+    matchScore?: number;
+  };
+  adaptationMeta?: {
+    adaptedForOfferId: string;
+    adaptationMode: "ai" | "template";
+    summaryWasAdapted: boolean;
+    experiencesReordered: boolean;
+    skillsFiltered: boolean;
+  };
   template: CvTemplateId;
   options: CvRenderOptions;
 }

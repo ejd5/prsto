@@ -50,23 +50,27 @@ test.describe("Smoke — routes principales", () => {
 test.describe("Smoke — sidebar navigation", () => {
   test("toutes les routes depuis la sidebar", async ({ page }) => {
     await page.goto("/");
-    const sidebar = page.locator("aside");
+    const sidebar = page.locator("aside").first();
     await expect(sidebar).toBeVisible();
 
-    // Vérifier les entrées principales de la sidebar
     const navItems = [
-      "Dashboard",
+      "Home",
+      "AI Briefing",
+      "Signal Feed",
+      "Market Watch",
+      "Recruiter Intel",
+      "Interview Studio",
+      "Documents AI",
+      "Strategy Lab",
+      "Decision Support",
       "Démarrage guidé",
-      "Test flow",
       "Profil",
-      "Opportunités",
+      "CV Maître",
+      "Proof Vault",
+      "Sources",
       "Pipeline",
-      "Documents",
-      "Analyse",
-      "Entretiens",
-      "Performance",
       "Paramètres",
-      "Guide",
+      "Guide complet",
     ];
     for (const label of navItems) {
       await expect(sidebar).toContainText(label);

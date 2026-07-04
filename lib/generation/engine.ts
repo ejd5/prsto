@@ -1,4 +1,4 @@
-// ─── ELTON OS – Moteur de génération de documents ───
+// ─── PRSTO – Moteur de génération de documents ───
 // Assemble données + template ou IA → document + ChangeLog
 // Anti-hallucination : tout est vérifié contre le snapshot candidat.
 
@@ -277,26 +277,73 @@ export async function generateDocumentContent(
     const analysis = opp.analysis as AnalysisReport | null;
 
     let content: string;
-    let model = "ELTON-OS Template Engine v1.0";
+    let model = "PRSTO Template Engine v2.0 (Tailored)";
     let mode = "template";
 
-    if (useAI) {
-      try {
-        const aiResult = await generateWithAI(candidate, analysis, opp, type);
-        content = aiResult.content;
-        model = aiResult.model;
-        mode = "ai";
-      } catch (e: unknown) {
-        // Fallback template
-        const err = e as Error;
-        console.warn(`AI generation failed: ${err.message}, using template`);
-        const templateFn = getTemplateForType(type);
-        content = templateFn(candidate, analysis, opp);
-        mode = `template (fallback: ${err.message.slice(0, 40)})`;
+    if (type.startsWith("cv")) {
+      const { tailorCvForOffer } = await import("@/lib/cv-render/tailor-engine");
+      const { resolveTemplate } = await import("@/components/cv-templates/cv-template-types");
+      
+      // Determine template to use
+      const profile = await prisma.profile.findFirst();
+      const templateId = resolveTemplate(profile?.cvDefaultTemplate);
+      const language = type === "cv_en" ? "en" : "fr";
+      
+      const tailorResult = await tailorCvForOffer(opportunityId, {
+        template: templateId,
+        useAI: useAI,
+        language
+      });
+      content = tailorResult.rawText;
+      mode = tailorResult.mode;
+      if (useAI) {
+        model = "DeepSeek Tailored CV Engine";
+      }
+
+      // Store in ApplicationDraft.tailoredResumeContent
+      await prisma.applicationDraft.upsert({
+        where: { jobId: opportunityId },
+        update: {
+          tailoredResumeContent: JSON.stringify(tailorResult.renderData),
+        },
+        create: {
+          jobId: opportunityId,
+          tailoredResumeContent: JSON.stringify(tailorResult.renderData),
+          status: "draft",
+        }
+      });
+    } else if (type.startsWith("lettre")) {
+      const { generateTailoredLetter } = await import("@/lib/generation/letter-engine");
+      const language = type === "lettre_en" ? "en" : "fr";
+      const letterResult = await generateTailoredLetter(opportunityId, {
+        language,
+        format: "long",
+        useAI
+      });
+      content = letterResult.content;
+      mode = letterResult.metadata.adaptationLevel === "high" ? "high-adaptation" : "medium-adaptation";
+      if (useAI) {
+        model = "DeepSeek Tailored Letter Engine";
       }
     } else {
-      const templateFn = getTemplateForType(type);
-      content = templateFn(candidate, analysis, opp);
+      if (useAI) {
+        try {
+          const aiResult = await generateWithAI(candidate, analysis, opp, type);
+          content = aiResult.content;
+          model = aiResult.model;
+          mode = "ai";
+        } catch (e: unknown) {
+          // Fallback template
+          const err = e as Error;
+          console.warn(`AI generation failed: ${err.message}, using template`);
+          const templateFn = getTemplateForType(type);
+          content = templateFn(candidate, analysis, opp);
+          mode = `template (fallback: ${err.message.slice(0, 40)})`;
+        }
+      } else {
+        const templateFn = getTemplateForType(type);
+        content = templateFn(candidate, analysis, opp);
+      }
     }
 
     // Validation anti-hallucination (STRICT pour CV, BALANCED pour lettre/email/linkedin)

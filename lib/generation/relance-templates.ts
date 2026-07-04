@@ -1,4 +1,4 @@
-// ─── ELTON OS – Templates de relance (email, LinkedIn, cabinet) ───
+// ─── PRSTO – Templates de relance (email, LinkedIn, cabinet) ───
 // Fonctions pures — zéro envoi automatique. L'utilisateur copie et envoie lui-même.
 
 export type RelanceTemplate = "j5_fr" | "j10_fr" | "linkedin_fr" | "cabinet_fr" | "remerciement_fr"

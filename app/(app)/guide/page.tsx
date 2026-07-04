@@ -79,9 +79,9 @@ export default function GuidePage() {
 
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>Guide complet ELTON OS</h1>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>Guide Recruteur</h1>
           <p className="text-sm mt-1" style={{ color: "var(--texte-secondaire)" }}>
-            Tout ce qu&apos;il faut savoir pour accélérer votre recherche executive — sans IA, sans cloud, sans hallucinations.
+            Tout ce qu&apos;il faut savoir pour optimiser votre gestion de candidats — sans IA, sans cloud, sans hallucinations.
           </p>
         </div>
 
@@ -95,8 +95,8 @@ export default function GuidePage() {
             { num: "5", title: "Analyser l'offre", desc: "Lancer l'analyse heuristique. Voir le score, les gaps, les risques.", path: "/analyse" },
             { num: "6", title: "Générer les documents", desc: "CV adapté, lettre, email, message LinkedIn. Tout est basé sur vos données réelles.", path: "/documents" },
             { num: "7", title: "Valider", desc: "Relire, corriger si nécessaire, puis approuver le document.", path: "/documents" },
-            { num: "8", title: "Ajouter au pipeline", desc: "L'opportunité entre dans le Kanban. Changer les statuts au fil de l'eau.", path: "/pipeline" },
-            { num: "9", title: "Relancer", desc: "Générer une relance J+5 ou J+10. Copier, coller, envoyer manuellement.", path: "/pipeline" },
+            { num: "8", title: "Ajouter au pipeline", desc: "L'opportunité entre dans le Kanban. Changer les statuts au fil de l'eau.", path: "/dashboard/jobs/pipeline" },
+            { num: "9", title: "Relancer", desc: "Générer une relance J+5 ou J+10. Copier, coller, envoyer manuellement.", path: "/dashboard/jobs/pipeline" },
             { num: "10", title: "Préparer l'entretien", desc: "Générer les 24 sections de préparation : pitchs, STAR, objections, négociation.", path: "/entretiens" },
           ]} />
         </Section>
@@ -107,7 +107,7 @@ export default function GuidePage() {
             <h4 style={{ color: "var(--texte)" }}>Matin — Recherche & Analyse</h4>
             <ul className="space-y-1 mt-1" style={{ color: "var(--texte-secondaire)" }}>
               <li>• Parcourir les nouvelles offres sur vos sources prioritaires</li>
-              <li>• Copier-coller les offres pertinentes dans ELTON OS</li>
+              <li>• Copier-coller les offres pertinentes dans PRSTO</li>
               <li>• Lancer l&apos;analyse heuristique (score, gaps, risques)</li>
               <li>• Classer : score ≥ 70 → pipeline, score 50-69 → à surveiller, score &lt; 50 → archive</li>
             </ul>
@@ -231,14 +231,14 @@ export default function GuidePage() {
           <h4 className="text-sm font-bold" style={{ color: "var(--texte)" }}>Comment chercher</h4>
           <ul className="space-y-1 mt-1 text-xs" style={{ color: "var(--texte-secondaire)" }}>
             <li>• Utiliser les sources configurées (LinkedIn, APEC, Indeed, etc.)</li>
-            <li>• Copier-coller le texte complet de l&apos;offre dans ELTON OS</li>
+            <li>• Copier-coller le texte complet de l&apos;offre dans PRSTO</li>
             <li>• Le système extrait automatiquement titre, entreprise, localisation</li>
             <li>• La détection de doublons évite de postuler deux fois à la même offre</li>
           </ul>
 
           <h4 className="text-sm font-bold mt-4" style={{ color: "var(--texte)" }}>Comment éviter les doublons</h4>
           <ul className="space-y-1 mt-1 text-xs" style={{ color: "var(--texte-secondaire)" }}>
-            <li>• ELTON OS compare automatiquement les nouvelles offres avec celles existantes</li>
+            <li>• PRSTO compare automatiquement les nouvelles offres avec celles existantes</li>
             <li>• Score de similarité sur 100 (titre, entreprise, localisation, description)</li>
             <li>• Badge sur l&apos;offre : Unique, Similaire, Doublon probable, Doublon confirmé</li>
             <li>• Si doublon confirmé, une offre canonique est désignée mais les deux sources sont conservées</li>
@@ -304,7 +304,7 @@ export default function GuidePage() {
             </div>
             <p className="mt-1" style={{ color: "var(--texte-secondaire)" }}>
               Aucun document ne peut être marqué comme &quot;prêt à envoyer&quot; sans avoir été relu et approuvé par vous.
-              ELTON OS ne postule jamais à votre place.
+              PRSTO ne postule jamais à votre place.
             </p>
           </div>
           <div className="p-3 rounded-md border mt-2 text-xs" style={{ borderColor: "var(--bordure)", background: "var(--fond-surface)" }}>
@@ -346,10 +346,10 @@ export default function GuidePage() {
               <strong>Pas d&apos;envoi automatique</strong>
             </div>
             <p className="mt-1" style={{ color: "var(--texte-secondaire)" }}>
-              ELTON OS génère le texte des relances. Vous copiez, vous collez dans votre email/LinkedIn, vous envoyez manuellement.
+              PRSTO génère le texte des relances. Vous copiez, vous collez dans votre email/LinkedIn, vous envoyez manuellement.
             </p>
           </div>
-          {btn("Aller au Pipeline", "/pipeline")}
+          {btn("Aller au Pipeline", "/dashboard/jobs/pipeline")}
         </Section>
 
         {/* 9. Interview War Room */}
@@ -372,7 +372,7 @@ export default function GuidePage() {
             <Card color="var(--succes)">
               <h4 style={{ color: "var(--succes)" }}>Mode local (par défaut)</h4>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
-                ELTON OS fonctionne entièrement sans IA externe. Tous les templates de documents, relances et préparations
+                PRSTO fonctionne entièrement sans IA externe. Tous les templates de documents, relances et préparations
                 d&apos;entretien sont générés localement à partir de vos données.
               </p>
             </Card>
@@ -380,7 +380,7 @@ export default function GuidePage() {
               <h4 style={{ color: "var(--or)" }}>DeepSeek (optionnel)</h4>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
                 Vous pouvez connecter DeepSeek pour des analyses plus fines. La clé API est chiffrée et jamais affichée
-                après sauvegarde. DeepSeek n&apos;est pas requis pour utiliser ELTON OS.
+                après sauvegarde. DeepSeek n&apos;est pas requis pour utiliser PRSTO.
               </p>
             </Card>
             <Card color="var(--info)">
@@ -393,7 +393,7 @@ export default function GuidePage() {
             <Card color="var(--texte-tertiaire)">
               <h4 style={{ color: "var(--texte)" }}>Fallback local</h4>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
-                Si l&apos;IA externe échoue ou est indisponible, ELTON OS bascule automatiquement sur les templates locaux.
+                Si l&apos;IA externe échoue ou est indisponible, PRSTO bascule automatiquement sur les templates locaux.
                 Vous n&apos;êtes jamais bloqué.
               </p>
             </Card>
@@ -404,11 +404,11 @@ export default function GuidePage() {
         {/* 11. Templates CV */}
         <Section id="templates" icon={FileText} title="11. Templates CV">
           <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-            ELTON OS inclut 8 templates CV internes originaux, inspirés des bonnes pratiques ATS et executive.
+            PRSTO inclut 8 templates CV internes originaux, inspirés des bonnes pratiques ATS et executive.
             Aucun template commercial n&apos;a été copié.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-            <TemplateGuideCard name="ATS Classic" usage="Première candidature, grands groupes" ats="HIGH" desc="Sobre, structuré, compatible tous ATS. Priorité à la lisibilité machine." />
+            <TemplateGuideCard name="ATS Classique" usage="Première candidature, grands groupes" ats="HIGH" desc="Sobre, structuré, compatible tous ATS. Priorité à la lisibilité machine." />
             <TemplateGuideCard name="Executive Premium" usage="Postes Direction, comités exécutifs" ats="MEDIUM" desc="Mise en page exécutive, focus résultats chiffrés, leadership." />
             <TemplateGuideCard name="Corporate France" usage="Entreprises françaises, CAC 40, ETI" ats="HIGH" desc="Format français classique, photo optionnelle, sections standardisées." />
             <TemplateGuideCard name="International EN" usage="Postes internationaux, multinationales" ats="HIGH" desc="Format anglo-saxon, summary, core competencies, professional experience." />
@@ -437,7 +437,7 @@ export default function GuidePage() {
             <BenchmarkRow name="FlowCV" features="Templates et builder simple" />
           </div>
 
-          <h4 className="text-sm font-bold mt-5" style={{ color: "var(--or)" }}>Ce qu&apos;ELTON OS fait mieux</h4>
+          <h4 className="text-sm font-bold mt-5" style={{ color: "var(--or)" }}>Ce qu&apos;PRSTO fait mieux</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-xs">
             {[
               "Local-first : aucune donnée ne quitte votre machine",
@@ -462,7 +462,7 @@ export default function GuidePage() {
         {/* 13. Détection de doublons */}
         <Section id="doublons" icon={GitCompare} title="13. Détection de doublons">
           <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-            ELTON OS détecte automatiquement les offres similaires pour éviter de postuler deux fois
+            PRSTO détecte automatiquement les offres similaires pour éviter de postuler deux fois
             au même poste. La détection utilise une comparaison normalisée du titre, de l&apos;entreprise,
             de la localisation et de la description.
           </p>
@@ -534,7 +534,7 @@ export default function GuidePage() {
         {/* 14. Sauvegarde locale */}
         <Section id="sauvegarde" icon={Download} title="14. Sauvegarde locale">
           <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-            Toutes vos données ELTON OS sont stockées localement dans une base SQLite.
+            Toutes vos données PRSTO sont stockées localement dans une base SQLite.
             Vous pouvez exporter l&apos;intégralité de vos données en un clic pour les sauvegarder
             ou les transférer.
           </p>
@@ -587,14 +587,14 @@ export default function GuidePage() {
             <Card color="var(--info)">
               <strong style={{ color: "var(--texte)" }}>Avant mise à jour</strong>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
-                Faites un export avant toute mise à jour d&apos;ELTON OS ou de ses dépendances.
+                Faites un export avant toute mise à jour d&apos;PRSTO ou de ses dépendances.
                 En cas de problème, vos données sont récupérables.
               </p>
             </Card>
             <Card color="var(--texte-tertiaire)">
               <strong style={{ color: "var(--texte)" }}>Transfert entre machines</strong>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
-                L&apos;export JSON permet de transférer vos données vers une autre installation d&apos;ELTON OS.
+                L&apos;export JSON permet de transférer vos données vers une autre installation d&apos;PRSTO.
                 Copiez également le fichier <code>prisma/dev.db</code> pour une migration complète.
               </p>
             </Card>
@@ -609,7 +609,7 @@ export default function GuidePage() {
               La base SQLite (<code>prisma/dev.db</code>) est le fichier le plus important.
               Sauvegardez-le régulièrement. Sans lui, toutes vos données sont perdues.
               L&apos;export JSON est un format lisible et portable, mais la base SQLite reste la source
-              de vérité pour ELTON OS.
+              de vérité pour PRSTO.
             </p>
           </div>
           {btn("Aller aux Paramètres", "/parametres")}
@@ -618,7 +618,7 @@ export default function GuidePage() {
         {/* 15. Tests automatisés */}
         <Section id="tests" icon={FlaskConical} title="15. Tests automatisés">
           <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-            ELTON OS dispose d&apos;une suite de tests unitaires (Vitest) et de tests E2E (Playwright) pour garantir la fiabilité des fonctions critiques et des parcours utilisateur.
+            PRSTO dispose d&apos;une suite de tests unitaires (Vitest) et de tests E2E (Playwright) pour garantir la fiabilité des fonctions critiques et des parcours utilisateur.
           </p>
 
           <h4 className="text-sm font-bold mt-4" style={{ color: "var(--texte)" }}>Commandes disponibles</h4>
@@ -695,7 +695,7 @@ export default function GuidePage() {
             </div>
             <div className="p-2 rounded border" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
               <p className="font-bold" style={{ color: "var(--or)" }}>Relances (10 templates)</p>
-              <p style={{ color: "var(--texte-secondaire)" }}>Vérifie que les 10 templates FR/EN existent, contiennent les infos candidat, et qu&apos;aucune fonction d&apos;envoi automatique n&apos;existe.</p>
+              <p style={{ color: "var(--texte-secondaire)" }}>Vérifie que les 10 templates FR/EN existent, contiennent les infos recruteur, et qu&apos;aucune fonction d&apos;envoi automatique n&apos;existe.</p>
             </div>
             <div className="p-2 rounded border" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
               <p className="font-bold" style={{ color: "var(--or)" }}>Anti-hallucination</p>
@@ -720,7 +720,7 @@ export default function GuidePage() {
         {/* 16. Passage en usage réel */}
         <Section id="usage-reel" icon={Target} title="16. Passage en usage réel">
           <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-            ELTON OS est livré avec des données de démonstration. Voici les 12 étapes pour passer
+            PRSTO est livré avec des données de démonstration. Voici les 12 étapes pour passer
             en usage réel avec vos propres candidatures.
           </p>
 
@@ -745,8 +745,8 @@ export default function GuidePage() {
             { num: "7", title: "Choisir les meilleures", desc: "Utilisez le tableau de priorisation pour classer les offres par score, fit international, leadership et risque.", path: "/opportunites" },
             { num: "8", title: "Générer les documents", desc: "Pour chaque offre prioritaire, générez CV adapté + lettre + email au format FR ou EN selon le pays.", path: "/documents" },
             { num: "9", title: "Relire et valider", desc: "Utilisez l'assistant qualité (/quality-check) pour évaluer chaque document. Relisez les alertes anti-hallucination. Passez en APPROVED.", path: "/quality-check" },
-            { num: "10", title: "Ajouter au pipeline", desc: "Ajoutez l'opportunité au pipeline, renseignez le contact recruteur et la date de prochaine étape.", path: "/pipeline" },
-            { num: "11", title: "Relancer", desc: "Générez une relance J+5 ou J+10. Copiez le texte, envoyez-le vous-même, puis marquez la relance comme envoyée.", path: "/pipeline" },
+            { num: "10", title: "Ajouter au pipeline", desc: "Ajoutez l'opportunité au pipeline, renseignez le contact recruteur et la date de prochaine étape.", path: "/dashboard/jobs/pipeline" },
+            { num: "11", title: "Relancer", desc: "Générez une relance J+5 ou J+10. Copiez le texte, envoyez-le vous-même, puis marquez la relance comme envoyée.", path: "/dashboard/jobs/pipeline" },
             { num: "12", title: "Préparer l'entretien", desc: "Quand un entretien est programmé, créez une préparation avec pitch, questions, STAR et grille d'évaluation.", path: "/entretiens" },
           ]} />
 
@@ -774,7 +774,7 @@ export default function GuidePage() {
             </div>
             <div className="p-2 rounded border" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
               <p className="font-bold" style={{ color: "var(--or)" }}>Personnalisation</p>
-              <p style={{ color: "var(--texte-tertiaire)" }}>Mention du poste, de l&apos;entreprise, du candidat.</p>
+              <p style={{ color: "var(--texte-tertiaire)" }}>Mention du poste, de l&apos;entreprise, du recruteur.</p>
             </div>
             <div className="p-2 rounded border" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
               <p className="font-bold" style={{ color: "var(--or)" }}>Preuves</p>
@@ -852,7 +852,7 @@ export default function GuidePage() {
             <div className="p-3 rounded-md border" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
               <p className="text-sm font-bold" style={{ color: "var(--or)" }}>TXT (texte brut)</p>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
-                Export texte simple avec en-tête ELTON OS. Si le document n&apos;est pas approuvé, un watermark BROUILLON
+                Export texte simple avec en-tête PRSTO. Si le document n&apos;est pas approuvé, un watermark BROUILLON
                 est ajouté automatiquement. Utile pour un copier-coller rapide ou pour les ATS legacy.
               </p>
               <p className="text-xs mt-1 font-mono" style={{ color: "var(--texte-tertiaire)" }}>Disponible même en BROUILLON</p>
@@ -903,7 +903,7 @@ export default function GuidePage() {
 
           <p className="text-xs mt-2" style={{ color: "var(--texte-tertiaire)" }}>
             Cette règle garantit qu&apos;aucun document non relu humainement ne peut être exporté en PDF ou DOCX.
-            ELTON OS ne vous laisse pas envoyer un document sans relecture.
+            PRSTO ne vous laisse pas envoyer un document sans relecture.
           </p>
 
           <h4 className="text-sm font-bold mt-4" style={{ color: "var(--texte)" }}>Quand utiliser quel format</h4>
@@ -933,7 +933,7 @@ export default function GuidePage() {
             <li>Les fichiers sont nommés automatiquement : <code className="font-mono" style={{ color: "var(--or)" }}>TypeDoc_Entreprise_Titre_Date.ext</code></li>
             <li>Exemple : <code className="font-mono" style={{ color: "var(--or)" }}>CV_FR_TechCorp_DirecteurCommercial_20260619.pdf</code></li>
             <li>Les caractères spéciaux et accents sont supprimés pour la compatibilité multiplateforme.</li>
-            <li>Le dossier ZIP suit le format : <code className="font-mono" style={{ color: "var(--or)" }}>ELTON_OS_Candidature_Entreprise_Titre_Date.zip</code></li>
+            <li>Le dossier ZIP suit le format : <code className="font-mono" style={{ color: "var(--or)" }}>PRSTO_Candidature_Entreprise_Titre_Date.zip</code></li>
             <li>Vous pouvez renommer les fichiers après téléchargement, mais conservez la date et le nom de l&apos;entreprise.</li>
           </ul>
 
@@ -955,7 +955,7 @@ export default function GuidePage() {
         </Section>
 
         {/* ── Section 19 — Piloter sa recherche ──── */}
-        <Section id="pilotage" icon={TrendingUp} title="19. Piloter sa recherche d&apos;emploi">
+        <Section id="pilotage" icon={TrendingUp} title="19. Piloter sa gestion de candidats">
 
           <h4 className="text-sm font-bold" style={{ color: "var(--texte)" }}>Lire les KPIs</h4>
           <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
@@ -980,7 +980,7 @@ export default function GuidePage() {
               <p className="text-sm font-bold" style={{ color: "var(--or)" }}>Taux d&apos;entretien</p>
               <p className="text-xs mt-1" style={{ color: "var(--texte-secondaire)" }}>
                 Candidatures ayant abouti à un entretien. ≥ 20% = les documents sont efficaces.
-                ≥ 30% = vous êtes dans le top 5% des candidats.
+                ≥ 30% = vous êtes dans le top 5% des recruteurs.
               </p>
             </div>
             <div className="p-3 rounded-md border" style={{ borderColor: "var(--bordure-douce)", background: "var(--fond-surface)" }}>
@@ -1069,7 +1069,7 @@ export default function GuidePage() {
 
           <div className="p-3 rounded-md border mb-3" style={{ borderColor: "rgba(99,102,241,0.3)", background: "rgba(99,102,241,0.05)" }}>
             <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
-              <strong style={{ color: "var(--info)" }}>DeepSeek est optionnel.</strong> ELTON OS fonctionne
+              <strong style={{ color: "var(--info)" }}>DeepSeek est optionnel.</strong> PRSTO fonctionne
               intégralement sans clé API. L&apos;IA premium est un bonus pour améliorer la qualité rédactionnelle
               — elle ne remplace jamais le jugement humain.
             </p>
@@ -1169,7 +1169,7 @@ export default function GuidePage() {
             <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
               <strong style={{ color: "var(--texte)" }}>Rappel sécurité :</strong> votre clé API est stockée chiffrée dans la base locale.
               Aucune donnée n&apos;est envoyée sans votre action explicite. Le mode local reste disponible en permanence.
-              ELTON OS ne dépend d&apos;aucun service externe pour fonctionner.
+              PRSTO ne dépend d&apos;aucun service externe pour fonctionner.
             </p>
           </div>
 
@@ -1178,7 +1178,7 @@ export default function GuidePage() {
 
         <Section id="demarrage-guide" icon={Target} title="21. Démarrage guidé & Agent Readiness">
           <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
-            ELTON OS propose un <strong style={{ color: "var(--texte)" }}>wizard de démarrage guidé</strong> en 10 étapes
+            PRSTO propose un <strong style={{ color: "var(--texte)" }}>wizard de démarrage guidé</strong> en 10 étapes
             qui configure votre agent exécutif depuis un seul écran, sans avoir à naviguer entre les différents menus.
             Le mode manuel reste disponible — le wizard est une couche optionnelle.
           </p>
@@ -1295,7 +1295,7 @@ export default function GuidePage() {
               "Ajouter votre 1ère vraie offre (manuellement ou via source)",
               "Ajouter 5 vraies offres au total",
               "Analyser toutes les offres (scoring, gaps, risques)",
-              "Générer un CV adapté pour une offre (template ATS Classic)",
+              "Générer un CV adapté pour une offre (template ATS Classique)",
               "Relire et approuver le CV généré",
               "Générer et approuver une lettre de motivation",
               "Ajouter les offres au pipeline Kanban",
@@ -1369,6 +1369,80 @@ export default function GuidePage() {
           </div>
 
           {btn("Accéder au First Run", "/first-run")}
+        </Section>
+
+        {/* 23. Importer une offre LinkedIn */}
+        <Section id="import-linkedin" icon={Globe} title="23. Importer une offre LinkedIn">
+          <StepList steps={[
+            { num: "1", title: "Ouvrir l'offre LinkedIn", desc: "Naviguez vers l'annonce LinkedIn. Copiez l'URL ou le texte de l'offre." },
+            { num: "2", title: "Utiliser Import Express", desc: "Allez dans l'onglet Import Express et collez l'URL ou le texte. Cliquez sur Analyser.", path: "/dashboard/jobs/importer" },
+            { num: "3", title: "Utiliser l'extension Chrome", desc: "Ou cliquez sur l'icône PRSTO → Import Pro → Analyser l'offre visible → Envoyer vers PRSTO." },
+            { num: "4", title: "Vérifier les données", desc: "Vérifiez le titre, l'entreprise, la localisation et le score de confiance avant d'importer." },
+          ]} />
+          <p className="text-xs mt-2" style={{ color: "var(--texte-tertiaire)" }}>L'extension ne fonctionne que si vous êtes connecté(e) à LinkedIn et que la page est accessible.</p>
+        </Section>
+
+        {/* 24. Importer une offre Indeed */}
+        <Section id="import-indeed" icon={Search} title="24. Importer une offre Indeed">
+          <StepList steps={[
+            { num: "1", title: "Ouvrir l'offre Indeed", desc: "Allez sur l'annonce Indeed. Pour les résultats avec panneau latéral, assurez-vous que l'offre est sélectionnée." },
+            { num: "2", title: "Extension Chrome", desc: "Cliquez sur l'icône PRSTO → Import Pro → Analyser l'offre visible." },
+            { num: "3", title: "Vérifier le résultat", desc: "Indeed peut mélanger titre/entreprise/lieu. Vérifiez et corrigez si nécessaire avant d'envoyer." },
+            { num: "4", title: "Import manuel", desc: "Si l'extraction automatique échoue, copiez-collez le texte dans Import Express.", path: "/dashboard/jobs/importer" },
+          ]} />
+          <Card color="#f59e0b">Indeed peut afficher "Bienvenue, ELTON" comme titre parasite si l'extraction rate le panneau latéral. Vérifiez toujours l'aperçu.</Card>
+        </Section>
+
+        {/* 25. Importer une offre APEC */}
+        <Section id="import-apec" icon={Search} title="25. Importer une offre APEC">
+          <StepList steps={[
+            { num: "1", title: "Ouvrir l'offre APEC", desc: "Accédez à l'annonce APEC. L'extension détecte automatiquement la plateforme." },
+            { num: "2", title: "Extension Chrome", desc: "Cliquez sur l'icône PRSTO → Import Pro → Analyser l'offre visible." },
+            { num: "3", title: "Import manuel", desc: "Alternative : copier-coller le texte dans Import Express.", path: "/dashboard/jobs/importer" },
+          ]} />
+        </Section>
+
+        {/* 26. Utiliser l'extension Chrome */}
+        <Section id="extension" icon={Sparkles} title="26. Utiliser l'extension Chrome">
+          <StepList steps={[
+            { num: "1", title: "Installer l'extension", desc: "Ouvrez chrome://extensions → Mode développeur → Charger l'extension non empaquetée → sélectionnez browser-extension/elton-os-importer", path: "/dashboard/jobs/importer/extension" },
+            { num: "2", title: "Aller sur une offre", desc: "Ouvrez une annonce sur LinkedIn, Indeed ou APEC." },
+            { num: "3", title: "Cliquer sur l'icône PRSTO", desc: "En haut à droite de Chrome (icône PRSTO)." },
+            { num: "4", title: "Onglet Import Pro", desc: "Cliquez sur Analyser l'offre visible → vérifiez → Envoyer vers PRSTO." },
+          ]} />
+          {btn("Configurer l'extension", "/dashboard/jobs/importer/extension")}
+        </Section>
+
+        {/* 99. Ce que PRSTO ne fait pas */}
+        <Section id="securite" icon={AlertTriangle} title="Ce que PRSTO ne fait pas automatiquement">
+          <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>Transparence totale sur les limites volontaires du système :</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+            <Card color="#ef4444">
+              <p className="font-bold mb-1">Pas d&apos;envoi automatique</p>
+              <p>PRSTO ne postule jamais à votre place. Aucun bouton "Postuler" caché. Aucune soumission de formulaire automatique.</p>
+            </Card>
+            <Card color="#f59e0b">
+              <p className="font-bold mb-1">Pas de scraping LinkedIn</p>
+              <p>L&apos;extension Chrome lit uniquement la page visible lorsque vous cliquez sur "Analyser". Pas de crawling en arrière-plan.</p>
+            </Card>
+            <Card color="#ef4444">
+              <p className="font-bold mb-1">Pas d&apos;auto-apply ATS</p>
+              <p>L&apos;extension remplit les champs des formulaires ATS mais ne clique jamais sur "Envoyer". Vous validez et soumettez manuellement.</p>
+            </Card>
+            <Card color="#6366f1">
+              <p className="font-bold mb-1">Pas d&apos;email automatique</p>
+              <p>Les emails, lettres LinkedIn et messages sont générés pour que vous les copiiez et les envoyiez manuellement.</p>
+            </Card>
+            <Card color="#f59e0b">
+              <p className="font-bold mb-1">Pas de stockage de cookies</p>
+              <p>L&apos;extension ne lit ni ne stocke les cookies de session LinkedIn, Indeed ou APEC.</p>
+            </Card>
+            <Card color="#ef4444">
+              <p className="font-bold mb-1">Pas de contournement anti-bot</p>
+              <p>Si LinkedIn affiche une page de login, CAPTCHA ou wall, l'extension se bloque et vous en informe. Elle ne tente pas de contourner.</p>
+            </Card>
+          </div>
+          {btn("Voir le guide de sécurité complet", "/parametres")}
         </Section>
 
       </div>

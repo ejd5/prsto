@@ -1,4 +1,4 @@
-// ─── ELTON OS – Moteur d'analyse heuristique ───
+// ─── PRSTO – Moteur d'analyse heuristique ───
 // Fonctionne sans clé API. Tout est local, explicable, anti-hallucination.
 
 import { prisma } from "@/lib/prisma";
@@ -758,7 +758,7 @@ export function runFullAnalysis(rawText: string, candidate: CandidateSnapshot): 
       strongestProofs: match.strongestProofs,
       overqualified: match.overqualificationSignals,
     },
-    aiModel: "ELTON-OS Heuristic Engine v1.0",
+    aiModel: "PRSTO Heuristic Engine v1.0",
   };
 }
 

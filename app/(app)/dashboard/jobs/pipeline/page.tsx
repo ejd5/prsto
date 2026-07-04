@@ -5,8 +5,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   Loader2, Send, Bell, RefreshCw, MessageCircle, Briefcase, Trophy, XCircle,
   Archive, Copy, CheckCircle2, AlertTriangle, ExternalLink, Eye, FileText, Sparkles,
+  UserPlus, MousePointer, Building2, Zap, FlaskConical, HelpCircle,
 } from "lucide-react";
+
+const SOURCE_STYLES: Record<string, { label: string; color: string; bg: string; icon: React.FC<{size?:number}> }> = {
+  browser:   { label: "Manuel",    color: "#f59e0b", bg: "rgba(245,158,11,0.12)",  icon: MousePointer },
+  ats:       { label: "ATS",       color: "#3b82f6", bg: "rgba(59,130,246,0.12)",  icon: Building2 },
+  "firecrawl-safe": { label: "Firecrawl", color: "#8b5cf6", bg: "rgba(139,92,246,0.12)", icon: Zap },
+  fixture:   { label: "Test",      color: "#808080", bg: "rgba(128,128,128,0.10)", icon: FlaskConical },
+  fallback:  { label: "Inconnu",   color: "#9ca3af", bg: "rgba(156,163,175,0.10)", icon: HelpCircle },
+};
 import { isDemoFromParams, DEMO_BADGE_TEXT, withDemoParam } from "@/lib/jobs/demo-data";
+import { getScoreColor } from "@/lib/score-colors";
 
 interface PipelineItem {
   id: string; jobId: string; status: string; pipelineStatus: string | null;
@@ -14,14 +24,19 @@ interface PipelineItem {
   followedUpAt: string | null; recruiterRepliedAt: string | null;
   interviewAt: string | null; lastPipelineActionAt: string | null;
   jobTitle: string; jobCompany: string | null; jobLocation: string | null;
-  sourceUrl: string | null; sourceName: string | null; globalScore: number | null;
+  sourceUrl: string | null; sourceName: string | null; sourceType: string | null; globalScore: number | null;
+  contact?: { id: string; fullName: string; contactType: string; firmName?: string | null; companyName?: string | null } | null;
+  hasInterviewPrep?: boolean;
+  interviewPrepId?: string | null;
+  interviewPrepStatus?: string | null;
 }
 
-interface PipelineStats { sent: number; toFollowUp: number; followedUp: number; recruiterReplied: number; interview: number; offer: number; rejected: number; archived: number; total: number; }
+interface PipelineStats { imported: number; sent: number; toFollowUp: number; followedUp: number; recruiterReplied: number; interview: number; offer: number; rejected: number; archived: number; total: number; }
 
 interface FollowUpMessages { emailCourt: string; messageLinkedin: string; relanceFormelle: string; relanceUltraCourte: string; }
 
 const COLUMNS = [
+  { key: "imported", label: "À traiter", icon: FileText, color: "#3b82f6", description: "Offres importées — prêtes à préparer" },
   { key: "sent", label: "Envoyées", icon: Send, color: "#B8860B", description: "Candidatures envoyées — en attente de retour" },
   { key: "toFollowUp", label: "À relancer", icon: Bell, color: "#f59e0b", description: "Relance due (7+ jours après envoi)" },
   { key: "followedUp", label: "Relancées", icon: RefreshCw, color: "#6366f1", description: "Relance envoyée — en attente de réponse" },
@@ -35,6 +50,8 @@ const COLUMNS = [
 function getItemsForColumn(items: PipelineItem[], colKey: string): PipelineItem[] {
   const now = new Date();
   switch (colKey) {
+    case "imported":
+      return items.filter((i) => i.pipelineStatus === "imported");
     case "sent":
       return items.filter((i) => {
         if (i.pipelineStatus === "sent" && (!i.followUpDueAt || new Date(i.followUpDueAt) > now)) return true;
@@ -88,10 +105,24 @@ export default function PipelinePage() {
       }
     } catch { /* ignore */ }
     setLoading(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [demoQuery]);
 
-  useEffect(() => { load(); }, [load]);
+  // Chargement initial — fetch inline pour éviter setState synchrone dans l'effet
+  // (loading démarre à true donc pas besoin de setLoading(true) ici)
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/jobs/application-pipeline${demoQuery}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled && data.success) {
+          setItems(data.items);
+          setStats(data.stats);
+        }
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [demoQuery]);
 
   /* ─── Actions pipeline ─── */
   const pipelineAction = async (draftId: string, action: string, extra?: Record<string, unknown>) => {
@@ -104,6 +135,23 @@ export default function PipelinePage() {
       });
       await load();
     } catch { /* ignore */ }
+    setBusy(null);
+  };
+
+  /* ─── Préparation entretien depuis Pipeline ─── */
+  const createPrepFromPipeline = async (item: PipelineItem) => {
+    setBusy(`prep-${item.id}`);
+    try {
+      const r = await fetch(`/api/application-drafts/${item.id}/interview-prep`, { method: "POST" });
+      const data = await r.json();
+      if (data.prepId) {
+        router.push(withDemoParam(`/dashboard/jobs/interview-prep/${data.prepId}`, demoActive));
+        return;
+      }
+    } catch { /* ignore */ }
+    setBusy(null);
+    // Si la création échoue, rafraîchir pour refléter un éventuel changement d'état
+    await load();
     setBusy(null);
   };
 
@@ -149,9 +197,9 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>Pipeline candidatures</h1>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>Pipeline Missions</h1>
           <p className="text-sm mt-1" style={{ color: "var(--texte-secondaire)" }}>
-            {stats ? `${stats.total} candidature${stats.total !== 1 ? "s" : ""} dans le pipeline` : "Chargement..."}
+            {stats ? `${stats.total} candidature${stats.total !== 1 ? "s" : ""} dans le pipeline missions` : "Chargement..."}
           </p>
           <p className="text-xs mt-1" style={{ color: "var(--texte-tertiaire)" }}>
             Suivez chaque candidature depuis l&apos;envoi jusqu&apos;à la réponse, l&apos;entretien ou l&apos;offre.
@@ -180,7 +228,7 @@ export default function PipelinePage() {
       {/* Avertissement */}
       <div className="px-3 py-2 rounded-md text-xs font-mono border flex items-center gap-2" style={{ background: "var(--fond-eleve)", borderColor: "var(--bordure-douce)", color: "var(--texte-tertiaire)" }}>
         <AlertTriangle size={12} style={{ color: "#f59e0b", flexShrink: 0 }} />
-        ELTON OS ne postule ni ne relance jamais à votre place. Vous copiez, vous envoyez, vous marquez.
+        PRSTO ne postule ni ne relance jamais à votre place. Vous copiez, vous envoyez, vous marquez.
       </div>
 
       {/* Stats bar */}
@@ -245,17 +293,29 @@ export default function PipelinePage() {
                       const score = item.globalScore ?? item.matchScore ?? 0;
                       const overdue = item.pipelineStatus === "sent" && isOverdue(item.followUpDueAt);
                       return (
-                        <div key={item.id} className="rounded-md border p-2.5 space-y-1.5 text-xs" style={{ background: "var(--fond)", borderColor: "var(--bordure-douce)" }}>
+                        <div key={item.id}
+                          onClick={() => router.push(withDemoParam(`/dashboard/jobs/applications/${item.id}`, demoActive))}
+                          className="rounded-md border p-2.5 space-y-1.5 text-xs cursor-pointer transition-all hover:shadow-md"
+                          style={{ background: "var(--fond)", borderColor: "var(--bordure-douce)" }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--or)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--bordure-douce)"; }}>
                           {/* Score + source */}
                           <div className="flex items-center justify-between">
                             {score > 0 && (
-                              <span className="font-mono text-xs font-bold" style={{ color: score >= 70 ? "#22c55e" : score >= 45 ? "#f59e0b" : "var(--texte-tertiaire)" }}>
+                              <span className="font-mono text-xs font-bold" style={{ color: getScoreColor(score) }}>
                                 {score}%
                               </span>
                             )}
-                            {item.sourceName && (
-                              <span className="text-[10px] px-1 rounded font-mono" style={{ background: "var(--fond-eleve)", color: "var(--texte-tertiaire)" }}>{item.sourceName}</span>
-                            )}
+                            {item.sourceName && (() => {
+                              const st = SOURCE_STYLES[item.sourceType || ""] || SOURCE_STYLES.fallback;
+                              const SIcon = st.icon;
+                              return (
+                                <span className="inline-flex items-center gap-0.5 text-[10px] px-1 rounded font-mono flex-shrink-0" style={{ background: st.bg, color: st.color }}>
+                                  <SIcon size={9} />
+                                  {item.sourceName}
+                                </span>
+                              );
+                            })()}
                           </div>
 
                           {/* Titre + entreprise */}
@@ -263,6 +323,18 @@ export default function PipelinePage() {
                             <p className="font-bold leading-tight text-xs" style={{ color: "var(--texte)" }}>{item.jobTitle}</p>
                             <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>{item.jobCompany || "—"}</p>
                           </div>
+
+                          {/* Contact lié */}
+                          {item.contact && (
+                            <div className="text-[10px] pt-1 border-t" style={{ borderColor: "var(--bordure-douce)" }}>
+                              <a href={`/dashboard/jobs/crm/contacts/${item.contact.id}`} onClick={e => e.stopPropagation()}
+                                className="flex items-center gap-1" style={{ color: "var(--texte-tertiaire)", textDecoration: "none" }}>
+                                <UserPlus size={9} style={{ color: "#8b5cf6" }} />
+                                <span style={{ color: "var(--texte-secondaire)" }}>{item.contact.fullName}</span>
+                                {item.contact.firmName && <span style={{ color: "var(--or)" }}>· {item.contact.firmName}</span>}
+                              </a>
+                            </div>
+                          )}
 
                           {/* Dates */}
                           <div className="space-y-0.5 text-xs font-mono" style={{ color: "var(--texte-tertiaire)" }}>
@@ -279,12 +351,28 @@ export default function PipelinePage() {
                           </div>
 
                           {/* Actions */}
-                          <div className="flex flex-wrap gap-1 pt-1 border-t" style={{ borderColor: "var(--bordure-douce)" }}>
+                          <div className="flex flex-wrap gap-1 pt-1 border-t" style={{ borderColor: "var(--bordure-douce)" }} onClick={e => e.stopPropagation()}>
                             {/* Voir dossier */}
                             <button onClick={() => router.push(withDemoParam(`/dashboard/jobs/applications/${item.id}`, demoActive))}
                               className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-mono border" style={{ borderColor: "var(--or)", color: "var(--or)" }}>
                               <Eye size={10} /> Dossier
                             </button>
+
+                            {/* Préparation entretien (colonne interview) */}
+                            {item.pipelineStatus === "interview" && item.hasInterviewPrep && item.interviewPrepId && (
+                              <button onClick={() => router.push(withDemoParam(`/dashboard/jobs/interview-prep/${item.interviewPrepId}`, demoActive))}
+                                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-mono border" style={{ borderColor: "#22c55e", color: "#22c55e" }}>
+                                <CheckCircle2 size={10} /> Préparation prête
+                              </button>
+                            )}
+                            {item.pipelineStatus === "interview" && !item.hasInterviewPrep && (
+                              <button onClick={() => createPrepFromPipeline(item)}
+                                disabled={busy === `prep-${item.id}`}
+                                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-mono border" style={{ borderColor: "#8b5cf6", color: "#8b5cf6", opacity: busy === `prep-${item.id}` ? 0.5 : 1 }}>
+                                {busy === `prep-${item.id}` ? <Loader2 size={10} className="animate-spin" /> : <FileText size={10} />}
+                                Préparer entretien
+                              </button>
+                            )}
 
                             {/* URL source */}
                             {item.sourceUrl && (
@@ -422,6 +510,13 @@ function PipelineActions({ item, busy, onAction }: {
   );
 
   switch (item.pipelineStatus) {
+    case "imported":
+      return (
+        <>
+          {bt("Envoyé", "mark_sent", "#B8860B")}
+          {bt("Refusé", "mark_rejected", "#ef4444")}
+        </>
+      );
     case "sent":
       return (
         <>

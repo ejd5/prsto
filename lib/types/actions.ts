@@ -1,4 +1,4 @@
-// ─── Types d'actions serveur ELTON OS ─────────────
+// ─── Types d'actions serveur PRSTO ─────────────
 // Types standardisés pour les retours de server actions,
 // les fonctions d'export, et les handlers de formulaire.
 

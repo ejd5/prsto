@@ -8,7 +8,7 @@ export interface DetectionInput {
   approvedDocCount: number;
   plannedRelanceCount: number;
   sentRelanceCount: number;
-  pipelineTaskCount: number;
+  pipelineDraftCount: number;
   profileComplete: boolean;
 }
 
@@ -147,23 +147,23 @@ export function detectNoPlannedRelances(input: DetectionInput): DetectionResult 
       : "Aucune relance planifiée ou envoyée.",
     recommendation: ok
       ? "Continuez le suivi de vos candidatures."
-      : "Planifiez des relances J+5 depuis le /pipeline.",
+      : "Planifiez des relances J+5 depuis le pipeline.",
   };
 }
 
 export function detectNoPipeline(input: DetectionInput): DetectionResult {
-  const ok = input.pipelineTaskCount >= 1;
+  const ok = input.pipelineDraftCount >= 1;
   return {
     id: "pipeline",
     label: "Pipeline actif",
     ok,
     severity: ok ? "ok" : "warning",
     message: ok
-      ? `${input.pipelineTaskCount} tâche(s) dans le pipeline.`
+      ? `${input.pipelineDraftCount} dossier(s) dans le pipeline.`
       : "Aucune tâche dans le pipeline.",
     recommendation: ok
       ? "Suivez la progression de vos candidatures."
-      : "Ajoutez vos offres au pipeline dans /pipeline.",
+      : "Ajoutez vos offres au pipeline depuis le Pipeline.",
   };
 }
 

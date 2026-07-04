@@ -13,7 +13,7 @@ function checkAuth(request: Request): "ok" | "missing" | "invalid" {
 
 export async function GET() {
   return NextResponse.json({
-    endpoint: "Rapport soir ELTON OS",
+    endpoint: "Rapport soir PRSTO",
     method: "POST pour déclencher l'import et le rapport",
     status: "ok",
     env: process.env.NODE_ENV || "development",

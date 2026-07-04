@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  markSent,
   markFollowedUp,
   markRecruiterReplied,
   markInterviewScheduled,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/jobs/application-pipeline";
 
 const ACTIONS: Record<string, (id: string, extra?: string) => Promise<{ success: boolean; error?: string }>> = {
+  mark_sent: (id) => markSent(id),
   mark_followed_up: (id) => markFollowedUp(id),
   mark_replied: (id) => markRecruiterReplied(id),
   schedule_interview: (id, extra) => markInterviewScheduled(id, extra),

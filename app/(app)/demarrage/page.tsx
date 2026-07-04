@@ -137,7 +137,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
       const result = await getSuggestions(profileId, target);
       setSuggestions(result.suggestions);
       if (result.source === "no_key") {
-        setSuggestionError("DeepSeek non configuré — suggestions basées sur votre profil et CV.");
+        setSuggestionError("DeepSeek non configuré — suggestions basées sur votre cabinet et vos outils.");
       }
     } catch {
       setSuggestions([]);
@@ -576,10 +576,10 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--texte)" }}>
-            Démarrage guidé
+            Démarrage Cabinet
           </h1>
           <p className="text-sm mt-1" style={{ color: "var(--texte-secondaire)" }}>
-            Configurez votre agent de recherche exécutive en 15 minutes
+            Configuration guidée pour recruteurs — mettez votre cabinet en ordre de marche en 15 minutes
           </p>
         </div>
         {readiness && (
@@ -630,7 +630,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
           <div className="space-y-6 text-center">
             <Sparkles size={40} style={{ color: "var(--or)", margin: "0 auto" }} />
             <div>
-              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--texte)" }}>Bienvenue dans ELTON OS</h2>
+              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--texte)" }}>Bienvenue dans PRSTO</h2>
               <p className="text-sm max-w-md mx-auto" style={{ color: "var(--texte-secondaire)" }}>
                 Votre assistant de recherche d&apos;emploi exécutive. En 10 étapes, configurez votre agent pour qu&apos;il trouve,
                 analyse et candidate aux meilleures offres — automatiquement.
@@ -747,7 +747,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
                       <FileText size={14} /> Importer depuis mon CV maître
                     </h3>
                     <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
-                      Votre CV maître peut contenir vos expériences passées. ELTON OS peut les détecter et vous proposer un import contrôlé.
+                      Votre CV maître peut contenir vos expériences passées. PRSTO peut les détecter et vous proposer un import contrôlé.
                     </p>
 
                     {/* Scan button */}
@@ -891,7 +891,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
                       <AlertTriangle size={14} /> Importer depuis mon CV maître
                     </h3>
                     <p className="text-xs" style={{ color: "var(--texte-secondaire)" }}>
-                      Aucun CV maître validé. Importez d&apos;abord votre CV dans l&apos;étape suivante, puis revenez ici pour importer vos expériences automatiquement.
+                      Aucun CV maître validé. Importez d&apos;abord vos outils dans l&apos;étape suivante, puis revenez ici pour importer vos expériences automatiquement.
                     </p>
                     <button
                       onClick={() => handleStepChange(6)}
@@ -966,7 +966,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
               <div className="p-3 rounded-lg border flex items-center justify-between" style={{ borderColor: "var(--or)", background: "var(--or-faible)" }}>
                 <div className="flex items-center gap-2">
                   <Cpu size={14} style={{ color: "var(--or)" }} />
-                  <span className="text-xs" style={{ color: "var(--texte)" }}>Suggestions IA basées sur votre profil et CV</span>
+                  <span className="text-xs" style={{ color: "var(--texte)" }}>Suggestions IA basées sur votre cabinet et vos outils</span>
                 </div>
                 <div className="flex gap-1.5">
                   {(["skills", "languages", "education", "certifications"] as const).map((target) => (
@@ -987,7 +987,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
               <div className="p-3 rounded-lg border flex items-center gap-2" style={{ borderColor: "var(--or)", background: "var(--or-faible)" }}>
                 <Loader2 size={14} className="animate-spin" style={{ color: "var(--or)" }} />
                 <span className="text-xs" style={{ color: "var(--texte-tertiaire)" }}>
-                  {suggestionTarget === "skills" ? "Analyse de votre profil pour les compétences..." : suggestionTarget === "languages" ? "Analyse de votre CV pour les langues..." : suggestionTarget === "education" ? "Analyse de votre parcours pour les formations..." : "Analyse de votre profil pour les certifications..."}
+                  {suggestionTarget === "skills" ? "Analyse de votre cabinet pour les compétences..." : suggestionTarget === "languages" ? "Analyse de vos outils pour les langues..." : suggestionTarget === "education" ? "Analyse de votre parcours pour les formations..." : "Analyse de votre cabinet pour les certifications..."}
                 </span>
               </div>
             )}
@@ -1092,7 +1092,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
           <div className="space-y-5">
             <h2 className="text-lg font-bold" style={{ color: "var(--texte)" }}>CV Maître</h2>
             <p className="text-sm" style={{ color: "var(--texte-secondaire)" }}>
-              Copiez-collez le texte intégral de votre CV. Il servira de source de vérité pour générer des documents et alimenter le Proof Vault.
+              Copiez-collez le texte intégral de vos outils. Il servira de source de vérité pour générer des documents et alimenter le Proof Vault.
             </p>
             <Field label="Nom du fichier" value={cvFileName} onChange={setCvFileName} placeholder="cv-executif.txt" />
             <div className="space-y-1">
@@ -1103,7 +1103,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
                 rows={15}
                 className="w-full p-3 rounded-md border text-sm font-mono"
                 style={{ background: "var(--fond)", borderColor: "var(--bordure)", color: "var(--texte)" }}
-                placeholder="Collez ici le texte intégral de votre CV..."
+                placeholder="Collez ici le texte intégral de vos outils..."
               />
             </div>
             {cvMaster && (
@@ -1375,7 +1375,7 @@ export default function DemarragePage({ searchParams }: { searchParams?: Promise
                       "Au moins une source marquée prioritaire": "/sources",
                       "Mode de confidentialité IA configuré": "/parametres",
                       "Clé API DeepSeek configurée": "/parametres",
-                      "Au moins une opportunité dans le pipeline": "/pipeline",
+                      "Au moins une opportunité dans le pipeline": "/dashboard/jobs/pipeline",
                     };
                     const path = fieldToPath[f];
                     return path ? (

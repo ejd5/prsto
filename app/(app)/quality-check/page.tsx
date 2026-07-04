@@ -5,6 +5,7 @@ import { ClipboardPaste, CheckCircle2, AlertTriangle, Lightbulb, Zap, BarChart3,
 import { evaluateDocumentQuality, type QualityCriterion, type QualityScore } from "@/lib/quality-check/engine";
 import { qualityCheckWithIA } from "@/lib/actions/document";
 import AIAssistant from "@/components/ai-assistant";
+import { getScoreColor, getScoreBg } from "@/lib/score-colors";
 import type { SuggestionItem } from "@/lib/ai/suggestions";
 
 const CRITERION_LABELS: Record<QualityCriterion, string> = {
@@ -20,19 +21,8 @@ const CRITERION_LABELS: Record<QualityCriterion, string> = {
   appropriateLength: "Longueur adaptée",
 };
 
-function scoreColor(s: number): string {
-  if (s >= 70) return "var(--succes)";
-  if (s >= 50) return "var(--or)";
-  if (s >= 30) return "var(--warning)";
-  return "var(--erreur)";
-}
-
-function scoreBg(s: number): string {
-  if (s >= 70) return "rgba(74,222,128,0.12)";
-  if (s >= 50) return "rgba(245,158,11,0.12)";
-  if (s >= 30) return "rgba(239,68,68,0.10)";
-  return "rgba(239,68,68,0.06)";
-}
+const scoreColor = (s: number) => getScoreColor(s);
+const scoreBg = (s: number) => getScoreBg(s, 0.12);
 
 function scoreLabel(s: number): string {
   if (s >= 85) return "Excellent";
@@ -141,16 +131,16 @@ export default function QualityCheckPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <input type="text" placeholder="Votre nom" value={candidateName}
               onChange={e => setCandidateName(e.target.value)}
-              className="input-elton text-xs" />
+              className="input-prsto text-xs" />
             <input type="text" placeholder="Votre titre" value={candidateTitle}
               onChange={e => setCandidateTitle(e.target.value)}
-              className="input-elton text-xs" />
+              className="input-prsto text-xs" />
             <input type="text" placeholder="Poste cible" value={offerTitle}
               onChange={e => setOfferTitle(e.target.value)}
-              className="input-elton text-xs" />
+              className="input-prsto text-xs" />
             <input type="text" placeholder="Entreprise cible" value={offerCompany}
               onChange={e => setOfferCompany(e.target.value)}
-              className="input-elton text-xs" />
+              className="input-prsto text-xs" />
           </div>
         )}
 

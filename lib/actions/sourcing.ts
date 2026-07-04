@@ -384,3 +384,139 @@ export async function getConnectorHealth(): Promise<ConnectorHealth[]> {
 
   return health;
 }
+
+export async function scrapeCustomUrl(url: string, cssSelector?: string): Promise<{
+  success: boolean;
+  rawText?: string;
+  jsonData?: any;
+  error?: string;
+}> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+      }
+    });
+    if (!res.ok) {
+      return { success: false, error: `Erreur HTTP ${res.status}: ${res.statusText}` };
+    }
+    const html = await res.text();
+
+    // Clean HTML to extract readable text
+    let bodyText = html;
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    if (bodyMatch) bodyText = bodyMatch[1];
+
+    // Remove script and style tags
+    bodyText = bodyText.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, "");
+    bodyText = bodyText.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, "");
+    // Remove HTML comments
+    bodyText = bodyText.replace(/<!--([\s\S]*?)-->/g, "");
+
+    // If CSS selector is specified, try a basic match
+    let textToAnalyze = bodyText;
+    if (cssSelector) {
+      const cleanSelector = cssSelector.replace(/^[.#]/, "");
+      const regex = new RegExp(`<[^>]*class=["'][^"']*${cleanSelector}[^"']*["'][^>]*>([\\s\\S]*?)<\/[^>]+>`, "gi");
+      const matches = [];
+      let match;
+      while ((match = regex.exec(bodyText)) !== null) {
+        matches.push(match[1].replace(/<[^>]*>/g, "").trim());
+      }
+      if (matches.length > 0) {
+        textToAnalyze = matches.join("\n\n---\n\n");
+      }
+    }
+
+    // Clean all other HTML tags
+    const cleanText = textToAnalyze.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+    // Check for Cloudflare / CAPTCHA / DDOS protection pages
+    const lowerCleanText = cleanText.toLowerCase();
+    if (
+      lowerCleanText.includes("cloudflare") || 
+      lowerCleanText.includes("captcha") ||
+      lowerCleanText.includes("checking your browser") ||
+      lowerCleanText.includes("ddos protection") ||
+      lowerCleanText.includes("please enable js") ||
+      lowerCleanText.includes("robot verification") ||
+      lowerCleanText.includes("hcaptcha")
+    ) {
+      return {
+        success: false,
+        rawText: cleanText.slice(0, 1000),
+        error: "Le site cible est protégé par Cloudflare / Anti-Bot. Le scraper serveur direct ne peut pas contourner cette protection. Veuillez utiliser l'extension Chrome (onglet Import Pro) pour capturer cette offre de manière sécurisée."
+      };
+    }
+
+    // Use AI/DeepSeek to structure the job details
+    const aiResult = await generateJsonWithDeepSeek<{ offers: any[] }>({
+      systemPrompt: `Tu es un extracteur de données d'annonces d'emploi de type Apify/Octoparse. 
+Analyse le texte brut fourni et extrais la liste des offres d'emploi sous forme de tableau JSON d'objets.
+Chaque offre d'emploi doit avoir la structure suivante :
+{
+  "title": string (titre),
+  "company": string (entreprise),
+  "location": string (ville/lieu),
+  "contractType": string (CDI/CDD/Freelance/etc),
+  "remote": string (remote/hybride/présentiel),
+  "salary": string (rémunération),
+  "description": string (courte description ou exigences clés)
+}
+Retourne uniquement le JSON : { "offers": [...] }`,
+      userPrompt: `Texte extrait de la page :\n\n${cleanText.slice(0, 15000)}`,
+      temperature: 0.1,
+    });
+
+    if (!aiResult.success || !aiResult.data || !aiResult.data.offers) {
+      return { success: false, rawText: cleanText.slice(0, 1000), error: "L'IA n'a pas pu structurer les données" };
+    }
+
+    return {
+      success: true,
+      rawText: cleanText.slice(0, 3000),
+      jsonData: aiResult.data
+    };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Erreur réseau ou DNS" };
+  }
+}
+
+export async function importScrapedOffers(offers: any[]): Promise<{ imported: number; duplicates: number }> {
+  try {
+    let imported = 0;
+    let duplicates = 0;
+    for (const offer of offers) {
+      const extId = dedupKey(offer.title, offer.company || "unknown");
+      const existing = await prisma.opportunity.findFirst({
+        where: { externalId: extId },
+      });
+      if (existing) { duplicates++; continue; }
+
+      const normalized: any = {
+        externalId: extId,
+        title: offer.title,
+        company: offer.company || "Inconnu",
+        location: offer.location || "France",
+        sourceUrl: "",
+        sourceName: "Custom Scraper",
+        sourceType: "manual_clipboard" as any,
+        description: offer.description || "",
+        contractType: offer.contractType || "",
+        remote: offer.remote || "",
+        salaryMin: 0,
+        salaryMax: 0,
+        salaryCurrency: "EUR"
+      };
+
+      const scored = await enrichWithDeepSeek(normalized);
+      await addOrUpdateOffer(scored, true);
+      imported++;
+    }
+    revalidatePath("/opportunites");
+    return { imported, duplicates };
+  } catch (e) {
+    console.error("Error in importScrapedOffers:", e);
+    return { imported: 0, duplicates: 0 };
+  }
+}

@@ -297,7 +297,9 @@ export async function compareDocumentVersions(params: {
   if (!doc) return { success: false, error: "Document introuvable" };
 
   // Generate local version using template
-  const localResult = await generateDocumentContent(doc.opportunityId, doc.type as DocumentType, false);
+  const targetId = doc.opportunityId ?? doc.jobId;
+  if (!targetId) return { success: false, error: "Document non rattaché" };
+  const localResult = await generateDocumentContent(targetId, doc.type as DocumentType, false);
 
   // Get AI improved version
   const iaResult = await improveDocumentWithIA({ documentId, styleId });

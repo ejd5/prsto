@@ -25,7 +25,7 @@ function makeInput(overrides: Partial<DetectionInput> = {}): DetectionInput {
     approvedDocCount: 3,
     plannedRelanceCount: 2,
     sentRelanceCount: 1,
-    pipelineTaskCount: 4,
+    pipelineDraftCount: 4,
     profileComplete: true,
     ...overrides,
   };
@@ -141,12 +141,12 @@ describe("detectNoPlannedRelances", () => {
 
 describe("detectNoPipeline", () => {
   it("ok avec pipeline actif", () => {
-    const r = detectNoPipeline(makeInput({ pipelineTaskCount: 3 }));
+    const r = detectNoPipeline(makeInput({ pipelineDraftCount: 3 }));
     expect(r.ok).toBe(true);
   });
 
   it("warning sans pipeline", () => {
-    const r = detectNoPipeline(makeInput({ pipelineTaskCount: 0 }));
+    const r = detectNoPipeline(makeInput({ pipelineDraftCount: 0 }));
     expect(r.ok).toBe(false);
     expect(r.severity).toBe("warning");
   });
@@ -235,7 +235,7 @@ describe("realUsageReadiness", () => {
       approvedDocCount: 0,
       plannedRelanceCount: 0,
       sentRelanceCount: 0,
-      pipelineTaskCount: 0,
+      pipelineDraftCount: 0,
       analyzedOpportunityCount: 0,
     }));
     const readiness = realUsageReadiness(results);
@@ -252,7 +252,7 @@ describe("realUsageReadiness", () => {
       approvedDocCount: 0,
       plannedRelanceCount: 0,
       sentRelanceCount: 0,
-      pipelineTaskCount: 0,
+      pipelineDraftCount: 0,
       analyzedOpportunityCount: 0,
     }));
     const readiness = realUsageReadiness(results);

@@ -1,0 +1,97 @@
+{
+  "manifest_version": 3,
+  "name": "PRSTO Copilot",
+  "version": "4.0.0",
+  "description": "Le copilote carrière IA premium pour cadres dirigeants. AI Side Panel conversationnel qui analyse en temps réel les offres LinkedIn, Indeed, APEC, Cadremploi, Welcome to the Jungle.",
+  "author": "PRSTO",
+  "homepage_url": "https://prsto.fr",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "sidePanel",
+    "tabs",
+    "contextMenus",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*",
+    "https://app.prsto.fr/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.indeed.fr/*",
+    "https://www.apec.fr/*",
+    "https://www.cadremploi.fr/*",
+    "https://www.hellowork.com/*",
+    "https://www.welcometothejungle.com/*"
+  ],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/jobs/*",
+        "https://*.linkedin.com/jobs/view/*"
+      ],
+      "js": ["dist/content-linkedin.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://*.indeed.com/*",
+        "https://*.indeed.fr/*"
+      ],
+      "js": ["dist/content-indeed.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://www.apec.fr/*"
+      ],
+      "js": ["dist/content-apec.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://www.cadremploi.fr/*"
+      ],
+      "js": ["dist/content-cadremploi.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://www.welcometothejungle.com/*"
+      ],
+      "js": ["dist/content-wttj.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_title": "PRSTO Copilot — Analyser cette offre",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src http://localhost:3000 http://127.0.0.1:3000 https://app.prsto.fr https://*.supabase.co; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com;"
+  }
+}

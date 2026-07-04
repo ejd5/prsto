@@ -77,7 +77,7 @@ export async function generateRelance(opportunityId: string, templateType: Relan
   });
 
   revalidatePath(`/opportunites/${opportunityId}`);
-  revalidatePath("/pipeline");
+  revalidatePath("/dashboard/jobs/pipeline");
   return { ...relance, label: getRelanceLabel(templateType) };
 }
 
@@ -88,7 +88,7 @@ export async function markRelanceSent(id: string) {
   });
 
   revalidatePath(`/opportunites/${relance.opportunityId}`);
-  revalidatePath("/pipeline");
+  revalidatePath("/dashboard/jobs/pipeline");
   return relance;
 }
 
@@ -99,7 +99,7 @@ export async function scheduleRelance(id: string, scheduledDate: string) {
   });
 
   revalidatePath(`/opportunites/${relance.opportunityId}`);
-  revalidatePath("/pipeline");
+  revalidatePath("/dashboard/jobs/pipeline");
   return relance;
 }
 

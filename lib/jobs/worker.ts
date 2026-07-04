@@ -3,49 +3,35 @@ import { planSearches } from "./search-planner";
 import { detectLocationPriority, computeLocationScore, detectCountryScope } from "./location-priority";
 import { checkDuplicate, computeChecksum } from "./dedupe";
 import { scoreJob, scoreJobLocal } from "./deepseek-job-scorer";
-import type { ImportMode, SearchQuery, ImportedJob } from "./types";
+import type { CronRunMode, SearchQuery, ImportedJob } from "./types";
 import fixtureData from "./fixtures/france-travail-sample.json";
 
 export interface ImportOptions {
-  mode?: ImportMode;
+  mode?: CronRunMode;
   source?: string;        // "all" | "france-travail" | "michael-page" | ...
   dryRun?: boolean;       // si true, utilise les fixtures au lieu des API
   maxPages?: number;      // pagination France Travail (défaut: 1)
   maxJobsPerRun?: number; // limite globale (défaut: 250)
+  respectCapabilities?: boolean; // si true, ne lance que les sources AUTO_* (défaut: true)
 }
 
 // Tous les connecteurs disponibles
-import { linkedinPublicConnector } from "./connectors/linkedin-public";
 import { franceTravailConnector } from "./connectors/france-travail";
-import { michaelPageConnector } from "./connectors/michael-page";
-import { greenhouseConnector } from "./connectors/greenhouse";
-import { leverConnector } from "./connectors/lever";
-import { ashbyConnector } from "./connectors/ashby";
-import { smartRecruitersConnector } from "./connectors/smartrecruiters";
 import { genericJsonLdConnector } from "./connectors/generic-jsonld";
 import { browserAgentConnector } from "./connectors/browser-agent-connector";
+import { publicAtsConnector } from "./connectors/public-ats";
 
 /** Configuration : quels connecteurs sont "broad" (1 appel large) vs "per_query" (par localisation) */
 const CONNECTOR_MODE: Record<string, "broad" | "per_query"> = {
   "france-travail": "broad",
-  "michael-page": "per_query",
-  "linkedin-public": "per_query",
-  "greenhouse": "broad",
-  "lever": "broad",
-  "ashby": "broad",
-  "smartrecruiters": "broad",
+  "public-ats": "broad",
   "generic-jsonld": "broad",
   "browser-agent": "broad",
 };
 
 const ALL_CONNECTORS = [
   franceTravailConnector,
-  michaelPageConnector,
-  linkedinPublicConnector,
-  greenhouseConnector,
-  leverConnector,
-  ashbyConnector,
-  smartRecruitersConnector,
+  publicAtsConnector,
   genericJsonLdConnector,
   browserAgentConnector,
 ];
@@ -220,9 +206,37 @@ async function runReal(opts: ImportOptions): Promise<{
   }
 
   // Filtrer par source si demandé
-  const activeConnectors = sourceFilter === "all"
-    ? ALL_CONNECTORS
+  const respectCaps = opts.respectCapabilities !== false; // true par défaut
+  let activeConnectors = sourceFilter === "all"
+    ? [...ALL_CONNECTORS]
     : ALL_CONNECTORS.filter(c => c.id === sourceFilter || c.name === sourceFilter);
+
+  // Smart filtering : ignorer les sources USER_ASSISTED, MANUAL_ONLY, BLOCKED
+  if (respectCaps) {
+    const filtered: typeof ALL_CONNECTORS = [];
+    for (const connector of activeConnectors) {
+      try {
+        const src = await prisma.importSource.findUnique({ where: { name: connector.name } });
+        if (src?.configJson) {
+          const cap = JSON.parse(src.configJson) as { importMode?: string };
+          const mode = cap.importMode || "";
+          if (mode.startsWith("AUTO_")) {
+            filtered.push(connector);
+            // Les logs seront visibles dans les rapports
+          } else {
+            allErrors.push(`⏭️ Skip: ${connector.name} (${mode || "non scanné"})`);
+          }
+        } else {
+          // Pas encore scanné → on autorise (compatibilité existante)
+          filtered.push(connector);
+        }
+      } catch {
+        // Erreur de parsing → on autorise
+        filtered.push(connector);
+      }
+    }
+    activeConnectors = filtered;
+  }
 
   // Phase 1 : connecteurs broad
   for (const connector of activeConnectors) {
