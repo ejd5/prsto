@@ -770,3 +770,80 @@ Stage Summary:
 - ✅ Toutes APIs testées en réel avec qualité exec confirmée
 - 🔵 Phase A complète — passer à Phase B (SEO content: 50 CV examples + 30 lettres)
 
+
+---
+Task ID: 21
+Agent: main (Super Z)
+Task: Phase B — SEO content massif (130 pages) pour captter trafic organique type Rezi
+
+Work Log:
+- Création lib/seo/helpers.ts
+  * slugifyFr (suppression accents)
+  * articleJsonLd, faqJsonLd, breadcrumbJsonLd (rich snippets Google)
+
+- 50 CV examples executive (/lib/seo/cv-examples.ts)
+  * 5 catégories : C-Suite (10), Direction (15), Management (7), Conseil/Finance (8), International (10)
+  * Chaque CV example: slug, title, salaryRange, keywords SEO, summary (100-150 mots),
+    keySkills (6-8), achievements chiffrés (4), FAQ (3 Q/R)
+  * Exemples: cv-directeur-general, cv-ceo, cv-cfo, cv-coo, cv-cto, cv-cmo, cv-chro,
+    cv-cio, cv-cro, cv-cso, cv-directeur-commercial, cv-directeur-industriel,
+    cv-directeur-supply-chain, cv-directeur-juridique, cv-directeur-risques,
+    cv-directeur-transformation, cv-directeur-digital, cv-directeur-data,
+    cv-directeur-achats, cv-directeur-qualite, cv-directeur-filiale,
+    cv-directeur-audit, cv-directeur-conformite, cv-directeur-communication,
+    cv-country-manager, cv-managing-director, cv-vice-president, cv-area-manager,
+    cv-expatrie, cv-directeur-europe, cv-directeur-ameriques, cv-directeur-apac,
+    cv-directeur-emea, cv-business-unit-manager, cv-consultant-strategie,
+    cv-directeur-conseil, cv-investisseur-prive, cv-venture-capital,
+    cv-banquier-affaires, cv-directeur-fonds, cv-directeur-administration,
+    cv-controleur-gestion, cv-directeur-projet, cv-directeur-rse,
+    cv-directeur-innovation, cv-directeur-customer-success, cv-directeur-operations,
+    cv-directeur-talents, cv-chef-de-projet-senior
+
+- 30 lettres de motivation (/lib/seo/cover-letters.ts)
+  * 3 catégories : Secteur (12), Situation (10), Ton (8)
+  * Chaque lettre: slug, title, targetRole, summary, structure (6-7 parts),
+    fullExample (lettre complète), tips (4), FAQ (3)
+  * Exemples: lettre-motivation-directeur-banque, -assurance, -industrie,
+    -tech-saas, -pharma, -retail, -energie, -conseil, -fonds-pe, -logistique,
+    -immobilier, -public, -cadre-transition, -premier-poste-dg, -cadre-reconversion,
+    -expatrie-retour, -internal-application, -co-fondateur, -spontannee,
+    -board-member, -consultant-independent, -cadre-handicap, -board-ready,
+    -peer-to-peer, -founder-style, -cold-outreach, -email-court, -formelle,
+    -moderne, -courte-percutante
+
+- 50 synonymes management (/lib/seo/synonyms.ts)
+  * 6 catégories : Action (10), Leadership (10), Stratégie (8), Résultat (10),
+    Communication (7), Management (5)
+  * Chaque synonyme: slug, word, context, synonyms (6-7 avec nuances + exemples + powerLevel),
+    cvUseCase, FAQ (3)
+  * Cible SEO: "synonyme diriger", "synonyme manager", "synonyme piloter", etc.
+  * Inspiré de Rezi (cluster "develop synonym" mais adapté FR executive)
+
+- 6 pages créées:
+  * /prsto/cv-examples (hub avec 5 catégories)
+  * /prsto/cv-examples/[slug] (50 pages dynamiques avec structured data)
+  * /prsto/lettres (hub avec 3 catégories)
+  * /prsto/lettres/[slug] (30 pages dynamiques)
+  * /prsto/synonymes (hub avec 6 catégories)
+  * /prsto/synonymes/[slug] (50 pages dynamiques)
+
+- SEO technique:
+  * Structured data JSON-LD sur toutes les pages (Article, FAQ, Breadcrumb)
+  * generateStaticParams pour pre-render SSG (rapide + SEO-friendly)
+  * generateMetadata dynamique pour title + description
+  * Breadcrumbs navigables
+  * Related content (cross-linking interne)
+  * CTA vers outils PRSTO sur chaque page
+
+- Build: ✓ Compiled in 45s, 332 pages générées (vs 200 avant)
+- Toutes pages testées HTTP 200
+
+Stage Summary:
+- ✅ 130 pages SEO créées (50 CV + 30 lettres + 50 synonymes)
+- ✅ Structured data JSON-LD (rich snippets Google)
+- ✅ Cross-linking interne (related + CTA)
+- ✅ Build OK 332 pages, daemon stable
+- ✅ Cible: capter trafic organique type Rezi (340K/mois) sur marché FR exec
+- 🔵 Phase B complète — passer à Phase C (Enterprise white-label)
+
