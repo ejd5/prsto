@@ -52,11 +52,25 @@ def main():
     # Change to project dir
     os.chdir('/home/z/my-project/elton-os')
 
-    # Set env
+    # Set env — load all vars from .env.local manually (standalone build doesn't auto-load it)
     env = os.environ.copy()
     env['PORT'] = '3000'
     env['HOSTNAME'] = '0.0.0.0'
     env['NODE_OPTIONS'] = '--max-old-space-size=1024'
+
+    # Parse .env.local and inject all vars
+    env_local = '/home/z/my-project/elton-os/.env.local'
+    if os.path.exists(env_local):
+        with open(env_local) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' not in line:
+                    continue
+                key, _, val = line.partition('=')
+                val = val.strip().strip('"').strip("'")
+                env[key.strip()] = val
 
     # Watchdog loop: restart server if it dies
     while True:
