@@ -15,8 +15,8 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden min-h-[92vh] flex items-center justify-center"
       style={{
-        backgroundImage: "url('/hero-home.png')",
-        backgroundSize: "100% 100%",
+        backgroundImage: "url('/hero-premium.png')",
+        backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
       }}>
