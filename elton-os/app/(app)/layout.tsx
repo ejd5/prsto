@@ -36,7 +36,7 @@ const NAV_SECTIONS = [
   {
     title: "Campagne",
     items: [
-      { href: "/", label: "Cockpit", icon: LayoutDashboard },
+      { href: "/dashboard", label: "Cockpit", icon: LayoutDashboard },
       { href: "/opportunites", label: "Pipelines ouverts", icon: Briefcase },
       { href: "/dashboard/jobs/pipeline", label: "Missions en cours", icon: BarChart3 },
       { href: "/dashboard/jobs/analytics", label: "Radar marché", icon: TrendingUp },
