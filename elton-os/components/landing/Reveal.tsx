@@ -39,12 +39,24 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    // Respect reduced-motion preference
+    // Respect reduced-motion preference — show immediately
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       const id = requestAnimationFrame(() => setVisible(true));
       return () => cancelAnimationFrame(id);
     }
+
+    // If the element is ALREADY in the viewport on mount (hero section case),
+    // show it immediately without waiting for observer
+    const rect = el.getBoundingClientRect();
+    const viewportH = window.innerHeight;
+    if (rect.top < viewportH && rect.bottom > 0) {
+      const id = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(id);
+    }
+
+    // Fallback: force visible after 1500ms even if observer never fires
+    const fallbackTimer = setTimeout(() => setVisible(true), 1500);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -57,11 +69,14 @@ export default function Reveal({
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+      { threshold: 0.05, rootMargin: "0px 0px -8% 0px" }
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(fallbackTimer);
+      observer.disconnect();
+    };
   }, [once]);
 
   return (

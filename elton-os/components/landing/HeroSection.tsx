@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Sparkles, Eye, Cpu, Shield, BarChart3, Bell, Crown } from "lucide-react";
-import Reveal from "./Reveal";
 
 const FEATURES = [
   { icon: Cpu, label: "Scoring IA 7 dimensions" },
@@ -28,7 +27,7 @@ export default function HeroSection() {
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-16 w-full relative text-center" style={{ zIndex: 2 }}>
-        <Reveal variant="up">
+        <div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[11px] font-medium mb-6" style={{
             borderColor: "rgba(228,177,24,0.25)", color: "#A38010",
             background: "rgba(228,177,24,0.08)",
@@ -36,9 +35,9 @@ export default function HeroSection() {
             <Crown size={11} style={{ color: "#E4B118" }} />
             Le copilote carrière IA des cadres dirigeants — DG, CEO, COO, CFO, Country Manager
           </div>
-        </Reveal>
+        </div>
 
-        <Reveal variant="up" delay={80}>
+        <div>
           <h1 className="text-[clamp(2.25rem,5vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.04em] mb-5 font-serif" style={{ fontFamily: "Playfair Display, serif" }}>
             <span className="block text-[#0B1F18]" style={{ textShadow: "0 2px 12px rgba(255,255,255,0.6)" }}>
               Votre prochain poste
@@ -50,17 +49,17 @@ export default function HeroSection() {
               PRSTO vous donne les 18 outils pour le décrocher.
             </span>
           </h1>
-        </Reveal>
+        </div>
 
-        <Reveal variant="up" delay={160}>
+        <div>
           <p className="text-base md:text-lg leading-relaxed mb-8 max-w-2xl mx-auto font-medium" style={{ color: "#103826", textShadow: "0 0 6px rgba(255,255,255,0.5)" }}>
             Un process de recrutement de dirigeant dure <strong style={{ color: "#E4B118" }}>6 à 18 mois</strong>, traverse
             7 à 12 étapes, mobilise 15 à 30 interlocuteurs. Les outils généralistes ne sont pas calibrés pour ça.
             PRSTO, si. CV Maître, ATS Scanner, Mock Interview Panel, Conseiller IA, Market Radar, CRM Recruteur — un seul cockpit.
           </p>
-        </Reveal>
+        </div>
 
-        <Reveal variant="up" delay={240}>
+        <div>
           <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
             <Link href="/demarrage"
               className="group inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
@@ -88,9 +87,9 @@ export default function HeroSection() {
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#E4B118" }} />
             Pour les dirigeants uniquement. Pas pour la masse. →
           </Link>
-        </Reveal>
+        </div>
 
-        <Reveal variant="fade" delay={340}>
+        <div>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             {FEATURES.map((f) => (
               <div key={f.label} className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: "#103826", textShadow: "0 0 4px #fff, 0 0 12px rgba(255,255,255,0.6)" }}>
@@ -99,7 +98,7 @@ export default function HeroSection() {
               </div>
             ))}
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );
