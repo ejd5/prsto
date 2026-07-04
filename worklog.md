@@ -709,3 +709,64 @@ Stage Summary:
 - 🔵 Waiting on user: provide GOOGLE_CLIENT_ID/SECRET and LINKEDIN_CLIENT_ID/SECRET
   (instructions in PRSTO_SSO_setup.md), then restart server to activate SSO buttons
 
+
+---
+Task ID: 20
+Agent: main (Super Z)
+Task: Phase A — 6 outils executive-grade + hub SEO (mieux que Rezi, pas copié)
+
+Work Log:
+- Création lib/executive/tools.ts (450 lignes) — librairie shared executive-grade
+  * 35 ATS checkpoints (vs 23 Rezi) avec 12 executive-specific:
+    - Titre exécutif (DG/CFO/COO/Country Manager)
+    - Signaux gouvernance (CoDir/Board/Comex)
+    - Portée internationale
+    - M&A / transformation
+    - Parties prenantes stratégiques (investors/régulateurs)
+    - Vision stratégique
+    - Secteur d'expertise identifiable
+    - École tier-1 (HEC/INSEAD/Polytechnique)
+    - Certifications (MBA/CFA)
+    - Reconnaissance / prix
+    - Impact financier (CA/EBITDA)
+    - Taille d'équipe managée
+  * Détection langue (FR/EN/ES), industrie (10 secteurs), réalisations chiffrées
+  * computeGlobalScore avec pondération par poids
+  * generateExecutiveContent (Z.AI prioritaire, DeepSeek fallback)
+
+- 6 API routes créées:
+  * POST /api/tools/resume-checker — 35 points + IA recommandations exec
+  * POST /api/tools/bullet-writer — 5 bullets executive-grade (P&L, team, board, M&A)
+  * POST /api/tools/summary-generator — 3 versions (board-ready, visionary, operational)
+  * POST /api/tools/cover-letter — 3 tons (board, peer, founder)
+  * POST /api/tools/resignation-letter — 2 versions (standard + executive avec garden leave/non-compète/Board)
+  * POST /api/tools/resume-agent — agent conversationnel qui interview l'exec
+
+- 5 UI pages créées:
+  * /prsto/outils (hub SEO 13 outils avec comparaison vs Rezi)
+  * /prsto/ats-checker (ATS Checker 35 points + IA recommandations)
+  * /prsto/outils/agent-cv (chat conversationnel + sidebar extracted data + génération CV)
+  * /prsto/outils/cover-letter (form + 3 lettres board/peer/founder)
+  * /prsto/outils/resignation-letter (form + options exec + 2 versions + rappels juridiques)
+
+- Tests réels:
+  * ATS Checker: score 89/100 grade A sur CV test de CFO (Jean Dupont, Groupe ABC)
+  * Bullet Writer: 5 bullets générés avec M€, %, pays, équipe, Comex/Board
+  * Summary Generator: 3 versions distinctes (board-ready sobre, visionary inspirant, operational concret)
+  * Cover Letter: 3 tons distincts (Board = "Monsieur le Président du Conseil", Peer = "Cher [CEO]", Founder = "Cher [Fondateur]")
+  * Resignation Letter: 2 versions + 2 rappels juridiques
+  * Resume Agent: conversation qui pose questions pertinentes (P&L scope, team size)
+
+- Build: ✓ Compiled successfully in 43s, 200 pages générées
+- Toutes les pages retour HTTP 200
+
+Stage Summary:
+- ✅ 6 outils executive-grade créés (vs Rezi: 13 outils génériques)
+- ✅ ATS Checker 35 points (vs 23 Rezi) avec 12 signaux exec uniques
+- ✅ Cover Letter 3 tons (vs 1 Rezi)
+- ✅ Resume Agent conversationnel (vs one-shot Rezi)
+- ✅ Resignation Letter avec clauses exec (garden leave/non-compète/Board)
+- ✅ Hub /prsto/outils positionne PRSTO vs Rezi explicitement
+- ✅ Toutes APIs testées en réel avec qualité exec confirmée
+- 🔵 Phase A complète — passer à Phase B (SEO content: 50 CV examples + 30 lettres)
+
