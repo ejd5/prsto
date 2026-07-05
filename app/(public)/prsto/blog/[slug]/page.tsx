@@ -7,6 +7,7 @@ import {
   getRelatedArticles,
   getCategoryGradient,
 } from "@/lib/blog/data";
+import { getArticleContent } from "@/lib/blog/posts";
 import ArticleContent from "@/components/blog/ArticleContent";
 import AuthorCard from "@/components/blog/AuthorCard";
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -82,6 +83,7 @@ export default async function ArticlePage({
   const article = getArticleBySlug(slug);
   if (!article) notFound();
 
+  const content = getArticleContent(slug);
   const related = getRelatedArticles(article);
   const gradient = getCategoryGradient(article.category);
   const baseUrl = "https://prsto.fr";
@@ -180,7 +182,7 @@ export default async function ArticlePage({
 
         {/* Article content */}
         <div className="max-w-3xl mx-auto">
-          <ArticleContent content={article.content} />
+          <ArticleContent content={content} />
         </div>
 
         {/* Tags */}
