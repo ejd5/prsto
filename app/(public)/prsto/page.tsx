@@ -13,6 +13,7 @@ import {
   LandingFooter,
   ScrollProgress,
 } from "@/components/landing";
+import { AudienceToggle } from "@/components/landing/AudienceToggle";
 
 export const metadata = {
   title: "PRSTO — La carrière d'exception mérite une recherche d'exception",
@@ -29,6 +30,7 @@ export default function PrstoLandingPage() {
   return (
     <>
       <ScrollProgress />
+      <AudienceToggle />
       <LandingHeader />
       <main>
         <HeroSection />

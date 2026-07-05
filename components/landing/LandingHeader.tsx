@@ -32,13 +32,14 @@ export default function LandingHeader() {
             { label: "Témoignages", href: "#temoignages" },
             { label: "Ressources", href: "/prsto/ressources" },
             { label: "Blog", href: "/prsto/blog" },
+            { label: "Entreprise", href: "/prsto/enterprise" },
             { label: "FAQ", href: "#faq" },
           ].map((link) => (
-            <a key={link.label} href={link.href} className="text-[13.5px] font-medium transition-colors" style={{
+            <Link key={link.label} href={link.href} className="text-[13.5px] font-medium transition-colors" style={{
               color: "#50625A", textDecoration: "none",
             }}>
               {link.label}
-            </a>
+            </Link>
           ))}
           <Link href="/demarrage" className="px-5 py-2 rounded-xl text-[13.5px] font-semibold transition-all" style={{
             background: "#103826", border: "1px solid #103826",
@@ -61,13 +62,14 @@ export default function LandingHeader() {
             { label: "Témoignages", href: "#temoignages" },
             { label: "Ressources", href: "/prsto/ressources" },
             { label: "Blog", href: "/prsto/blog" },
+            { label: "Entreprise", href: "/prsto/enterprise" },
             { label: "FAQ", href: "#faq" },
           ].map((link) => (
-            <a key={link.label} href={link.href}
+            <Link key={link.label} href={link.href}
               className="block text-sm py-1.5" style={{ color: "#50625A", textDecoration: "none" }}
               onClick={() => setOpen(false)}>
               {link.label}
-            </a>
+            </Link>
           ))}
           <Link href="/demarrage" className="block text-center px-4 py-2.5 rounded-lg text-sm font-medium" style={{
             background: "#103826", border: "1px solid #103826",
