@@ -489,8 +489,10 @@ export default function EnterprisePage() {
                   <p><strong>Limites :</strong> Uniquement en anglais. Pas de marque blanche réelle (nom du fournisseur visible partout). Aucun module d&apos;aide à la décision pour le Board.</p>
                 </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-[10px] font-semibold text-red-700">
-                Limité aux profils intermédiaires
+              <div className="mt-6 pt-4 border-t border-dashed border-gray-300">
+                <div className="text-[10px] font-bold text-[#103826] mb-1">Tarif Mensuel Moyen :</div>
+                <div className="text-sm font-extrabold text-[#103826]">~800$ à 1 500$ / mois</div>
+                <span className="text-[9px] text-[#50625A] block mt-1">(Basé sur crédits de volume)</span>
               </div>
             </div>
 
@@ -505,8 +507,10 @@ export default function EnterprisePage() {
                   <p><strong>Limites :</strong> Interfaces austères et non personnalisables. Manque d&apos;agilité technique et absence d&apos;entraînements interactifs vocaux.</p>
                 </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-[10px] font-semibold text-red-700">
-                Setup complexe & Coûteux
+              <div className="mt-6 pt-4 border-t border-dashed border-gray-300">
+                <div className="text-[10px] font-bold text-[#103826] mb-1">Tarif Mensuel Moyen :</div>
+                <div className="text-sm font-extrabold text-[#103826]">~1 200€ à 2 500$ / mois</div>
+                <span className="text-[9px] text-[#50625A] block mt-1">(Hors frais de setup initiaux)</span>
               </div>
             </div>
 
@@ -521,8 +525,10 @@ export default function EnterprisePage() {
                   <p><strong>Limites :</strong> Perte d&apos;indépendance commerciale. Vos données candidats appartiennent légalement à la tête de réseau.</p>
                 </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-[10px] font-semibold text-red-700">
-                Dépendance & Redevances de CA
+              <div className="mt-6 pt-4 border-t border-dashed border-gray-300">
+                <div className="text-[10px] font-bold text-[#103826] mb-1">Redevance Estimée :</div>
+                <div className="text-sm font-extrabold text-[#103826]">~2 000€ à 5 000€ / mois</div>
+                <span className="text-[9px] text-[#50625A] block mt-1">(Calculé sur commissionnement)</span>
               </div>
             </div>
 
@@ -537,11 +543,12 @@ export default function EnterprisePage() {
                   <p><strong>Avantages :</strong> Marque blanche absolue, multi-langue natif (FR/EN/ES), simulations vidéo d&apos;entretien au format STAR et briefs Board automatisés.</p>
                 </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-dashed border-emerald-800 text-[10px] font-bold text-[#E4B118]">
-                Liberté totale & 100% Souverain
+              <div className="mt-6 pt-4 border-t border-dashed border-emerald-800">
+                <div className="text-[10px] font-bold text-[#E4B118] mb-1">Tarif Réel PRSTO :</div>
+                <div className="text-sm font-extrabold text-white">Dès 149€ / mois</div>
+                <span className="text-[9px] opacity-75 block mt-1">(Fixe sans frais d&apos;entrée)</span>
               </div>
             </div>
-
           </div>
         </div>
       </section>
