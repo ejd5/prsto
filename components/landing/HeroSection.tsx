@@ -13,7 +13,7 @@ const FEATURES = [
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden min-h-[92vh] flex items-center justify-center"
+    <section className="relative overflow-hidden min-h-[92vh] flex items-start justify-center pt-20 md:pt-28"
       style={{
         backgroundImage: "url('/hero-home.png')",
         backgroundSize: "100% 100%",
