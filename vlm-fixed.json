@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "La page web PRSTO présente une structure complète avec des sections bien remplies : header, sections de présentation (outils, résultats, IA, fonctionnalités, tarifs, FAQ, etc.). Toutes les sections visibles contiennent du texte, images ou éléments interactifs. Aucune section vide ou manquante n’est apparente dans la vue globale. Le design est cohérent, avec des blocs d’informations clairs et des appels à l’action.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1783252586,
+  "id": "202607051956155ea8eab9f5d34d90",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202607051956155ea8eab9f5d34d90",
+  "usage": {
+    "completion_tokens": 104,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6106,
+    "prompt_tokens_details": {
+      "cached_tokens": 7
+    },
+    "total_tokens": 6210
+  }
+}

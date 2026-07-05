@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Voici la description de chaque section de la page, de haut en bas, avec indication de la présence ou de l'absence de texte (vide) et la liste des sections vides :\n\n---\n\n### 1. **En-tête (Header)**\n- **Description** : Barre de navigation supérieure avec le logo \"PRSTO\", menu de navigation (Fonctionnalités, Tarifs, Témoignages, etc.), et boutons (Essai gratuit, Connexion, etc.).\n- **Texte présent** : Oui (contient le logo, menu, et boutons).\n\n---\n\n### 2. **Section \"Votre prochain poste de direction se mérite\"**\n- **Description** : Section héroïque avec un titre principal, sous-titre, et boutons d'action.\n- **Texte présent** : Oui (contient le titre, sous-titre, et texte descriptif).\n\n---\n\n### 3. **Section \"Des résultats mesurables\"**\n- **Description** : Section avec des icônes et statistiques (ex: \"0\", \"0s\", etc.).\n- **Texte présent** : Oui (contient des titres et descriptions des statistiques).\n\n---\n\n### 4. **Section \"Tout pour votre recherche au même endroit\"**\n- **Description** : Section avec des cartes d'outils (ex: \"ATS Scanner\", \"CV Optimizer\", etc.).\n- **Texte présent** : Oui (contient titres et descriptions des outils).\n\n---\n\n### 5. **Section \"Votre copilote IA sur 6 plateformes d'emploi\"**\n- **Description** : Section sombre avec icônes de plateformes et description du copilote IA.\n- **Texte présent** : Oui (contient titre, sous-titre, et texte descriptif).\n\n---\n\n### 6. **Section \"Trois gestes, zéro friction\"**\n- **Description** : Section avec une interface utilisateur (ex: \"CV adapté généré\").\n- **Texte présent** : Oui (contient titre, sous-titre, et texte descriptif).\n\n---\n\n### 7. **Section \"Opérationnel en 3 minutes chrono\"**\n- **Description** : Section avec des étapes (ex: \"Importez votre profil\", \"Définissez votre cible\", etc.).\n- **Texte présent** : Oui (contient titres et descriptions des étapes).\n\n---\n\n### 8. **Section \"Rejoint par des centaines de cadres dirigeants\"**\n- **Description** : Section avec des témoignages ou logos de clients.\n- **Texte présent** : Oui (contient titre et descriptions des témoignages).\n\n---\n\n### 9. **Section \"Investissez dans votre prochaine opportunité\"**\n- **Description** : Section avec des plans tarifaires (ex: \"0€\", \"39,90€\", \"149€\").\n- **Texte présent** : Oui (contient titres, descriptions, et boutons).\n\n---\n\n### 10. **Section \"Questions fréquentes\"**\n- **Description** : Section avec des questions/réponses (ex: \"Comment fonctionne PRSTO ?\", etc.).\n- **Texte présent** : Oui (contient titre et questions/réponses).\n\n---\n\n### 11. **Section \"Prêt à reprendre le contrôle de votre carrière ?\"**\n- **Description** : Section finale avec un appel à l'action.\n- **Texte présent** : Oui (contient titre, sous-titre, et bouton).\n\n---\n\n### 12. **Footer**\n- **Description** : Pied de page avec le logo, liens, et informations légales.\n- **Texte présent** : Oui (contient le logo, menu, et texte).\n\n---\n\n### Sections avec contenu vide (texte manquant) :\nAucune section n'est vide. Toutes les sections contiennent du texte ou du contenu descriptif.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1783252513,
+  "id": "202607051954490883c26b82e1426c",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202607051954490883c26b82e1426c",
+  "usage": {
+    "completion_tokens": 849,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 6115,
+    "prompt_tokens_details": {
+      "cached_tokens": 7
+    },
+    "total_tokens": 6964
+  }
+}
