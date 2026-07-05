@@ -458,6 +458,94 @@ export default function EnterprisePage() {
         </div>
       </section>
 
+      {/* ═══ INTERNATIONAL COMPARATIVE ANALYSIS ═══ */}
+      <section className="py-24 px-6" style={{ background: "#FFFFFF", borderTop: "1px solid rgba(16,56,38,0.08)" }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style={{ background: "rgba(16,56,38,0.06)" }}>
+              <Globe className="w-4 h-4 text-[#E4B118]" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#103826]">
+                Analyse comparative internationale
+              </span>
+            </div>
+            <h2 className="text-3xl font-extrabold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
+              Comment se positionne notre offre face au marché mondial ?
+            </h2>
+            <p className="text-xs text-[#50625A] max-w-2xl mx-auto mt-2">
+              Une évaluation comparative complexe des solutions américaines, européennes et françaises face aux exigences des recruteurs executives indépendants.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6 items-stretch">
+            
+            {/* US Model */}
+            <div className="p-6 rounded-2xl border flex flex-col justify-between" style={{ borderColor: "rgba(16,56,38,0.08)", background: "#FAF6EF" }}>
+              <div className="space-y-4">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#50625A]">Modèle US</span>
+                <h4 className="text-base font-bold text-[#103826]">Sourcing & Volume</h4>
+                <div className="text-[11px] leading-relaxed space-y-2 text-[#50625A]">
+                  <p><strong>Philosophie :</strong> Outils de masse axés sur le volume et le traitement automatique des candidatures intermédiaires.</p>
+                  <p><strong>Tarification :</strong> À l&apos;usage ou au crédit d&apos;analyse. Coût variable imprévisible.</p>
+                  <p><strong>Limites :</strong> Uniquement en anglais. Pas de marque blanche réelle (nom du fournisseur visible partout). Aucun module d&apos;aide à la décision pour le Board.</p>
+                </div>
+              </div>
+              <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-[10px] font-semibold text-red-700">
+                Limité aux profils intermédiaires
+              </div>
+            </div>
+
+            {/* EU Model */}
+            <div className="p-6 rounded-2xl border flex flex-col justify-between" style={{ borderColor: "rgba(16,56,38,0.08)", background: "#FAF6EF" }}>
+              <div className="space-y-4">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#50625A]">Modèle Européen (Hors FR)</span>
+                <h4 className="text-base font-bold text-[#103826]">Outplacement Lourd</h4>
+                <div className="text-[11px] leading-relaxed space-y-2 text-[#50625A]">
+                  <p><strong>Philosophie :</strong> Logiciels d&apos;outplacement traditionnels intégrés aux ERP des grands cabinets.</p>
+                  <p><strong>Tarification :</strong> Frais de configuration initiaux élevés (setup de 5 000€ à 15 000€) et licences annuelles rigides.</p>
+                  <p><strong>Limites :</strong> Interfaces austères et non personnalisables. Manque d&apos;agilité technique et absence d&apos;entraînements interactifs vocaux.</p>
+                </div>
+              </div>
+              <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-[10px] font-semibold text-red-700">
+                Setup complexe & Coûteux
+              </div>
+            </div>
+
+            {/* FR Model */}
+            <div className="p-6 rounded-2xl border flex flex-col justify-between" style={{ borderColor: "rgba(16,56,38,0.08)", background: "#FAF6EF" }}>
+              <div className="space-y-4">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#50625A]">Modèle Français</span>
+                <h4 className="text-base font-bold text-[#103826]">Réseaux & Franchises</h4>
+                <div className="text-[11px] leading-relaxed space-y-2 text-[#50625A]">
+                  <p><strong>Philosophie :</strong> Outils mutualisés par des réseaux d&apos;affiliation nationaux.</p>
+                  <p><strong>Tarification :</strong> Royalties proportionnelles prélevées sur chaque placement réussi (de 10% à 25%).</p>
+                  <p><strong>Limites :</strong> Perte d&apos;indépendance commerciale. Vos données candidats appartiennent légalement à la tête de réseau.</p>
+                </div>
+              </div>
+              <div className="mt-6 pt-4 border-t border-dashed border-gray-300 text-[10px] font-semibold text-red-700">
+                Dépendance & Redevances de CA
+              </div>
+            </div>
+
+            {/* PRSTO */}
+            <div className="p-6 rounded-2xl border flex flex-col justify-between" style={{ borderColor: "#E4B118", background: "linear-gradient(135deg, #082E1E 0%, #103826 100%)", color: "#FAF6EF" }}>
+              <div className="space-y-4">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#E4B118]">✦ Proposition PRSTO</span>
+                <h4 className="text-base font-bold text-white">SaaS Executive Libre</h4>
+                <div className="text-[11px] leading-relaxed space-y-2 opacity-90">
+                  <p><strong>Philosophie :</strong> Autonomie totale pour cabinets indépendants et consultants libres.</p>
+                  <p><strong>Tarification :</strong> Abonnement mensuel fixe transparent, sans engagement et sans commissions sur vos placements.</p>
+                  <p><strong>Avantages :</strong> Marque blanche absolue, multi-langue natif (FR/EN/ES), simulations vidéo d&apos;entretien au format STAR et briefs Board automatisés.</p>
+                </div>
+              </div>
+              <div className="mt-6 pt-4 border-t border-dashed border-emerald-800 text-[10px] font-bold text-[#E4B118]">
+                Liberté totale & 100% Souverain
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* ═══ PRICING SECTION ═══ */}
       <section className="py-24 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-16">
