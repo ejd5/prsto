@@ -1,0 +1,285 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: routes-smoke.spec.ts >> Smoke — routes principales >> GET /profil → 200 et rendu
+- Location: e2e/routes-smoke.spec.ts:25:9
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e5]:
+          - generic [ref=e8]: E
+        - generic [ref=e9]:
+          - generic [ref=e10]: ELTON OS
+          - generic [ref=e11]: BOARDROOM AI COPILOT
+      - navigation [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: AI Copilot
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: /
+            - img [ref=e16]
+            - generic [ref=e21]: Home
+          - link "AI Briefing" [ref=e22] [cursor=pointer]:
+            - /url: /analyse
+            - img [ref=e23]
+            - generic [ref=e26]: AI Briefing
+          - link "Signal Feed" [ref=e27] [cursor=pointer]:
+            - /url: /opportunites
+            - img [ref=e28]
+            - generic [ref=e34]: Signal Feed
+          - link "Market Watch" [ref=e35] [cursor=pointer]:
+            - /url: /market-radar
+            - img [ref=e36]
+            - generic [ref=e39]: Market Watch
+        - generic [ref=e40]:
+          - generic [ref=e41]: Intelligence & Tools
+          - link "Recruiter Intel" [ref=e42] [cursor=pointer]:
+            - /url: /dashboard/jobs/crm
+            - img [ref=e43]
+            - generic [ref=e48]: Recruiter Intel
+          - link "Interview Studio" [ref=e49] [cursor=pointer]:
+            - /url: /entretiens
+            - img [ref=e50]
+            - generic [ref=e53]: Interview Studio
+          - link "Documents AI" [ref=e54] [cursor=pointer]:
+            - /url: /documents
+            - img [ref=e55]
+            - generic [ref=e58]: Documents AI
+          - link "Strategy Lab" [ref=e59] [cursor=pointer]:
+            - /url: /analyse
+            - img [ref=e60]
+            - generic [ref=e62]: Strategy Lab
+          - link "Decision Support" [ref=e63] [cursor=pointer]:
+            - /url: /performance
+            - img [ref=e64]
+            - generic [ref=e66]: Decision Support
+        - generic [ref=e67]:
+          - generic [ref=e68]: Classic Modules
+          - link "Démarrage guidé" [ref=e69] [cursor=pointer]:
+            - /url: /demarrage
+            - img [ref=e70]
+            - generic [ref=e73]: Démarrage guidé
+          - link "Profil" [ref=e74] [cursor=pointer]:
+            - /url: /profil
+            - img [ref=e76]
+            - generic [ref=e79]: Profil
+          - link "CV Maître" [ref=e80] [cursor=pointer]:
+            - /url: /cv-maitre
+            - img [ref=e81]
+            - generic [ref=e84]: CV Maître
+          - link "Proof Vault" [ref=e85] [cursor=pointer]:
+            - /url: /proof-vault
+            - img [ref=e86]
+            - generic [ref=e88]: Proof Vault
+          - link "Sources" [ref=e89] [cursor=pointer]:
+            - /url: /sources
+            - img [ref=e90]
+            - generic [ref=e93]: Sources
+          - link "Pipeline" [ref=e94] [cursor=pointer]:
+            - /url: /dashboard/jobs/pipeline
+            - img [ref=e95]
+            - generic [ref=e97]: Pipeline
+        - generic [ref=e98]:
+          - generic [ref=e99]: System
+          - link "Paramètres" [ref=e100] [cursor=pointer]:
+            - /url: /parametres
+            - img [ref=e101]
+            - generic [ref=e104]: Paramètres
+          - link "Guide complet" [ref=e105] [cursor=pointer]:
+            - /url: /guide
+            - img [ref=e106]
+            - generic [ref=e108]: Guide complet
+      - generic [ref=e109]:
+        - generic [ref=e110]: EXECUTIVE PROFILE
+        - generic [ref=e111]:
+          - generic [ref=e112]: E
+          - generic [ref=e113]:
+            - generic [ref=e114]: Elton Duarte
+            - generic [ref=e115]: Executive
+        - generic [ref=e116]:
+          - text: ELTON BLACK TIER
+          - text: GLOBAL ACCESS
+        - generic [ref=e117]: ELTON OS v2.0
+    - generic [ref=e118]:
+      - banner [ref=e119]:
+        - generic [ref=e120]:
+          - generic [ref=e121]: Good morning, Alex.
+          - generic [ref=e122]: Your AI Boardroom Briefing is ready.
+        - generic [ref=e123]:
+          - img [ref=e124]
+          - generic [ref=e127]: Search anything...
+          - generic [ref=e128]: ⌘K
+        - generic [ref=e129]:
+          - button "3" [ref=e130]:
+            - img [ref=e131]
+            - generic [ref=e134]: "3"
+          - generic [ref=e135]: 04:49
+          - button "E ELTON BLACK" [ref=e136]:
+            - generic [ref=e137]: E
+            - generic [ref=e138]: ELTON BLACK
+            - img [ref=e139]
+      - main [ref=e142]:
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - generic [ref=e145]:
+              - heading "Profil Exécutif" [level=1] [ref=e146]
+              - paragraph [ref=e147]: Créez votre profil
+            - button "Sauvegarder" [ref=e148]:
+              - img [ref=e149]
+              - text: Sauvegarder
+          - generic [ref=e153]:
+            - button "Profil" [ref=e154]:
+              - img [ref=e155]
+              - text: Profil
+            - button "Expériences (0)" [ref=e158]:
+              - img [ref=e159]
+              - text: Expériences
+              - generic [ref=e162]: (0)
+            - button "Compétences (0)" [ref=e163]:
+              - img [ref=e164]
+              - text: Compétences
+              - generic [ref=e167]: (0)
+          - generic [ref=e168]:
+            - generic [ref=e169]:
+              - heading "Identité" [level=3] [ref=e170]
+              - generic [ref=e171]:
+                - generic [ref=e172]:
+                  - generic [ref=e173]: Nom complet
+                  - textbox [ref=e174]
+                - generic [ref=e175]:
+                  - generic [ref=e176]: Email
+                  - textbox [ref=e177]
+                - generic [ref=e178]:
+                  - generic [ref=e179]: Téléphone
+                  - textbox [ref=e180]
+                - generic [ref=e181]:
+                  - generic [ref=e182]: Photo de profil
+                  - button "Choose File" [ref=e184]
+              - generic [ref=e185]:
+                - generic [ref=e186]:
+                  - generic [ref=e187]: LinkedIn URL
+                  - textbox [ref=e188]
+                - generic [ref=e189]:
+                  - generic [ref=e190]: Localisation
+                  - textbox [ref=e191]
+            - generic [ref=e192]:
+              - heading "Ciblage" [level=3] [ref=e193]
+              - generic [ref=e194]:
+                - generic [ref=e195]:
+                  - generic [ref=e196]: Poste cible principal
+                  - textbox [ref=e197]
+                - generic [ref=e198]:
+                  - generic [ref=e199]: Années d'expérience
+                  - spinbutton [ref=e200]: "0"
+              - generic [ref=e201]:
+                - generic [ref=e202]:
+                  - generic [ref=e203]: Rôles ciblés
+                  - generic [ref=e205]:
+                    - textbox "Ajouter un rôle…" [ref=e206]
+                    - button "+" [ref=e207]
+                - generic [ref=e208]:
+                  - generic [ref=e209]: Secteurs ciblés
+                  - generic [ref=e211]:
+                    - textbox "Ajouter un secteur…" [ref=e212]
+                    - button "+" [ref=e213]
+              - generic [ref=e214]:
+                - generic [ref=e215]:
+                  - generic [ref=e216]: Mobilité (pays)
+                  - generic [ref=e218]:
+                    - textbox "Ajouter un pays…" [ref=e219]
+                    - button "+" [ref=e220]
+                - generic [ref=e222]:
+                  - generic [ref=e223]: Rémunération cible
+                  - 'textbox "ex: 120-180K€ + variable 30%" [ref=e224]'
+              - generic [ref=e225]:
+                - generic [ref=e226]: Langues parlées
+                - generic [ref=e227]:
+                  - button "Français" [ref=e228]
+                  - button "Anglais" [ref=e229]
+                  - button "Espagnol" [ref=e230]
+                  - button "Portugais" [ref=e231]
+                  - button "Allemand" [ref=e232]
+                  - button "Italien" [ref=e233]
+              - generic [ref=e234]:
+                - generic [ref=e235]:
+                  - generic [ref=e236]: Préférence remote
+                  - combobox [ref=e237]:
+                    - option "Non défini" [selected]
+                    - option "remote"
+                    - option "hybride"
+                    - option "présentiel"
+                - generic [ref=e238]:
+                  - generic [ref=e239]: Ton préféré
+                  - combobox [ref=e240]:
+                    - option "Non défini" [selected]
+                    - option "formel"
+                    - option "direct"
+                    - option "inspirant"
+                    - option "stratégique"
+                    - option "analytique"
+                    - option "relationnel"
+                - generic [ref=e241]:
+                  - generic [ref=e242]: Contraintes
+                  - 'textbox "ex: Pas de relocalisation" [ref=e243]'
+            - generic [ref=e244]:
+              - heading "Résumé exécutif" [level=3] [ref=e245]
+              - textbox "Rédigez un résumé exécutif percutant..." [ref=e246]
+            - generic [ref=e247]:
+              - heading "Formation & Certifications" [level=3] [ref=e248]
+              - generic [ref=e249]:
+                - generic [ref=e250]: Formation (JSON)
+                - 'textbox "[{\"diplome\":\"Master\",\"ecole\":\"HEC\",\"annee\":2010}]" [ref=e251]'
+              - generic [ref=e252]:
+                - generic [ref=e253]: Certifications (JSON)
+                - textbox "[\"PMP\", \"Six Sigma Black Belt\"]" [ref=e254]
+        - generic [ref=e255]:
+          - heading "Préférences CV" [level=3] [ref=e256]
+          - generic [ref=e257]:
+            - generic [ref=e258]:
+              - generic [ref=e259]: Modèle par défaut
+              - combobox [ref=e260]:
+                - option "ATS Classique" [selected]
+                - option "Moderne Exécutif"
+                - option "Premium Leadership"
+            - generic [ref=e261]:
+              - generic [ref=e262]: Couleur d'accent
+              - combobox [ref=e263]:
+                - option "Champagne" [selected]
+                - option "Bleu nuit"
+                - option "Graphite"
+                - option "Bordeaux"
+                - option "Vert exécutif"
+            - generic [ref=e264]:
+              - checkbox "Afficher la photo sur le CV Afficher la photo sur le CV" [checked] [ref=e265]
+              - generic [ref=e266]: Afficher la photo sur le CV
+            - generic [ref=e267]:
+              - checkbox "Afficher LinkedIn sur le CV Afficher LinkedIn sur le CV" [ref=e268]
+              - generic [ref=e269]: Afficher LinkedIn sur le CV
+          - paragraph [ref=e270]: LinkedIn est désactivé par défaut. Activez-le uniquement si vous souhaitez le voir apparaître sur vos CV.
+        - button "Suggestions IA" [ref=e271]:
+          - img [ref=e272]
+          - text: Suggestions IA
+  - button "Open Next.js Dev Tools" [ref=e280] [cursor=pointer]:
+    - generic [ref=e283]:
+      - text: Rendering
+      - generic [ref=e284]:
+        - generic [ref=e285]: .
+        - generic [ref=e286]: .
+        - generic [ref=e287]: .
+  - alert [ref=e288]
+```

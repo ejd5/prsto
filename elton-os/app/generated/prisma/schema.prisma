@@ -1,0 +1,1177 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Authentification ──────────────────────────────────────
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String? // bcrypt hash (null for SSO-only users)
+  role      String   @default("user") // user, recruiter, admin
+  plan      String? // null, "solo", "pro", "elite"
+  company   String? // nom du cabinet de recrutement
+  phone     String? // téléphone professionnel
+  image     String? // avatar (from SSO or uploaded)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions          Session[]
+  accounts          Account[]
+  candidates        Candidate[]
+  recruiterClients  RecruiterClient[]
+  recruiterMissions RecruiterMission[]
+  candidateDossiers CandidateDossier[]
+  candidateNotes    CandidateNote[]
+  commissions       Commission[]
+  orgMemberships    OrganizationMember[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// ─── SSO (Google, LinkedIn) ────────────────────────────────
+model Account {
+  id                String    @id @default(uuid())
+  userId            String
+  provider          String // "google" | "linkedin"
+  providerAccountId String // ID from the provider
+  email             String?
+  name              String?
+  image             String?
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@index([provider])
+}
+
+// ─── Enterprise (Organizations / White-label) ─────────────
+// Permet aux cabinets de recrutement, business schools, coaches
+// de proposer PRSTO en white-label à leurs candidats executives.
+model Organization {
+  id         String @id @default(uuid())
+  name       String // "Cabinet Dupont Executive"
+  slug       String @unique // "cabinet-dupont" → subdomain
+  type       String // "recruitment" | "business_school" | "coach" | "outplacement" | "association"
+  status     String @default("trial") // "trial" | "active" | "suspended" | "cancelled"
+  plan       String @default("growth") // "starter" | "growth" | "enterprise"
+  seatsUsed  Int    @default(0)
+  seatsLimit Int    @default(20) // 20 for starter, 100 for growth, unlimited for enterprise
+
+  // White-label branding
+  customDomain    String? // "cabinet-dupont.com"
+  primaryColor    String? @default("#1a3a2e") // PRSTO green default
+  logoUrl         String?
+  defaultLanguage String? @default("fr") // "fr" | "en" | "es"
+
+  // Contact
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+
+  // Commission (70% default like Rezi)
+  commissionRate  Float   @default(0.70) // 0.70 = 70% for the org
+  stripeAccountId String? // Stripe Connect for payouts
+  totalCommission Float   @default(0) // Total commission earned (EUR)
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members     OrganizationMember[]
+  invitations OrganizationInvitation[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model OrganizationMember {
+  id             String    @id @default(uuid())
+  organizationId String
+  userId         String
+  role           String    @default("member") // "admin" | "reviewer" | "member"
+  invitedBy      String?
+  invitedAt      DateTime  @default(now())
+  joinedAt       DateTime?
+  status         String    @default("invited") // "invited" | "active" | "removed"
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model OrganizationInvitation {
+  id             String    @id @default(uuid())
+  organizationId String
+  email          String // email of invitee
+  role           String    @default("member")
+  token          String    @unique // secure token for accept URL
+  invitedBy      String // userId of inviter
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@index([token])
+}
+
+// ─── Profil Exécutif ───────────────────────────────────────
+model Profile {
+  id                String   @id @default(uuid())
+  fullName          String
+  title             String // Directeur Commercial, Country Manager, etc.
+  summary           String // résumé exécutif, vient du CV maître
+  phone             String?
+  email             String?
+  linkedin          String?
+  location          String?
+  photoUrl          String? // URL ou base64 de la photo de profil
+  mobility          String? // "France, Suisse, Belgique..."
+  languages         String? // JSON array stocké en texte
+  yearsExp          Int?
+  sectors           String? // JSON array
+  functions         String? // JSON array
+  education         String   @default("") // JSON stocké en texte
+  certifications    String   @default("") // JSON
+  remotePreference  String? // remote, hybride, présentiel
+  targetSalary      String? // fourchette de rémunération cible
+  constraints       String? // contraintes personnelles
+  preferredTone     String? // ton préféré (formel, direct, inspirant...)
+  cvDefaultTemplate String? // ats_classic | modern_executive | premium_leadership
+  cvIncludePhoto    Boolean  @default(true)
+  cvIncludeLinkedIn Boolean  @default(false)
+  cvAccentColor     String? // champagne | navy | graphite | burgundy | emerald
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  cvMaster     CVMaster?
+  skills       Skill[]
+  experiences  Experience[]
+  proofEntries ProofEntry[]
+}
+
+model Skill {
+  id         String    @id @default(uuid())
+  profileId  String
+  name       String
+  category   String    @default("autre") // technique, management, business, langue, outil
+  level      String    @default("confirmé") // débutant, intermédiaire, confirmé, expert
+  source     String    @default("cv_master") // cv_master, proof_vault
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, name, category])
+}
+
+model Experience {
+  id               String   @id @default(uuid())
+  profileId        String
+  company          String
+  title            String
+  sector           String? // secteur d'activité
+  country          String? // pays
+  startDate        String // "YYYY-MM"
+  endDate          String? // null = poste actuel
+  description      String?
+  responsibilities String? // responsabilités principales
+  teamSize         String? // taille d'équipe (peut être une fourchette)
+  revenue          String? // CA ou fourchette
+  budget           String? // budget ou P&L
+  tools            String? // outils utilisés (JSON array)
+  achievements     String? // JSON array
+  source           String   @default("cv_master")
+  createdAt        DateTime @default(now())
+
+  profile      Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  proofEntries ProofEntry[]
+}
+
+// ─── CV Maître ─────────────────────────────────────────────
+model CVMaster {
+  id           String   @id @default(uuid())
+  profileId    String   @unique
+  fileName     String
+  originalText String
+  parsedJson   String? // version parsée JSON
+  fileType     String   @default("text") // pdf, text, docx
+  fileSize     Int?
+  status       String   @default("importé") // importé, à_vérifier, validé
+  uploadedAt   DateTime @default(now())
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+// ─── Proof Vault ──────────────────────────────────────────
+model ProofEntry {
+  id              String   @id @default(uuid())
+  profileId       String
+  experienceId    String? // lié à une expérience
+  category        String // CA, croissance, équipe, budget, P&L, ouverture_marché, négociation, transformation_commerciale, CRM, langues, international, management, secteur, formation, certification, autre
+  title           String
+  value           String // le chiffre ou le fait, ex: "+32% CA", "25 personnes"
+  context         String? // période, entreprise, circonstances
+  period          String? // "2022-2023"
+  confidence      String   @default("moyen") // faible, moyen, fort
+  verifiable      Boolean  @default(false)
+  isConfidential  Boolean  @default(false)
+  usableForCV     Boolean  @default(true)
+  usableForLetter Boolean  @default(true)
+  sendableToAI    Boolean  @default(true)
+  documentUrl     String? // lien vers un document justificatif
+  linkedSkills    String? // JSON array d'IDs de Skill
+  createdAt       DateTime @default(now())
+
+  profile    Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  experience Experience? @relation(fields: [experienceId], references: [id])
+}
+
+// ─── Sources d'Emploi ─────────────────────────────────────
+model JobSource {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  url       String
+  region    String   @default("FR") // FR, EU, US, INTL
+  type      String   @default("job_board") // job_board, executive, startup, generalist
+  priority  Int      @default(0) // 0=standard, 1=prioritaire
+  active    Boolean  @default(true)
+  notes     String?
+  createdAt DateTime @default(now())
+
+  marketRadars  MarketRadar[]
+  opportunities Opportunity[]
+}
+
+// ─── Rôles Prioritaires ──────────────────────────────────
+model PriorityRole {
+  id        String   @id @default(uuid())
+  name      String   @unique // "Directeur Commercial"
+  rank      Int // 1=top priority
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ─── Pays Cibles ──────────────────────────────────────────
+model TargetCountry {
+  id        String   @id @default(uuid())
+  name      String   @unique // "France"
+  code      String   @unique // "FR"
+  region    String   @default("Europe")
+  priority  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ─── Market Radar ─────────────────────────────────────────
+model MarketRadar {
+  id          String    @id @default(uuid())
+  jobSourceId String
+  role        String? // peut filtrer par rôle
+  country     String? // code pays
+  searchUrl   String // URL de recherche construite
+  notes       String?
+  lastChecked DateTime?
+  createdAt   DateTime  @default(now())
+
+  jobSource JobSource @relation(fields: [jobSourceId], references: [id], onDelete: Cascade)
+}
+
+// ─── Radar Candidate ──────────────────────────────────────
+model RadarCandidate {
+  id         String  @id @default(uuid())
+  source     String
+  sourceType String // official_api, ats_public, career_page, assisted_url, manual_clipboard
+  sourceUrl  String
+  applyUrl   String?
+  externalId String?
+
+  title        String
+  company      String
+  location     String?
+  remote       String?
+  contractType String?
+  salary       String?
+  description  String
+  publishedAt  DateTime?
+  detectedAts  String?
+
+  score               Int
+  priority            String // A, B, C, ignore
+  reasonsJson         String?
+  risksJson           String?
+  matchedKeywordsJson String?
+  missingKeywordsJson String?
+
+  duplicateStatus       String?
+  duplicateOfId         String?
+  importedOpportunityId String?
+
+  status String @default("new") // new, reviewed, imported, ignored, duplicate
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([priority])
+  @@index([source])
+  @@index([company])
+  @@index([title])
+}
+
+// ─── Opportunités ─────────────────────────────────────────
+model Opportunity {
+  id                     String    @id @default(uuid())
+  title                  String
+  company                String
+  location               String?
+  country                String?
+  sourceUrl              String?
+  sourceName             String? // LinkedIn, APEC, etc.
+  jobSourceId            String?
+  rawText                String // texte brut de l'offre
+  salaryMin              Int?
+  salaryMax              Int?
+  salaryCurrency         String    @default("EUR")
+  contractType           String? // CDI, CDD, freelance, etc.
+  remote                 String? // remote, hybride, présentiel
+  status                 String    @default("nouveau") // nouveau, analyse, postule, relance, entretien, offre, refus, archive
+  score                  Int? // 0-100 score exécutif
+  priority               Int       @default(0) // 0=normal, 1=prioritaire
+  notes                  String?
+  appliedAt              DateTime?
+  // Déduplication
+  normalizedTitle        String?
+  normalizedCompany      String?
+  normalizedLocation     String?
+  descriptionFingerprint String?
+  duplicateGroupId       String?
+  duplicateScore         Float?
+  duplicateStatus        String    @default("UNIQUE") // UNIQUE, SIMILAR, PROBABLE_DUPLICATE, CONFIRMED_DUPLICATE, IGNORED
+  canonicalOpportunityId String?
+  // Sourcing automatique
+  externalId             String? // ID unique chez la source
+  sourceType             String? // api, html, jsonld, browser
+  geoScore               Int? // 0-100 score géographique
+  geoPriority            Int? // 1=PACA, 2=IDF, 3=FR, 4=INTL
+  roleScore              Int? // 0-100 adéquation rôle
+  globalScore            Int? // 0-100 combiné
+  matchedRoles           String? // JSON array des rôles matchés
+  matchedCity            String? // ville détectée
+  firstSeenAt            DateTime?
+  lastSeenAt             DateTime?
+  isNew                  Boolean   @default(true)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  jobSource    JobSource?        @relation(fields: [jobSourceId], references: [id])
+  analysis     Analysis?
+  documents    Document[]
+  pipelineTask PipelineTask?
+  relances     Relance[]
+  interviews   Interview[]
+  todos        OpportunityTodo[]
+}
+
+// ─── Analyse d'Offre ──────────────────────────────────────
+model Analysis {
+  id            String   @id @default(uuid())
+  opportunityId String?  @unique
+  jobId         String?  @unique
+  scoreGlobal   Int? // 0-100
+  keywordsAts   String   @default("[]") // JSON array
+  exigences     String   @default("[]") // JSON array
+  risks         String   @default("[]") // JSON array (drapeaux rouges)
+  gaps          String   @default("[]") // JSON array — compétences absentes
+  pointsForts   String   @default("[]") // JSON array
+  matchDetails  String   @default("{}") // JSON détaillé
+  rawResponse   String? // réponse brute IA
+  aiModel       String? // quel modèle a généré cette analyse
+  analysedAt    DateTime @default(now())
+
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─── Documents Générés ───────────────────────────────────
+model Document {
+  id            String    @id @default(uuid())
+  opportunityId String?
+  jobId         String?
+  type          String // cv_fr, cv_en, lettre_fr, lettre_en, email_fr, email_en, linkedin_fr, linkedin_en, ats_reponse
+  content       String
+  status        String    @default("DRAFT") // DRAFT, NEEDS_REVIEW, APPROVED, REJECTED
+  validatedAt   DateTime?
+  exportedAt    DateTime?
+  exportFormat  String? // pdf, docx, txt
+  version       Int       @default(1)
+  createdAt     DateTime  @default(now())
+
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  changeLogs  ChangeLog[]
+}
+
+// ─── ChangeLog ────────────────────────────────────────────
+model ChangeLog {
+  id         String   @id @default(uuid())
+  documentId String
+  section    String? // section du document modifiée (ex: "RÉSUMÉ EXÉCUTIF", "EXPÉRIENCE PROFESSIONNELLE")
+  field      String // quel champ a été modifié
+  oldValue   String?
+  newValue   String
+  reason     String // pourquoi
+  source     String   @default("manual") // manual, ai_suggestion, cv_master, proof_vault
+  risque     String? // risque identifié (ex: "hallucination possible", "donnée non vérifiée")
+  statut     String   @default("à_vérifier") // accepté, refusé, à_vérifier
+  createdAt  DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Pipeline Kanban ──────────────────────────────────────
+model PipelineTask {
+  id                String    @id @default(uuid())
+  opportunityId     String?   @unique
+  jobId             String?   @unique
+  column            String    @default("nouveau") // nouveau, a_analyser, analyse, a_preparer, document_a_valider, pret_a_envoyer, envoye, relance_1, relance_2, entretien_rh, entretien_direction, offre, refus, archive
+  order             Int       @default(0)
+  notes             String?
+  nextStep          String?
+  nextStepDate      DateTime?
+  lastStatusChange  DateTime?
+  // Mini-CRM recruteur
+  recruiterName     String?
+  recruiterTitle    String?
+  recruiterEmail    String?
+  recruiterLinkedin String?
+  recruiterPhone    String?
+  cabinetName       String?
+  contactNotes      String?
+  contactSource     String?
+  updatedAt         DateTime? @default(now())
+
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─── Relances ─────────────────────────────────────────────
+model Relance {
+  id            String    @id @default(uuid())
+  opportunityId String?
+  jobId         String?
+  type          String // email, linkedin, appel, cabinet, autre
+  date          DateTime  @default(now())
+  notes         String?
+  status        String    @default("a_envoyer") // a_envoyer, envoye, ouvert, repondu, ignore
+  templateUsed  String?
+  content       String? // texte généré
+  scheduledDate DateTime? // date programmée pour la prochaine relance
+  createdAt     DateTime  @default(now())
+
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─── Interview War Room ───────────────────────────────────
+model Interview {
+  id            String    @id @default(uuid())
+  opportunityId String?
+  jobId         String?
+  type          String    @default("entretien") // entretien, call_rh, test_technique, final
+  date          DateTime?
+  interviewer   String?
+  notes         String?
+  questions     String? // JSON array — questions posées
+  strengths     String? // points abordés
+  weaknesses    String? // points à améliorer
+  nextSteps     String?
+  preparation   String? // préparation générée complète
+  sections      String? // JSON — contenu de chaque section
+  status        String    @default("brouillon") // brouillon, pret, utilise
+  createdAt     DateTime  @default(now())
+
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─── CRM Carrière ─────────────────────────────────────────
+model RecruiterContact {
+  id                   String    @id @default(uuid())
+  fullName             String
+  firstName            String?
+  lastName             String?
+  email                String?
+  phone                String?
+  linkedinUrl          String?
+  roleTitle            String?
+  companyName          String? // société actuelle
+  firmName             String? // cabinet de recrutement
+  contactType          String    @default("unknown") // recruiter, headhunter, hiring_manager, hr, founder, executive, network, unknown
+  source               String? // origine (linkedin, indeed, apec, email, referral…)
+  location             String?
+  notes                String?
+  tagsJson             String? // JSON array: ["sector_saas", "executive", "paris"]
+  relationshipStrength String? // weak, new, active, strong
+  lastContactedAt      DateTime?
+  nextFollowUpAt       DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  interactions   ContactInteraction[]
+  drafts         ApplicationDraft[] // candidatures liées via ApplicationDraft.contactId (nullable)
+  interviewPreps InterviewPrep[]
+}
+
+model CompanyTarget {
+  id                String    @id @default(uuid())
+  name              String
+  website           String?
+  linkedinUrl       String?
+  sector            String?
+  size              String? // startup, scaleup, pme, eti, grand_groupe
+  location          String?
+  targetPriority    Int? // 1=haute, 2=moyenne, 3=basse
+  notes             String?
+  tagsJson          String?
+  lastInteractionAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  interactions ContactInteraction[]
+}
+
+model ContactInteraction {
+  id                 String    @id @default(uuid())
+  contactId          String?
+  companyTargetId    String?
+  applicationDraftId String?
+  jobId              String?
+  type               String // email, linkedin_message, phone_call, meeting, interview, note, follow_up, intro, other
+  direction          String    @default("outbound") // inbound, outbound, internal_note
+  subject            String?
+  body               String?
+  outcome            String? // positive, neutral, negative, pending
+  occurredAt         DateTime  @default(now())
+  nextActionAt       DateTime?
+  createdAt          DateTime  @default(now())
+
+  contact          RecruiterContact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  companyTarget    CompanyTarget?    @relation(fields: [companyTargetId], references: [id], onDelete: SetNull)
+  applicationDraft ApplicationDraft? @relation(fields: [applicationDraftId], references: [id], onDelete: SetNull)
+  job              Job?              @relation(fields: [jobId], references: [id], onDelete: SetNull)
+}
+
+// ─── Interview Preparation ────────────────────────────────
+model InterviewPrep {
+  id                    String    @id @default(uuid())
+  applicationDraftId    String?
+  jobId                 String?
+  contactId             String?
+  companyName           String?
+  roleTitle             String?
+  interviewStage        String    @default("unknown") // recruiter_screen, hiring_manager, case_study, panel, final, offer_negotiation, unknown
+  interviewDate         DateTime?
+  prepStatus            String    @default("draft") // draft, ready_to_review, approved, archived
+  executiveSummary      String?
+  companyBrief          String?
+  roleFitSummary        String?
+  candidatePitchShort   String?
+  candidatePitchLong    String?
+  likelyQuestionsJson   String? // JSON array of {question, category}
+  starAnswersJson       String? // JSON array of {situation, task, action, result}
+  objectionsJson        String? // JSON array of {objection, response}
+  questionsToAskJson    String? // JSON array of strings
+  compensationStrategy  String?
+  thirtySixtyNinetyPlan String?
+  risksJson             String?
+  strengthsJson         String?
+  gapsJson              String?
+  followUpEmail         String?
+  notes                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  applicationDraft ApplicationDraft? @relation(fields: [applicationDraftId], references: [id], onDelete: SetNull)
+  job              Job?              @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  contact          RecruiterContact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+}
+
+// ─── Paramètres ───────────────────────────────────────────
+model Setting {
+  id                   String   @id @default("elton-os-settings")
+  aiProvider           String   @default("none") // none, deepseek
+  apiKey               String?
+  baseUrl              String   @default("https://api.deepseek.com")
+  defaultModel         String   @default("deepseek-v4-flash")
+  proModel             String   @default("deepseek-v4-pro")
+  timeout              Int      @default(25)
+  temperature          Float    @default(0.4)
+  confidentialityMode  String   @default("local") // local, anonymise, complet
+  anonymizeName        Boolean  @default(false)
+  anonymizeEmail       Boolean  @default(false)
+  anonymizePhone       Boolean  @default(false)
+  anonymizeCompanies   Boolean  @default(false)
+  anonymizeSalary      Boolean  @default(false)
+  localFallbackEnabled Boolean  @default(true)
+  anonymizeBeforeCall  Boolean  @default(false)
+  autoExport           Boolean  @default(false)
+  updatedAt            DateTime @updatedAt
+}
+
+// ─── Prompts IA Éditables ─────────────────────────────────
+model AIPrompt {
+  id             String   @id @default(uuid())
+  name           String   @unique // ex: "cv_tailor_fr", "lettre_fr", etc.
+  label          String // nom affiché
+  description    String? // description du prompt
+  systemPrompt   String? // prompt système
+  content        String // le prompt template utilisateur
+  variables      String   @default("[]") // JSON array de variables disponibles
+  preferredModel String? // modèle IA recommandé
+  temperature    Float?
+  outputSchema   String? // JSON schema de sortie
+  active         Boolean  @default(true)
+  updatedAt      DateTime @updatedAt
+}
+
+// ─── Déduplication ──────────────────────────────────────────
+model DuplicateGroup {
+  id           String   @id @default(uuid())
+  canonicalId  String // ID de l'offre canonique
+  memberIds    String   @default("[]") // JSON array des IDs membres
+  averageScore Float? // score moyen de similarité
+  status       String   @default("PENDING") // PENDING, CONFIRMED, DISMISSED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Jobs — Sources d'import ──────────────────────────────
+model ImportSource {
+  id           String    @id @default(uuid())
+  name         String    @unique
+  type         String // api, html, ats, browser, aggregator
+  enabled      Boolean   @default(true)
+  configJson   String? // configuration JSON (clés API, URLs…)
+  lastRunAt    DateTime?
+  status       String    @default("pending") // pending, ok, error, needs_reauth
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  searchRuns JobSearchRun[]
+  rawJobs    RawJob[]
+  jobs       Job[]
+}
+
+// ─── Safe Source Registry ──────────────────────────────────
+model SafeJobSource {
+  id                String    @id @default(uuid())
+  label             String
+  url               String
+  normalizedDomain  String
+  sourceType        String    @default("career_page") // ats, career_page, jsonld
+  atsVendor         String? // greenhouse, lever, ashby, etc.
+  importMode        String // ATS_PUBLIC, AUTO_PUBLIC_CAREERS, AUTO_JSONLD, AUTO_FIRECRAWL_SAFE, PUBLIC_CAREERS, API_OFFICIAL
+  enabled           Boolean   @default(true)
+  maxPagesPerRun    Int       @default(1)
+  maxJobsPerRun     Int       @default(20)
+  lastRunAt         DateTime?
+  lastStatus        String? // success, partial, failed, refused
+  lastReasonCode    String?
+  lastJobsFound     Int       @default(0)
+  lastJobsImported  Int       @default(0)
+  lastError         String?
+  consecutiveErrors Int       @default(0)
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([normalizedDomain, url])
+}
+
+// ─── Browser Search Configs ─────────────────────────────
+model BrowserSearchConfig {
+  id                  String    @id @default(uuid())
+  platform            String // linkedin, indeed, apec
+  label               String
+  searchUrl           String
+  enabled             Boolean   @default(true)
+  maxResultsPerRun    Int       @default(10)
+  locationPriority    Int? // 1=PACA, 2=IDF, 3=FR, 4=INTL
+  scrollEnabled       Boolean   @default(false)
+  maxScrolls          Int       @default(3)
+  scrollDelayMs       Int       @default(1000)
+  fetchDetailsEnabled Boolean   @default(false)
+  maxDetailsPerRun    Int       @default(3)
+  lastRunAt           DateTime?
+  lastError           String?
+  lastOffersFound     Int       @default(0)
+  lastDetailsFetched  Int       @default(0)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+// ─── Job Search Run ─────────────────────────────────────────
+model JobSearchRun {
+  id             String    @id @default(uuid())
+  sourceId       String?
+  mode           String // morning, evening, manual
+  status         String    @default("running") // running, success, failed, partial
+  startedAt      DateTime  @default(now())
+  finishedAt     DateTime?
+  fetchedCount   Int       @default(0)
+  createdCount   Int       @default(0)
+  updatedCount   Int       @default(0)
+  duplicateCount Int       @default(0)
+  rejectedCount  Int       @default(0)
+  errorMessage   String?
+  logsJson       String? // JSON array de logs
+  createdAt      DateTime  @default(now())
+
+  source ImportSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+}
+
+// ─── Raw Job (brut, avant normalisation) ────────────────────
+model RawJob {
+  id             String   @id @default(uuid())
+  sourceId       String
+  externalId     String? // ID unique chez la source
+  sourceUrl      String?
+  canonicalUrl   String? // URL canonique de l'offre
+  rawTitle       String?
+  rawCompany     String?
+  rawLocation    String?
+  rawDescription String?
+  rawPayloadJson String? // payload brut JSON
+  rawHtml        String? // HTML brut
+  checksum       String? // hash pour dédup
+  fetchedAt      DateTime @default(now())
+
+  source ImportSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+// ─── Job (normalisé) ────────────────────────────────────────
+model Job {
+  id               String    @id @default(uuid())
+  sourceId         String
+  externalId       String? // ID unique chez la source
+  sourceUrl        String?
+  canonicalUrl     String?
+  title            String
+  company          String?
+  location         String?
+  locationPriority Int? // 1=PACA, 2=IDF, 3=FR, 4=INTL
+  countryScope     String? // france, europe, international
+  remotePolicy     String? // remote, hybride, présentiel
+  contractType     String? // CDI, CDD, Freelance, Stage
+  salaryMin        Int?
+  salaryMax        Int?
+  currency         String?   @default("EUR")
+  seniority        String? // executive, senior, leadership
+  functionArea     String? // direction commerciale, business dev…
+  sector           String? // SaaS, industrie, services…
+  description      String?
+  publishedAt      DateTime?
+  firstSeenAt      DateTime  @default(now())
+  lastSeenAt       DateTime  @default(now())
+  status           String    @default("new") // new, enriched, shortlisted, rejected, applied, expired, duplicate
+  checksum         String? // hash pour dédup
+
+  // ── Champs unifiés depuis Opportunity ──
+  notes                  String?
+  priority               Int       @default(0)
+  appliedAt              DateTime?
+  remote                 String? // remote, hybride, présentiel (legacy)
+  salaryCurrency         String? // legacy alias
+  rawText                String? // texte brut de l'offre
+  sourceName             String? // nom de la source (LinkedIn, APEC…)
+  country                String? // pays
+  duplicateGroupId       String?
+  duplicateScore         Float?
+  duplicateStatus        String    @default("UNIQUE")
+  canonicalOpportunityId String?
+  sourceType             String? // api, html, jsonld, browser
+  matchedRoles           String? // JSON array
+  matchedCity            String?
+  isNew                  Boolean   @default(true)
+  geoScore               Int?
+  geoPriority            Int?
+  roleScore              Int?
+  globalScore            Int?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+
+  source         ImportSource         @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  score          JobScore?
+  draft          ApplicationDraft?
+  interactions   ContactInteraction[]
+  interviewPreps InterviewPrep[]
+  analysis       Analysis?
+  documents      Document[]
+  pipelineTask   PipelineTask?
+  relances       Relance[]
+  interviews     Interview[]
+  todos          OpportunityTodo[]
+}
+
+// ─── Job Score ──────────────────────────────────────────────
+model JobScore {
+  id                   String   @id @default(uuid())
+  jobId                String   @unique
+  executiveScore       Int? // 0-100
+  matchScore           Int? // 0-100
+  locationScore        Int? // 0-100
+  salaryScore          Int? // 0-100
+  freshnessScore       Int? // 0-100
+  companyScore         Int? // 0-100
+  riskScore            Int? // 0-100 (inversé : plus bas = mieux)
+  globalScore          Int? // 0-100
+  reasonsJson          String? // JSON array des raisons
+  redFlagsJson         String? // JSON array des red flags
+  recommendedAction    String? // apply, shortlist, review, skip
+  semanticScore        Int? // 0-100 — score sémantique global
+  semanticConfidence   Int? // 0-100 — confiance dans le score
+  semanticAnalysisJson String? // JSON — JobFitAnalysis sérialisé
+  recommendation       String? // highly_recommended|recommended|possible|low_priority|reject
+  createdAt            DateTime @default(now())
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─── Application Draft ──────────────────────────────────────
+model ApplicationDraft {
+  id                         String    @id @default(uuid())
+  jobId                      String    @unique
+  contactId                  String? // recruteur / cabinet lié
+  candidateProfileId         String?
+  status                     String    @default("draft") // draft, ready_to_review, approved, rejected, sent
+  pipelineStatus             String? // sent, follow_up_due, followed_up, recruiter_replied, interview, offer, rejected, archived
+  sentAt                     DateTime?
+  followUpDueAt              DateTime?
+  followedUpAt               DateTime?
+  recruiterRepliedAt         DateTime?
+  interviewAt                DateTime?
+  lastPipelineActionAt       DateTime?
+  matchScore                 Int? // 0-100
+  jobSummary                 String? // résumé de l'offre
+  keyRequirements            String? // JSON array
+  atsKeywords                String? // JSON array
+  confirmedMatches           String? // JSON array
+  gaps                       String? // JSON array — compétences manquantes
+  risks                      String? // JSON array — risques identifiés
+  tailoredResumeDocumentId   String? // Document CV adapté (relie vers Document)
+  motivationLetterDocumentId String? // Document lettre de motivation
+  tailoredResumeContent      String? // contenu texte du CV adapté (fallback sans Document)
+  motivationLetterLong       String? // lettre longue texte
+  motivationLetterShort      String? // lettre courte texte
+  applicationEmail           String?
+  recruiterMessage           String?
+  atsFormAnswers             String? // JSON array
+  changeLogJson              String? // JSON array — journal des modifications
+  generationLogs             String? // JSON
+  cvVersion                  String? // legacy
+  coverLetter                String? // legacy
+  excitement                 Int? // excitement level (1-5 stars)
+  notes                      String? // personal notes
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+
+  job            Job                  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  contact        RecruiterContact?    @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  interactions   ContactInteraction[]
+  interviewPreps InterviewPrep[]
+}
+
+// ─── Assisted Apply Session ─────────────────────────────
+model AssistedApplySession {
+  id                   String   @id @default(uuid())
+  applicationDraftId   String   @unique
+  jobId                String
+  sourceUrl            String?
+  platform             String?
+  status               String   @default("created") // created, opened, fields_detected, ready_for_user, completed, failed
+  detectedFieldsJson   String? // JSON array
+  suggestedAnswersJson String? // JSON array
+  warningsJson         String? // JSON array
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// ─── Sourcing Automatisé ────────────────────────────────────
+model SourcingRun {
+  id               String    @id @default(uuid())
+  status           String    @default("running") // running, completed, failed
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  sourcesAttempted Int       @default(0)
+  sourcesSucceeded Int       @default(0)
+  offersFound      Int       @default(0)
+  offersNew        Int       @default(0)
+  offersDuplicates Int       @default(0)
+  summary          String? // résumé IA
+  errors           String? // JSON array
+  createdAt        DateTime  @default(now())
+}
+
+model SourcingReport {
+  id          String   @id @default(uuid())
+  type        String // morning, evening
+  date        DateTime @default(now())
+  content     String // contenu du rapport (markdown)
+  sourceRunId String?
+  sent        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+// ─── Contact Lead (landing page) ──────────────────────────
+model ContactLead {
+  id        String   @id @default(uuid())
+  name      String   @default("")
+  email     String
+  profile   String   @default("cadre") // cadre, recruteur, coach, investisseur, autre
+  message   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// ─── Tâches d'Opportunités (Checklist) ─────────────────────
+model OpportunityTodo {
+  id            String    @id @default(uuid())
+  opportunityId String?
+  jobId         String?
+  title         String
+  done          Boolean   @default(false)
+  dueDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  opportunity Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─── Candidats préparés (depuis /recruiter/prepare) ──────
+model Candidate {
+  id                 String   @id @default(uuid())
+  userId             String
+  name               String
+  offerTitle         String
+  company            String?
+  cvText             String // texte extrait du CV
+  offerText          String // texte de l'offre
+  atsScore           Int?
+  atsData            String? // JSON — full ATS scan result
+  cvOptimized        String? // texte CV optimisé
+  coverLetter        String? // lettre de motivation
+  interviewBrief     String? // brief entretien
+  interviewQuestions String? // JSON array
+  linkedinOpts       String? // JSON array — optimisations LinkedIn
+  notes              String?
+  status             String   @default("nouveau") // nouveau, en_contact, entretien, place, abandon
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missions       MissionCandidate[]
+  dossiers       CandidateDossier[]
+  candidateNotes CandidateNote[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── SaaS Recruteur — Clients & Missions ──────────────────
+model RecruiterClient {
+  id          String   @id @default(uuid())
+  userId      String
+  company     String
+  contactName String?
+  email       String?
+  phone       String?
+  website     String?
+  sector      String?
+  notes       String?
+  status      String   @default("actif") // actif, inactif, prospect
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  missions RecruiterMission[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model RecruiterMission {
+  id           String    @id @default(uuid())
+  userId       String
+  clientId     String
+  title        String
+  location     String?
+  contractType String? // CDI, CDD, Freelance, etc.
+  salary       String?
+  description  String?
+  status       String    @default("ouverte") // ouverte, en_cours, pourvue, fermee
+  fee          Float?
+  feeType      String? // percentage, fixed
+  deadline     DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client      RecruiterClient    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  candidates  MissionCandidate[]
+  shareLinks  MissionShareLink[]
+  commissions Commission[]
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([status])
+}
+
+model MissionCandidate {
+  id          String    @id @default(uuid())
+  missionId   String
+  candidateId String
+  status      String    @default("propose") // propose, entretien, offre, place, refuse, abandon
+  proposedAt  DateTime  @default(now())
+  interviewAt DateTime?
+  feedback    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  mission   RecruiterMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  candidate Candidate        @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@unique([missionId, candidateId])
+  @@index([missionId])
+  @@index([candidateId])
+}
+
+// ─── SaaS Recruteur — Dossier & Notes Candidat ────────────
+model CandidateDossier {
+  id             String   @id @default(uuid())
+  candidateId    String
+  userId         String
+  version        Int      @default(1)
+  cvOptimized    String?
+  coverLetter    String?
+  interviewBrief String?
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([candidateId, version])
+  @@index([candidateId])
+}
+
+model CandidateNote {
+  id          String   @id @default(uuid())
+  candidateId String
+  userId      String
+  content     String
+  category    String   @default("general") // general, entretien, relance, placement
+  createdAt   DateTime @default(now())
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+}
+
+// ─── SaaS Recruteur — Portail Client ──────────────────────
+model MissionShareLink {
+  id        String    @id @default(uuid())
+  missionId String
+  token     String    @unique
+  active    Boolean   @default(true)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  mission RecruiterMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@index([missionId])
+}
+
+// ─── SaaS Recruteur — Compta ──────────────────────────────
+model Commission {
+  id                 String    @id @default(uuid())
+  missionId          String
+  missionCandidateId String?
+  userId             String
+  amount             Float
+  status             String    @default("pending") // pending, paid, cancelled
+  paidAt             DateTime?
+  notes              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  mission RecruiterMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([missionId])
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── Executive Brief Orders ───────────────────────────────
+model ExecutiveBriefOrder {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  linkedin  String?
+  role      String
+  company   String
+  cvPreview String? // premiers 500 caractères
+  createdAt DateTime @default(now())
+}
+
+// ─── Embeddings (Second Brain RAG) ─────────────────────────
+// Vectorisation des preuves, opportunités, entretiens pour
+// recherche sémantique et mémoire longue du Conseiller IA.
+model Embedding {
+  id         String   @id @default(uuid())
+  entityType String // "proof_entry", "opportunity", "interview", "document"
+  entityId   String // ID de l'entité liée
+  content    String // texte vectorisé (max 8000 chars)
+  embedding  String // JSON array de 1024 floats (sérialisé)
+  model      String   @default("nvidia/nv-embedqa-e5-v5")
+  dimensions Int      @default(1024)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([entityType])
+  @@index([entityId])
+}

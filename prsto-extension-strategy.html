@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRSTO — Stratégie Extension Chrome Recruteur</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root {
+    --bg:#FAF6EF;--surface:#FFFDF8;--text:#0B1F18;--text-muted:#50625A;
+    --gold:#E4B118;--gold-dark:#A38010;--green:#103826;--green-light:#6A8F6D;
+    --border:rgba(16,56,38,0.08);--radius:16px;
+  }
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+  
+  .doc-hero{background:linear-gradient(145deg,#103826,#082E1E);color:#FFFDF8;padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden}
+  .doc-hero::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(228,177,24,0.08) 0%,transparent 70%);pointer-events:none}
+  .doc-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4.5vw,3.2rem);font-weight:900;letter-spacing:-0.04em;margin-bottom:12px}
+  .doc-hero h1 span{color:var(--gold)}
+  .doc-hero p{font-size:1rem;color:rgba(250,246,239,0.55);max-width:640px;margin:0 auto}
+  .doc-hero .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(228,177,24,0.1);border:1px solid rgba(228,177,24,0.2);border-radius:100px;padding:5px 14px;font-size:0.7rem;font-weight:700;color:var(--gold);margin-bottom:20px;text-transform:uppercase;letter-spacing:0.06em}
+
+  .container{max-width:1100px;margin:0 auto;padding:0 24px}
+  section{padding:56px 0}
+  section+section{border-top:1px solid var(--border)}
+  
+  .section-label{display:inline-flex;align-items:center;gap:6px;background:rgba(16,56,38,0.06);border:1px solid var(--border);border-radius:100px;padding:4px 14px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:16px}
+  h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:8px}
+  h3{font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px}
+  h4{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--gold-dark);margin-bottom:4px}
+  .subtitle{color:var(--text-muted);font-size:0.85rem;max-width:600px;margin-bottom:32px}
+
+  table{width:100%;border-collapse:collapse;font-size:0.82rem;border-radius:12px;overflow:hidden}
+  thead th{background:rgba(16,56,38,0.04);padding:12px 14px;text-align:left;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-bottom:2px solid var(--border)}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;font-size:0.8rem}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(16,56,38,0.015)}
+  tbody td:first-child{font-weight:600;white-space:nowrap}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.02)}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+  .card-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .card-header .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .card ul{list-style:none;padding:0}
+  .card ul li{padding:5px 0;font-size:0.8rem;color:var(--text-muted);display:flex;align-items:flex-start;gap:8px}
+  .card ul li::before{content:'→';color:var(--gold);font-weight:700;font-size:0.75rem;flex-shrink:0}
+
+  .pill{display:inline-block;padding:2px 10px;border-radius:100px;font-size:0.68rem;font-weight:600}
+  .pill-green{background:rgba(16,56,38,0.1);color:var(--green)}
+  .pill-gold{background:rgba(228,177,24,0.12);color:var(--gold-dark)}
+  .pill-red{background:rgba(220,38,38,0.08);color:#b91c1c}
+  .pill-blue{background:rgba(37,99,235,0.08);color:#2563eb}
+
+  .workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}
+  @media(max-width:768px){.workflow{grid-template-columns:1fr 1fr}}
+  .wf-step{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+  .wf-step .num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold)}
+  .wf-step .label{font-size:0.75rem;color:var(--text-muted);margin-top:4px;line-height:1.3}
+  .wf-step .time{font-size:0.65rem;color:var(--green-light);margin-top:4px;font-weight:600}
+
+  .highlight{border-color:rgba(228,177,24,0.25);background:rgba(228,177,24,0.025)}
+  .star-cell{text-align:center;font-size:0.85rem}
+  
+  .checklist{list-style:none}
+  .checklist li{padding:8px 0;font-size:0.82rem;color:var(--text-muted);display:flex;align-items:flex-start;gap:10px}
+  .checklist li .check,.checklist li .cross{flex-shrink:0;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;margin-top:2px}
+  .checklist li .check{background:rgba(16,56,38,0.1);color:var(--green)}
+  .checklist li .cross{background:rgba(220,38,38,0.08);color:#b91c1c}
+
+  .toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin:28px 0}
+  .toc h3{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;color:var(--text-muted)}
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .toc a{color:var(--green);text-decoration:none;font-size:0.82rem;font-weight:500;padding:2px 0}
+  .toc a:hover{color:var(--gold-dark)}
+  @media(max-width:640px){.toc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="doc-hero">
+  <div class="badge">✦ Étude stratégique</div>
+  <h1>Extension Chrome<br><span>PRSTO Recruteur</span></h1>
+  <p>Analyse concurrentielle, cas d'usage recruteur, spécifications fonctionnelles et plan d'adaptation de l'extension existante.</p>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>Sommaire</h3>
+  <div class="toc-grid">
+    <a href="#marche">1. État du marché des extensions recruteur</a>
+    <a href="#competiteurs">2. Analyse concurrentielle détaillée</a>
+    <a href="#etat-actuel">3. État actuel de l'extension PRSTO</a>
+    <a href="#use-cases">4. Cas d'usage recruteur quotidiens</a>
+    <a href="#gap">5. Gap analysis : ce qu'il manque</a>
+    <a href="#specs">6. Spécifications de la nouvelle extension</a>
+    <a href="#tabs">7. Architecture des 6 onglets</a>
+    <a href="#implementation">8. Plan d'implémentation</a>
+  </div>
+</div>
+
+<!-- 1. ÉTAT DU MARCHÉ -->
+<section id="marche">
+  <div class="section-label">✦ Analyse Marché</div>
+  <h2>1. État du marché des extensions recruteur</h2>
+  <p class="subtitle">Le marché des extensions Chrome pour recruteurs est dominé par 3 catégories : sourcing (contact), enrichment (données), et automation (workflow). PRSTO peut occuper une 4ème catégorie vierge : <strong>préparation de candidats</strong>.</p>
+  
+  <table>
+    <thead><tr><th>Solution</th><th>Catégorie</th><th>Prix/mois</th><th>Forces</th><th>Faiblesses</th></tr></thead>
+    <tbody>
+      <tr><td>Lusha</td><td>Contact Finder</td><td>$49-199</td><td>Emails vérifiés, intégration CRM</td><td>Uniquement contact, pas de préparation</td></tr>
+      <tr><td>Apollo.io</td><td>Sourcing + Séquences</td><td>$59-99</td><td>Base 275M contacts, séquences email</td><td>Prix élevé, pas de matching</td></tr>
+      <tr><td>ContactOut</td><td>Contact Finder</td><td>$79-199</td><td>Emails personnels, % de réponse</td><td>Limite de crédits, pas de curation</td></tr>
+      <tr><td>TexAu</td><td>Automation LinkedIn</td><td>$29-79</td><td>Automatisation de messages</td><td>Risque bannissement LinkedIn</td></tr>
+      <tr><td>SeekOut</td><td>Sourcing + Diversité</td><td>$99-499</td><td>Moteur diversité, filtres puissants</td><td>Prix très élevé, pas de préparation</td></tr>
+      <tr><td>HireEZ</td><td>Sourcing IA</td><td>$169-299</td><td>AI sourcing, 800M+ profils</td><td>Prix très élevé, pas d'extension</td></tr>
+      <tr><td style="color:var(--gold-dark);font-weight:700;">PRSTO (cible)</td><td style="color:var(--gold-dark);font-weight:700;">Préparation Candidat</td><td style="color:var(--gold-dark);font-weight:700;">99-349$</td><td style="color:var(--green-light);">CV formaté, ATS scan, lettre, matching offre, en 1 clic</td><td style="color:#b91c1c;">À construire — catégorie vierge</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 2. ANALYSE CONCURRENTIELLE -->
+<section id="competiteurs">
+  <div class="section-label">✦ Détail concurrentiel</div>
+  <h2>2. Analyse concurrentielle détaillée</h2>
+  <p class="subtitle">Ce qui fait gagner du temps à un recruteur aujourd'hui — et où PRSTO peut surpasser tout le monde.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#2563eb;"></div><h3>Lusha / Apollo / ContactOut</h3></div>
+      <ul>
+        <li>Trouvent emails et téléphones sur LinkedIn</li>
+        <li>Export vers CRM</li>
+        <li>Limitation : que du contact, pas de qualification</li>
+        <li>Le recruteur doit encore évaluer le profil, formater le CV, préparer</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#f59e0b;"></div><h3>TexAu / Dux-Soup / Waalaxy</h3></div>
+      <ul>
+        <li>Automatisent messages LinkedIn, visites de profils, invitations</li>
+        <li>Risque fort de bannissement (LinkedIn interdit l'automation)</li>
+        <li>Limitation : que de l'approche, pas de préparation</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:#16a34a;"></div><h3>SeekOut / HireEZ</h3></div>
+      <ul>
+        <li>Sourcing IA puissant avec filtres avancés</li>
+        <li>Agrégation de 30+ sources de profils</li>
+        <li>Limitation : outils lourds, pas d'extension légère, prix prohibitif</li>
+      </ul>
+    </div>
+    <div class="card highlight">
+      <div class="card-header"><div class="dot" style="background:var(--gold);"></div><h3 style="color:var(--gold-dark);">PRSTO Recruteur (cible)</h3></div>
+      <ul>
+        <li>Sur LinkedIn : 2 clics → CV formaté pour l'offre client</li>
+        <li>Sur job board : 1 clic → matching candidats vs offre</li>
+        <li>ATS intégré au flux : le recruteur ne quitte jamais sa page</li>
+        <li>Génération dossier complet (CV + lettre + brief) depuis l'extension</li>
+        <li>Partage lien client automatique</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. ÉTAT ACTUEL -->
+<section id="etat-actuel">
+  <div class="section-label">✦ Diagnostic</div>
+  <h2>3. État actuel de l'extension PRSTO</h2>
+  <p class="subtitle">L'extension ELTON OS Importer Pro v2.8.8 est conçue pour des <strong>candidats</strong>. Elle scrape des offres d'emploi et les envoie à l'app. Il faut la pivoter pour le flux recruteur : scrapper des <strong>profils candidats</strong> et générer des <strong>dossiers</strong> pour les clients.</p>
+
+  <table>
+    <thead><tr><th>Fonction actuelle</th><th>Pour qui</th><th>Doit devenir</th><th>Pour qui</th></tr></thead>
+    <tbody>
+      <tr><td>Scraper une offre d'emploi</td><td><span class="pill pill-red">Candidat</span></td><td>Scraper un profil LinkedIn candidat</td><td><span class="pill pill-gold">Recruteur</span></td></tr>
+      <tr><td>Analyser compatibilité offre vs MON CV</td><td><span class="pill pill-red">Candidat</span></td><td>Analyser compatibilité profil vs OFFRE CLIENT</td><td><span class="pill pill-gold">Recruteur</span></td></tr>
+      <tr><td>Autofill candidature</td><td><span class="pill pill-red">Candidat</span></td><td>Autofill dossier client (template cabinet)</td><td><span class="pill pill-gold">Recruteur</span></td></tr>
+      <tr><td>Générer CV pour MOI</td><td><span class="pill pill-red">Candidat</span></td><td>Générer CV formaté pour CLIENT (marque blanche cabinet)</td><td><span class="pill pill-gold">Recruteur</span></td></tr>
+      <tr><td>Suivi pipeline candidature</td><td><span class="pill pill-red">Candidat</span></td><td>Suivi mission : envoyé → entretien → placé</td><td><span class="pill pill-gold">Recruteur</span></td></tr>
+      <tr><td>Post-apply détection</td><td><span class="pill pill-red">Candidat</span></td><td>Détection statut candidat sur LinkedIn (open-to-work, etc.)</td><td><span class="pill pill-gold">Recruteur</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 4. CAS D'USAGE RECRUTEUR -->
+<section id="use-cases">
+  <div class="section-label">✦ Workflows</div>
+  <h2>4. Cas d'usage recruteur quotidiens</h2>
+  <p class="subtitle">Scénarios réels de la journée d'un recruteur indépendant ou cabinet. Ce que l'extension PRSTO doit couvrir.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--gold);"></div><h3>Cas 1 : Sourcing rapide sur LinkedIn</h3></div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Le recruteur a 3 offres client à pourvoir aujourd'hui. Il ouvre LinkedIn et cherche des profils.</p>
+      <h4>Flux cible</h4>
+      <ol style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+        <li style="margin-bottom:4px;">Arrive sur un profil LinkedIn prometteur</li>
+        <li style="margin-bottom:4px;">Ouvre l'extension PRSTO → clique "Importer ce profil"</li>
+        <li style="margin-bottom:4px;">L'extension scrape : nom, titre, expérience, compétences, localisation</li>
+        <li style="margin-bottom:4px;">Choisit l'offre client à matcher → "Analyser compatibilité"</li>
+        <li style="margin-bottom:4px;">Score ATS + recommandations en 3 secondes</li>
+        <li style="margin-bottom:4px;">"Générer dossier" → CV formaté + lettre cabinet + brief</li>
+        <li style="margin-bottom:4px;">Envoyer lien privé au client → mission créée</li>
+      </ol>
+      <p style="font-size:0.7rem;color:var(--green-light);margin-top:8px;"><strong>Temps gagné :</strong> 45 min → 3 min</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--gold);"></div><h3>Cas 2 : Réponse à une annonce client</h3></div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Le client envoie le lien d'une annonce. Le recruteur doit y répondre avec ses meilleurs candidats.</p>
+      <h4>Flux cible</h4>
+      <ol style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+        <li style="margin-bottom:4px;">Ouvre l'annonce (Indeed, APEC, Welcome to the Jungle...)</li>
+        <li style="margin-bottom:4px;">Ouvre l'extension → "Scanner cette offre"</li>
+        <li style="margin-bottom:4px;">L'extension extrait titre, entreprise, description, mots-clés</li>
+        <li style="margin-bottom:4px;">"Matcher mes candidats" → l'IA compare l'offre à la base de candidats</li>
+        <li style="margin-bottom:4px;">3 meilleurs matchs s'affichent avec scores</li>
+        <li style="margin-bottom:4px;">Cliquer sur un candidat → "Préparer pour cette offre"</li>
+        <li style="margin-bottom:4px;">CV formaté, lettre cabinet, brief prêts en 8 min</li>
+      </ol>
+      <p style="font-size:0.7rem;color:var(--green-light);margin-top:8px;"><strong>Temps gagné :</strong> 2h → 10 min</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--gold);"></div><h3>Cas 3 : Envoi dossier au client</h3></div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Le recruteur a 5 dossiers à envoyer. Il veut tracker qui a été vu, qui est en entretien.</p>
+      <h4>Flux cible</h4>
+      <ol style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+        <li style="margin-bottom:4px;">Dans l'extension → onglet "Missions"</li>
+        <li style="margin-bottom:4px;">Voit les dossiers prêts à envoyer</li>
+        <li style="margin-bottom:4px;">"Envoyer au client" → lien privé généré</li>
+        <li style="margin-bottom:4px;">Le client ouvre le lien → le recruteur est notifié</li>
+        <li style="margin-bottom:4px;">Pipeline mis à jour : envoyé → vu → entretien → placé</li>
+      </ol>
+      <p style="font-size:0.7rem;color:var(--green-light);margin-top:8px;"><strong>Temps gagné :</strong> tracking en temps réel, zéro oubli</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="dot" style="background:var(--gold);"></div><h3>Cas 4 : Sourcing passif multi-plateforme</h3></div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">Le recruteur navigue sur GitHub, Malt, Behance, Dribbble. Il repère un talent.</p>
+      <h4>Flux cible</h4>
+      <ol style="font-size:0.78rem;color:var(--text-muted);padding-left:16px;">
+        <li style="margin-bottom:4px;">Sur n'importe quelle page → ouvrir l'extension</li>
+        <li style="margin-bottom:4px;">"Capturer ce profil" → extraction générique (nom, titre, description)</li>
+        <li style="margin-bottom:4px;">"Ajouter à ma base candidats" → enrichissement auto (LinkedIn search)</li>
+        <li style="margin-bottom:4px;">Tagguer le candidat (secteur, séniorité, localisation)</li>
+        <li style="margin-bottom:4px;">Disponible pour matcher plus tard</li>
+      </ol>
+      <p style="font-size:0.7rem;color:var(--green-light);margin-top:8px;"><strong>Temps gagné :</strong> sourcing multi-source sans friction</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. GAP ANALYSIS -->
+<section id="gap">
+  <div class="section-label">✦ Gap Analysis</div>
+  <h2>5. Ce qu'il manque pour le recruteur</h2>
+  <p class="subtitle">Fonctionnalités que l'extension actuelle n'a pas, mais dont le recruteur a absolument besoin.</p>
+
+  <table>
+    <thead><tr><th>Fonctionnalité</th><th>État actuel</th><th>Priorité</th><th>Impact temps</th></tr></thead>
+    <tbody>
+      <tr><td>Scraper un profil LinkedIn candidat</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-gold">Critique</span></td><td>Économise 15 min/candidat</td></tr>
+      <tr><td>Matcher un candidat scrapé à une offre client</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-gold">Critique</span></td><td>Remplace 30 min d'analyse manuelle</td></tr>
+      <tr><td>Générer CV formaté + lettre depuis l'extension</td><td><span class="pill pill-green">Partiel</span></td><td><span class="pill pill-gold">Critique</span></td><td>Économise 45 min/dossier</td></tr>
+      <tr><td>Base de candidats dans l'extension (recherche rapide)</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-gold">Haute</span></td><td>Évite de jongler entre onglets</td></tr>
+      <tr><td>Partage lien client (marque blanche)</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-gold">Haute</span></td><td>Remplace email + pièces jointes</td></tr>
+      <tr><td>Pipeline missions en temps réel</td><td><span class="pill pill-green">Partiel</span></td><td><span class="pill pill-gold">Haute</span></td><td>Remplace Excel / Trello</td></tr>
+      <tr><td>Sourcing multi-plateforme (GitHub, Malt, Behance)</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-green">Moyenne</span></td><td>Économise 10 min/profil</td></tr>
+      <tr><td>Tags et notes sur les candidats</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-green">Moyenne</span></td><td>Organisation de la base</td></tr>
+      <tr><td>Notification client (dossier vu, feedback)</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-blue">Basse</span></td><td>Suivi client automatisé</td></tr>
+      <tr><td>Mode multi-candidats (sélection multiple)</td><td><span class="pill pill-red">Absent</span></td><td><span class="pill pill-blue">Basse</span></td><td>Gain de temps en batch</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 6. SPÉCIFICATIONS -->
+<section id="specs">
+  <div class="section-label">✦ Spécifications</div>
+  <h2>6. Spécifications de la nouvelle extension</h2>
+  <p class="subtitle">L'extension passe de <strong>"ELTON OS Importer Pro"</strong> à <strong>"PRSTO Recruteur"</strong>. Changement de nom, de positionnement, et de flux.</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-color:rgba(220,38,38,0.2);">
+      <div class="card-header"><div class="dot" style="background:#b91c1c;"></div><h3 style="color:#b91c1c;">AVANT — ELTON OS Importer</h3></div>
+      <ul>
+        <li>Manifest V3, Side Panel, 6 onglets</li>
+        <li>Scrape des offres d'emploi → envoie à l'app candidat</li>
+        <li>Compatibilité offre vs <strong>CV du candidat</strong></li>
+        <li>Autofill de formulaires ATS</li>
+        <li>Génération CV + lettre pour le <strong>candidat</strong></li>
+        <li>Post-apply détection</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:rgba(22,163,74,0.2);">
+      <div class="card-header"><div class="dot" style="background:#16a34a;"></div><h3 style="color:#16a34a;">APRÈS — PRSTO Recruteur</h3></div>
+      <ul>
+        <li>Même architecture (Side Panel, Manifest V3, 6 onglets)</li>
+        <li>Scrape des <strong>profils LinkedIn candidats</strong> → base cabinet</li>
+        <li>Compatibilité <strong>profil vs offre client</strong></li>
+        <li>Génération dossier marque blanche <strong>pour le client</strong></li>
+        <li>Pipeline missions avec tracking client</li>
+        <li>Extension de sourcing universel</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px;font-family:'Inter',sans-serif;">Nouveaux extracteurs à créer</h3>
+  <table>
+    <thead><tr><th>Plateforme</th><th>Type</th><th>Ce qu'on extrait</th><th>Statut</th></tr></thead>
+    <tbody>
+      <tr><td>LinkedIn Profil</td><td>Profil candidat</td><td>Nom, titre, localisation, résumé, expériences, formations, compétences, langues</td><td><span class="pill pill-red">À créer</span></td></tr>
+      <tr><td>LinkedIn Recherche</td><td>Liste profils</td><td>Jusqu'à 25 profils d'une page de résultats</td><td><span class="pill pill-red">À créer</span></td></tr>
+      <tr><td>GitHub</td><td>Profil tech</td><td>Nom, bio, langages, repos, contributions, localisation</td><td><span class="pill pill-red">À créer</span></td></tr>
+      <tr><td>Malt</td><td>Profil freelance</td><td>Nom, titre, TJM, compétences, rating, disponibilité</td><td><span class="pill pill-red">À créer</span></td></tr>
+      <tr><td>Indeed/APEC/Greenhouse</td><td>Offre client</td><td>Titre, entreprise, localisation, description</td><td><span class="pill pill-green">Existant ✓</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 7. ARCHITECTURE DES 6 ONGLETS -->
+<section id="tabs">
+  <div class="section-label">✦ Architecture</div>
+  <h2>7. Architecture des 6 onglets (v3 Recruteur)</h2>
+
+  <div class="workflow">
+    <div class="wf-step"><div class="num">01</div><div class="label">Sourcer</div><div class="time">Scraper des profils candidats sur LinkedIn, GitHub, Malt...</div></div>
+    <div class="wf-step"><div class="num">02</div><div class="label">Matcher</div><div class="time">Comparer profil vs offre client avec score IA</div></div>
+    <div class="wf-step"><div class="num">03</div><div class="label">Préparer</div><div class="time">CV formaté + lettre cabinet + brief en 1 clic</div></div>
+    <div class="wf-step"><div class="num">04</div><div class="label">Envoyer</div><div class="time">Lien privé client + tracking pipeline</div></div>
+  </div>
+
+  <table>
+    <thead><tr><th>Onglet</th><th>Nom</th><th>Fonction</th><th>Icône</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>Sourcing</strong></td>
+        <td>
+          • Scraper profil LinkedIn/Indeed/GitHub/Malt du candidat actuel<br>
+          • Mode "recherche" : capturer jusqu'à 25 profils d'une page de résultats<br>
+          • Enrichissement automatique avec les données manquantes<br>
+          • Ajout tags (secteur, séniorité, disponibilité)<br>
+          • Bouton "Ajouter à ma base" → sync avec l'app
+        </td>
+        <td style="text-align:center;">🎯</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><strong>Matcher</strong></td>
+        <td>
+          • Sélectionner un candidat sourcé + une offre client<br>
+          • Score de compatibilité IA (11 dimensions)<br>
+          • Points forts / lacunes / risques affichés<br>
+          • Recommandation : "Envoyer" / "Ne pas envoyer" / "À retravailler"<br>
+          • Bouton "Préparer pour ce client"
+        </td>
+        <td style="text-align:center;">⚡</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><strong>Dossier</strong></td>
+        <td>
+          • Génération CV formaté (template cabinet sélectionné)<br>
+          • Lettre de motivation au nom du cabinet<br>
+          • Brief entretien (forces, faiblesses, questions à poser)<br>
+          • Aperçu avant génération (choix du template)<br>
+          • Téléchargement PDF / ZIP ou partage lien privé<br>
+          • Marque blanche : logo cabinet, couleurs, signature email
+        </td>
+        <td style="text-align:center;">📄</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><strong>Mission</strong></td>
+        <td>
+          • Pipeline en temps réel : Brief créé → Envoyé client → Vu → Entretien → Placé<br>
+          • Historique des interactions avec le client<br>
+          • Planning de relance automatique<br>
+          • Notes sur le candidat (feedback client, points d'attention)<br>
+          • Bouton "Marquer comme placé" → calcul CA automatique
+        </td>
+        <td style="text-align:center;">📊</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td><strong>Base</strong></td>
+        <td>
+          • Recherche rapide dans la base de candidats<br>
+          • Filtres : secteur, séniorité, localisation, disponibilité, tags<br>
+          • Derniers profils ajoutés<br>
+          • Statistiques : X candidats, Y matchés ce mois, Z placés<br>
+          • Bouton "Ouvrir dans PRSTO" → redirige vers l'app
+        </td>
+        <td style="text-align:center;">🔍</td>
+      </tr>
+      <tr>
+        <td><strong>6</strong></td>
+        <td><strong>Cabinet</strong></td>
+        <td>
+          • Paramètres du cabinet : logo, couleurs, signature<br>
+          • Template CV par défaut<br>
+          • Abonnement actif et utilisation (candidats restants/mois)<br>
+          • Kill switch / déconnexion<br>
+          • Lien dashboard complet
+        </td>
+        <td style="text-align:center;">⚙️</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 8. PLAN D'IMPLÉMENTATION -->
+<section id="implementation">
+  <div class="section-label">✦ Execution</div>
+  <h2>8. Plan d'implémentation</h2>
+
+  <table>
+    <thead><tr><th>Étape</th><th>Fichier</th><th>Action</th><th>Priorité</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><code>manifest.json</code></td><td>Renommer "PRSTO Recruteur", ajouter host permissions GitHub/Malt</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>2</td><td><code>src/core/extractors.ts</code></td><td>Créer extractLinkedInProfileFn (scraper du profil candidat complet)</td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>3</td><td><code>src/core/extractors.ts</code></td><td>Créer extractLinkedInSearchFn (scraper page de résultats de recherche)</td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>4</td><td><code>src/core/extractors.ts</code></td><td>Créer extractGitHubProfileFn, extractMaltProfileFn</td><td><span class="pill pill-green">Moyenne</span></td></tr>
+      <tr><td>5</td><td><code>popup.html</code></td><td>Repositionner l'UI : 6 onglets recruteur (Sourcing, Matcher, Dossier, Mission, Base, Cabinet)</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>6</td><td><code>src/popup.ts</code></td><td>Adapter la logique d'état pour le flux recruteur, renommer tous les labels</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>7</td><td><code>src/core/backend.ts</code></td><td>Nouveau endpoint API : POST /api/recruiter/candidates/import (profil candidat)</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>8</td><td><code>src/core/backend.ts</code></td><td>Nouveau endpoint : POST /api/recruiter/match (candidat vs offre client)</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>9</td><td><code>src/core/backend.ts</code></td><td>Adapter POST /api/application-drafts → POST /api/recruiter/dossiers</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>10</td><td><code>src/core/documents.ts</code></td><td>Adapter la génération de documents pour la marque blanche cabinet</td><td><span class="pill pill-gold">Haute</span></td></tr>
+      <tr><td>11</td><td><code>src/tabs/autofill.ts</code></td><td>Remplacer par src/tabs/dossier.ts (génération + envoi dossier client)</td><td><span class="pill pill-green">Moyenne</span></td></tr>
+      <tr><td>12</td><td><code>src/tabs/reasoning.ts</code></td><td>Adapter pour l'analyse candidat vs offre client (au lieu de offre vs CV)</td><td><span class="pill pill-green">Moyenne</span></td></tr>
+      <tr><td>13</td><td><code>post-apply-detector.ts</code></td><td>Transformer en "candidate-status-detector" (open-to-work, activité récente)</td><td><span class="pill pill-blue">Basse</span></td></tr>
+      <tr><td>14</td><td>Nouveau</td><td>Créer api/recruiter/candidates/ route.ts pour l'import de profils</td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>15</td><td>Nouveau</td><td>Créer api/recruiter/match/ route.ts pour le matching candidat/offre</td><td><span class="pill pill-gold">Critique</span></td></tr>
+      <tr><td>16</td><td><code>icons/</code></td><td>Nouvelles icônes PRSTO Recruteur (16, 48, 128)</td><td><span class="pill pill-blue">Basse</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section style="border-top:2px solid rgba(228,177,24,0.2);padding-bottom:80px;">
+  <div class="section-label">✦ Synthèse</div>
+  <h2>Conclusion</h2>
+  <div class="card" style="border-color:rgba(228,177,24,0.2);background:rgba(228,177,24,0.03);padding:32px;">
+    <ul class="checklist">
+      <li><span class="check">✓</span> <strong>Positionnement unique :</strong> Aucune extension recruteur ne fait la préparation de candidats. PRSTO crée une catégorie vierge.</li>
+      <li><span class="check">✓</span> <strong>Base existante :</strong> 90% de l'architecture extension est réutilisable (Side Panel, Manifest V3, webpack, UI framework).</li>
+      <li><span class="check">✓</span> <strong>Différenciation clé :</strong> Lusha/ContactOut = contact. TexAu = automation risquée. PRSTO = préparation + placement.</li>
+      <li><span class="check">✓</span> <strong>ROI recruteur :</strong> 1 placement = 3000-20000€. À 99$/mois, PRSTO se rembourse au 1er dossier envoyé.</li>
+      <li><span class="check">✓</span> <strong>Valeur ajoutée quotidienne :</strong> 15-45 min économisées par candidat × 10 candidats/mois = 7h gagnées.</li>
+      <li><span class="check">✓</span> <strong>Chantier estimé :</strong> 3-5 jours de développement (16 modifications, 2 nouveaux API endpoints, 5 nouveaux extracteurs).</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<footer style="text-align:center;padding:40px 24px;font-size:0.75rem;color:var(--text-muted);border-top:1px solid var(--border);">
+  PRSTO — Stratégie Extension Chrome · Juin 2026 · Document confidentiel
+</footer>
+
+</body>
+</html>

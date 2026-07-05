@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRAIGHT — Concept complet</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:#fff; color:#111; -webkit-font-smoothing:antialiased; }
+
+/* ─── Shared ─── */
+nav { display:flex; justify-content:space-between; align-items:center; padding:28px 56px; max-width:1280px; margin:0 auto; }
+.logo { font-size:20px; font-weight:800; letter-spacing:-1px; text-transform:uppercase; }
+.logo span { font-weight:400; color:#999; }
+.nav-links { display:flex; gap:32px; align-items:center; }
+.nav-links a { color:rgba(17,17,17,.4); text-decoration:none; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:1.5px; transition:color .2s; }
+.nav-links a:hover { color:#111; }
+.btn-cta { background:#111; color:#fff; padding:12px 28px; text-decoration:none; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:1px; transition:all .2s; }
+.btn-cta:hover { background:#333; }
+
+/* ─── Hero ─── */
+.hero { padding:80px 56px 100px; max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; min-height:90vh; }
+.hero-tag { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:2.5px; color:#999; margin-bottom:24px; }
+.hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(36px,4.5vw,58px); line-height:1.05; letter-spacing:-1.5px; margin-bottom:20px; }
+.hero h1 .highlight { background:#111; color:#fff; padding:0 8px; display:inline-block; }
+.hero p { font-size:15px; color:#666; line-height:1.6; margin-bottom:36px; max-width:420px; }
+.hero-actions { display:flex; gap:12px; }
+.btn-primary { background:#111; color:#fff; padding:14px 36px; text-decoration:none; font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:1px; transition:all .15s; }
+.btn-primary:hover { background:#333; }
+.btn-outline { color:#111; padding:14px 36px; text-decoration:none; font-size:14px; font-weight:500; border:1px solid #ddd; transition:all .15s; }
+.btn-outline:hover { border-color:#111; }
+
+/* ─── Hero stats block ─── */
+.hero-visual { background:#f5f5f5; padding:48px; display:flex; flex-direction:column; gap:36px; }
+.stat-block { }
+.stat-block .num { font-family:'DM Serif Display',serif; font-size:64px; letter-spacing:-3px; line-height:1; margin-bottom:2px; }
+.stat-block .label { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:2px; color:#999; }
+.stat-block .desc { font-size:13px; color:#bbb; margin-top:6px; }
+.stat-divider { height:1px; background:#e5e5e5; }
+
+/* ─── Marquee ─── */
+.marquee { padding:20px 56px; max-width:1280px; margin:0 auto; border-top:1px solid #eee; border-bottom:1px solid #eee; overflow:hidden; }
+.marquee-inner { display:flex; gap:48px; animation:scroll 40s linear infinite; width:max-content; }
+.marquee-inner span { font-size:12px; font-weight:600; color:#bbb; text-transform:uppercase; letter-spacing:2px; white-space:nowrap; }
+@keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* ─── Sections ─── */
+section { padding:120px 56px; max-width:1280px; margin:0 auto; }
+.section-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2.5px; color:#bbb; margin-bottom:12px; }
+.section-title { font-family:'DM Serif Display',serif; font-size:clamp(28px,3.2vw,42px); letter-spacing:-1px; line-height:1.1; margin-bottom:16px; }
+.section-sub { font-size:15px; color:#666; max-width:480px; line-height:1.6; margin-bottom:56px; }
+
+/* ─── Features grid ─── */
+.features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid #eee; border-left:1px solid #eee; }
+.feature-card { padding:40px 32px; border-right:1px solid #eee; border-bottom:1px solid #eee; }
+.feature-card h3 { font-size:15px; font-weight:700; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+.feature-card p { font-size:13px; color:#666; line-height:1.6; }
+.feature-card .arrow { display:inline-block; margin-top:16px; color:#111; font-size:18px; font-weight:700; }
+
+/* ─── How ─── */
+.how-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0; border-top:1px solid #eee; }
+.how-item { padding:40px 32px; border-bottom:1px solid #eee; border-right:1px solid #eee; }
+.how-item .num { font-family:'DM Serif Display',serif; font-size:24px; color:#ddd; margin-bottom:12px; }
+.how-item h3 { font-size:14px; font-weight:700; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+.how-item p { font-size:13px; color:#666; line-height:1.5; }
+
+/* ─── Pricing ─── */
+.pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid #eee; border-left:1px solid #eee; }
+.plan-card { padding:48px 40px; border-right:1px solid #eee; border-bottom:1px solid #eee; }
+.plan-card.featured { background:#111; color:#fff; position:relative; }
+.plan-name { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#999; margin-bottom:16px; }
+.plan-card.featured .plan-name { color:rgba(255,255,255,.4); }
+.plan-price { font-size:48px; font-weight:800; letter-spacing:-3px; margin-bottom:2px; }
+.plan-price span { font-size:14px; font-weight:400; color:#bbb; }
+.plan-card.featured .plan-price span { color:rgba(255,255,255,.4); }
+.plan-desc { font-size:13px; color:#999; margin-bottom:28px; }
+.plan-card.featured .plan-desc { color:rgba(255,255,255,.5); }
+.plan-features { list-style:none; margin-bottom:32px; }
+.plan-features li { padding:7px 0; font-size:13px; color:#666; border-bottom:1px solid #f0f0f0; }
+.plan-card.featured .plan-features li { color:rgba(255,255,255,.5); border-color:rgba(255,255,255,.06); }
+.plan-features li::before { content:'—'; margin-right:10px; color:#ddd; }
+.plan-card.featured .plan-features li::before { color:rgba(255,255,255,.25); }
+.plan-btn { display:block; text-align:center; padding:14px; text-decoration:none; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; border:1px solid #111; color:#111; transition:all .15s; }
+.plan-card.featured .plan-btn { background:#fff; color:#111; border-color:#fff; }
+.plan-btn:hover { background:#111; color:#fff; }
+.plan-card.featured .plan-btn:hover { background:#eee; }
+
+/* ─── Testimonial ─── */
+.testimonial { border-top:1px solid #eee; padding:80px 56px; text-align:center; max-width:900px; margin:0 auto; }
+.testimonial blockquote { font-family:'DM Serif Display',serif; font-size:22px; color:#555; line-height:1.4; margin-bottom:20px; }
+.testimonial cite { font-size:13px; font-style:normal; color:#999; }
+.testimonial cite strong { color:#111; }
+
+/* ─── CTA dark strip ─── */
+.cta-dark { background:#111; color:#fff; padding:100px 56px; text-align:center; }
+.cta-dark h2 { font-family:'DM Serif Display',serif; font-size:clamp(28px,3vw,42px); letter-spacing:-1px; margin-bottom:12px; }
+.cta-dark p { color:rgba(255,255,255,.45); margin-bottom:32px; font-size:15px; max-width:480px; margin-left:auto; margin-right:auto; }
+.cta-dark .btn-primary { background:#fff; color:#111; display:inline-block; border:none; }
+.cta-dark .btn-primary:hover { background:#eee; }
+
+/* ─── Footer ─── */
+footer { padding:48px 56px; max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
+footer p { font-size:12px; color:#999; text-transform:uppercase; letter-spacing:1px; }
+
+@media(max-width:768px) {
+  nav { padding:20px 24px; flex-wrap:wrap; gap:12px; }
+  .hero { grid-template-columns:1fr; gap:40px; padding:60px 24px; }
+  .hero-visual { padding:32px; }
+  .stat-block .num { font-size:44px; }
+  .marquee { padding:16px 24px; }
+  section { padding:60px 24px; }
+  .features-grid, .how-grid, .pricing-grid { grid-template-columns:1fr; }
+  .feature-card { border-right:none; }
+  .how-item { border-right:none; }
+  .plan-card { border-right:none; }
+  .plan-card.featured { transform:none; }
+  .cta-dark { padding:60px 24px; }
+  footer { flex-direction:column; gap:12px; padding:32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ELTON<span> // OS</span></div>
+  <div class="nav-links">
+    <a href="#">Modules</a>
+    <a href="#">Tarifs</a>
+    <a href="#">Se connecter</a>
+    <a href="#" class="btn-cta">Créer un compte</a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div>
+    <div class="hero-tag">Recherche d'emploi augmentée</div>
+    <h1>Le boardroom de <span class="highlight">votre prochaine</span> carrière.</h1>
+    <p>ELTON OS est un système d'exploitation pour votre recherche d'emploi. Pas un énième site de CV. Pas un robot à candidatures. Un vrai copilote, pour les décideurs.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Commencer</a>
+      <a href="#" class="btn-outline">Explorer les modules</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="stat-block">
+      <div class="num">6</div>
+      <div class="label">Moteurs d'intelligence artificielle</div>
+      <div class="desc">ATS Scanner, CV Optimizer, LinkedIn Coach, Bullet Points, Skills DB, Interview Studio</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-block">
+      <div class="num">17</div>
+      <div class="label">Systèmes ATS supportés</div>
+      <div class="desc">Workday, Taleo, SAP SuccessFactors, Greenhouse, Lever, et plus</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-block">
+      <div class="num">100 %</div>
+      <div class="label">Local-first. Vos données.</div>
+      <div class="desc">Chiffrement AES-256. Zéro revente. Zéro tracking. Vous reprenez le contrôle.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MARQUEE ─── -->
+<div class="marquee">
+  <div class="marquee-inner">
+    <span>ATS Scanner</span><span>●</span><span>CV Optimizer</span><span>●</span><span>LinkedIn Coach</span><span>●</span><span>Market Radar</span><span>●</span><span>Recruiter CRM</span><span>●</span>
+    <span>Interview Studio</span><span>●</span><span>Pipeline Kanban</span><span>●</span><span>Bullet Points</span><span>●</span><span>Skills Database</span><span>●</span>
+    <span>ATS Scanner</span><span>●</span><span>CV Optimizer</span><span>●</span><span>LinkedIn Coach</span><span>●</span><span>Market Radar</span><span>●</span><span>Recruiter CRM</span><span>●</span>
+    <span>Interview Studio</span><span>●</span><span>Pipeline Kanban</span><span>●</span><span>Bullet Points</span><span>●</span><span>Skills Database</span><span>●</span>
+  </div>
+</div>
+
+<!-- ─── FEATURES ─── -->
+<section>
+  <div class="section-tag">Modules</div>
+  <h2 class="section-title">Six outils. Un objectif :<br>vous faire embaucher.</h2>
+  <p class="section-sub">Chaque module est indépendant. Tous travaillent ensemble. Aucun n'envoie de candidature à votre place — vous gardez le contrôle.</p>
+  <div class="features-grid">
+    <div class="feature-card"><h3>ATS Scanner</h3><p>Collez une offre, obtenez un score de compatibilité détaillé avec les mots-clés manquants et les suggestions.</p><span class="arrow">→</span></div>
+    <div class="feature-card"><h3>CV Optimizer</h3><p>Analyse complète de votre CV, recommandations prioritaires, adaptation automatique à chaque offre.</p><span class="arrow">→</span></div>
+    <div class="feature-card"><h3>Bullet Points</h3><p>Transformez vos expériences en réalisations percutantes. Format STAR, concis ou détaillé.</p><span class="arrow">→</span></div>
+    <div class="feature-card"><h3>LinkedIn Optimizer</h3><p>Score de votre profil, suggestions de mots-clés, optimisation pour les algorithmes recruteurs.</p><span class="arrow">→</span></div>
+    <div class="feature-card"><h3>Skills Database</h3><p>Analyse d'écart de compétences, recommandations de formation, catalogue sectoriel.</p><span class="arrow">→</span></div>
+    <div class="feature-card"><h3>Interview Studio</h3><p>Simulations d'entretien basées sur l'offre, questions probables, réponses STAR préparées.</p><span class="arrow">→</span></div>
+  </div>
+</section>
+
+<!-- ─── HOW ─── -->
+<section>
+  <div class="section-tag">Processus</div>
+  <h2 class="section-title">De l'opportunité<br>à l'embauche.</h2>
+  <p class="section-sub">Pas de magie. De la méthode. L'IA vous donne les armes, vous décidez du reste.</p>
+  <div class="how-grid">
+    <div class="how-item"><div class="num">01</div><h3>Importez votre profil</h3><p>CV, LinkedIn, expériences, compétences, réalisations. ELTON OS structure tout.</p></div>
+    <div class="how-item"><div class="num">02</div><h3>Définissez votre cible</h3><p>Postes, secteurs, localisation, salaire. Affinez vos critères de recherche.</p></div>
+    <div class="how-item"><div class="num">03</div><h3>Scannez & Optimisez</h3><p>IA analyse chaque offre, optimise votre CV, génère bullet points et lettres.</p></div>
+    <div class="how-item"><div class="num">04</div><h3>Suivez & Ajustez</h3><p>Pipeline Kanban, CRM Recruteur, Analytics. Vous pilotez en temps réel.</p></div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIAL ─── -->
+<div class="testimonial">
+  <blockquote>« Je suis passé de 0 à 4 entretiens en 3 semaines. Le ATS Scanner m'a ouvert les yeux sur mes CV mal optimisés. »</blockquote>
+  <cite>— <strong>VP Sales</strong>, secteur Industrie</cite>
+</div>
+
+<!-- ─── PRICING ─── -->
+<section>
+  <div class="section-tag">Tarifs</div>
+  <h2 class="section-title">Investissez dans votre<br>prochaine opportunité.</h2>
+  <p class="section-sub">Pas de frais cachés. Pas d'engagement. Résiliez à tout moment depuis votre compte.</p>
+  <div class="pricing-grid">
+    <div class="plan-card">
+      <div class="plan-name">Base</div>
+      <div class="plan-price">29€ <span>/mois</span></div>
+      <div class="plan-desc">Pour démarrer une recherche structurée.</div>
+      <ul class="plan-features">
+        <li>ATS Scanner illimité</li>
+        <li>Pipeline Kanban</li>
+        <li>CV Optimizer</li>
+        <li>50 analyses IA / mois</li>
+      </ul>
+      <a href="#" class="plan-btn">Souscrire</a>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-name">Executive</div>
+      <div class="plan-price">69€ <span>/mois</span></div>
+      <div class="plan-desc">L'arsenal complet du cadre dirigeant.</div>
+      <ul class="plan-features">
+        <li>Tout Base</li>
+        <li>Market Radar</li>
+        <li>LinkedIn Optimizer</li>
+        <li>Interview Studio</li>
+        <li>Analyses IA illimitées</li>
+        <li>CRM Recruteur</li>
+      </ul>
+      <a href="#" class="plan-btn">Souscrire</a>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Sur Mesure</div>
+      <div class="plan-price">Sur devis</div>
+      <div class="plan-desc">Pour équipes et cabinets de recrutement.</div>
+      <ul class="plan-features">
+        <li>Tout Executive</li>
+        <li>Multi-utilisateurs</li>
+        <li>API & Webhooks</li>
+        <li>Onboarding prioritaire</li>
+        <li>SSO</li>
+      </ul>
+      <a href="#" class="plan-btn">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<div class="cta-dark">
+  <h2>Vous voulez voir ce que ça donne ?</h2>
+  <p>14 jours d'essai gratuit. Sans carte bancaire. Vous déciderez après.</p>
+  <a href="#" class="btn-primary">Commencer l'essai →</a>
+</div>
+
+<footer>
+  <p>© 2026 ELTON OS</p>
+  <p>Conçu pour la performance. Pas pour le buzz.</p>
+</footer>
+
+</body>
+</html>

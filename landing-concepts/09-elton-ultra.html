@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ELTON OS — L'OS de votre carrière dirigeante</title>
+<meta name="description" content="ATS Scanner, CV Optimizer, LinkedIn Coach, CRM Recruteur — le premier système d'IA pensé pour les cadres dirigeants en recherche de poste.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#000;color:#fff;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:root{--gold:#c9a84c;--gold-dim:rgba(201,168,76,.15);--gold-glow:rgba(201,168,76,.35);--blue:#7da4ff;--card-bg:rgba(8,8,10,0.95);--card-border:rgba(255,255,255,.07);--card-border-hover:rgba(255,255,255,.14);--r1:20px;--r2:28px}
+.max-w{max-width:1200px;margin:0 auto;padding:0 48px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");background-size:200px 200px;pointer-events:none;z-index:9999;opacity:.6}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}.reveal-delay-4{transition-delay:.4s}
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 48px;position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(0,0,0,0);backdrop-filter:blur(0px);transition:background .4s,backdrop-filter .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(4,4,6,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom-color:rgba(255,255,255,.06)}
+.logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#a07830);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;letter-spacing:-.5px;box-shadow:0 0 20px var(--gold-glow)}
+.logo-text{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:rgba(255,255,255,.5);text-decoration:none;font-size:13.5px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;padding:9px 22px;border-radius:10px;text-decoration:none;font-size:13.5px;font-weight:600;transition:all .2s}
+.nav-cta:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.18)}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:140px 48px 100px;position:relative;z-index:1}
+.hero-inner{display:grid;grid-template-columns:1.1fr 0.9fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto;width:100%}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:6px 16px 6px 8px;border-radius:999px;font-size:11.5px;color:var(--gold);font-weight:600;letter-spacing:.3px;margin-bottom:28px}
+.eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold-glow);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero h1{font-family:'Inter Tight',sans-serif;font-size:clamp(40px,5.5vw,68px);font-weight:800;letter-spacing:-.04em;line-height:1.02;margin-bottom:22px}
+.h1-line{display:block}
+.h1-gradient{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.45) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.h1-gold{background:linear-gradient(135deg,var(--gold) 0%,#e8c870 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px var(--gold-glow))}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:40px;max-width:460px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-hero-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#a07830);color:#000;padding:14px 28px;border-radius:12px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-.01em;box-shadow:0 0 0 1px rgba(201,168,76,.3),0 8px 32px rgba(201,168,76,.2);transition:all .25s}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(201,168,76,.5),0 12px 40px rgba(201,168,76,.35)}
+.btn-hero-secondary{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.6);padding:14px 28px;border-radius:12px;text-decoration:none;font-size:14px;font-weight:500;border:1px solid rgba(255,255,255,.1);transition:all .25s}
+.btn-hero-secondary:hover{color:#fff;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04)}
+.hero-visual{position:relative}
+.hero-card{background:linear-gradient(145deg,rgba(12,12,15,0.98),rgba(6,6,8,0.98));border:1px solid var(--card-border);border-radius:24px;padding:28px;backdrop-filter:blur(20px);box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.hero-card::before{content:'';position:absolute;top:-1px;left:30%;right:30%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+.hc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.hc-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px}
+.hc-status{display:flex;align-items:center;gap:5px;font-size:10px;color:#22c55e;font-weight:600}
+.hc-status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease-in-out infinite}
+.hc-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;margin-bottom:8px;transition:border-color .2s;cursor:default}
+.hc-row:hover{border-color:rgba(255,255,255,.1)}
+.hc-row:last-child{margin-bottom:0}
+.hc-icon{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.hc-row-text{flex:1}
+.hc-row-title{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.88)}
+.hc-row-sub{font-size:10.5px;color:rgba(255,255,255,.38);margin-top:1px}
+.hc-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.2px}
+.badge-green{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.15)}
+.badge-gold{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.15)}
+.badge-blue{background:rgba(125,164,255,.12);color:#7da4ff;border:1px solid rgba(125,164,255,.15)}
+.hc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.hc-stat{padding:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;text-align:center}
+.hc-stat-num{font-size:24px;font-weight:800;letter-spacing:-.03em;color:#fff}
+.hc-stat-lbl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px}
+.float-card{position:absolute;background:rgba(8,8,10,.92);border:1px solid var(--card-border);border-radius:14px;padding:12px 16px;backdrop-filter:blur(20px);font-size:11px;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.float-card-1{top:-28px;right:-20px;animation:float1 6s ease-in-out infinite}
+.float-card-2{bottom:-24px;left:-24px;animation:float2 7s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-10px) rotate(-1deg)}}
+@keyframes float2{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(8px) rotate(1deg)}}
+.fc-label{color:rgba(255,255,255,.4);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.fc-value{font-size:18px;font-weight:800;letter-spacing:-.03em}
+.fc-value.green{color:#22c55e}
+.fc-value.gold{color:var(--gold)}
+.trust-bar{border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);padding:20px 0;position:relative;z-index:1}
+.trust-inner{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;max-width:1200px;margin:0 auto;padding:0 48px}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(255,255,255,.38);font-weight:500}
+.trust-icon{font-size:14px}
+section{padding:110px 0;position:relative;z-index:1}
+.section-header{text-align:center;margin-bottom:64px}
+.section-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(125,164,255,.08);border:1px solid rgba(125,164,255,.12);color:var(--blue);padding:5px 14px;border-radius:999px;font-size:11.5px;font-weight:600;letter-spacing:.3px;margin-bottom:18px}
+.section-title{font-family:'Inter Tight',sans-serif;font-size:clamp(30px,3.5vw,46px);font-weight:800;letter-spacing:-.04em;line-height:1.08;margin-bottom:14px;background:linear-gradient(180deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.4) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-sub{font-size:15px;color:rgba(255,255,255,.45);max-width:500px;margin:0 auto;line-height:1.75}
+.g-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--r2);transition:border-color .3s,box-shadow .3s,transform .3s;position:relative;overflow:hidden}
+.g-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,rgba(255,255,255,.03),transparent 60%);pointer-events:none}
+.g-card:hover{border-color:var(--card-border-hover);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.bento-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:16px}
+.bento-cell{padding:32px 28px}
+.bento-wide{grid-column:span 2}
+.feat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);position:relative}
+.feat-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px;margin-bottom:16px;display:inline-block}
+.feat-tag-blue{background:rgba(125,164,255,.1);color:#7da4ff}
+.feat-tag-gold{background:rgba(201,168,76,.1);color:var(--gold)}
+.feat-tag-green{background:rgba(34,197,94,.1);color:#22c55e}
+.feat-tag-purple{background:rgba(139,92,246,.1);color:#8b5cf6}
+.feat-tag-rose{background:rgba(244,63,94,.1);color:#f43f5e}
+.bento-cell h3{font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
+.bento-cell p{font-size:13px;color:rgba(255,255,255,.45);line-height:1.7}
+.ats-visual{margin-top:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px}
+.ats-score-ring{width:80px;height:80px;border-radius:50%;background:conic-gradient(#22c55e 0% 87%,rgba(255,255,255,.06) 87%);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 30px rgba(34,197,94,.15);position:relative}
+.ats-score-ring::before{content:'';position:absolute;width:64px;height:64px;border-radius:50%;background:#040404}
+.ats-score-val{position:relative;font-size:18px;font-weight:800;z-index:1}
+.ats-kw{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.ats-kw span{font-size:9px;padding:3px 8px;border-radius:999px;font-weight:600}
+.kw-hit{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.1)}
+.kw-miss{background:rgba(220,38,38,.08);color:#ef4444;border:1px solid rgba(220,38,38,.08)}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative}
+.steps-grid::before{content:'';position:absolute;top:30px;left:calc(33% + 20px);right:calc(33% + 20px);height:1px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.15),rgba(255,255,255,.06));pointer-events:none}
+.step-card{padding:36px 28px}
+.step-num{font-family:'Inter Tight',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.step-card h3{font-size:17px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
+.step-card p{font-size:13px;color:rgba(255,255,255,.45);line-height:1.7}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.test-card{padding:28px 24px;display:flex;flex-direction:column}
+.test-stars{display:flex;gap:2px;margin-bottom:16px;font-size:12px;color:var(--gold)}
+.test-card blockquote{font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.75;flex:1;font-style:normal;margin-bottom:20px}
+.test-card blockquote em{color:rgba(255,255,255,.85);font-style:normal;font-weight:500}
+.test-footer{display:flex;align-items:center;gap:10px}
+.test-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,rgba(201,168,76,.3),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--gold);flex-shrink:0}
+.test-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.85)}
+.test-role{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1060px;margin:0 auto}
+.plan-card{padding:36px 30px;display:flex;flex-direction:column;position:relative}
+.plan-card.featured{border-color:rgba(201,168,76,.25);box-shadow:0 0 60px rgba(201,168,76,.06)}
+.plan-card.featured::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.plan-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.15);color:var(--gold);padding:3px 10px;border-radius:999px;font-size:9.5px;font-weight:700;letter-spacing:.3px;margin-bottom:12px;width:fit-content}
+.plan-name{font-size:12px;color:rgba(255,255,255,.35);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.plan-price{font-family:'Inter Tight',sans-serif;font-size:48px;font-weight:800;letter-spacing:-.04em;color:#fff;margin-bottom:2px}
+.plan-price sub{font-size:15px;font-weight:400;color:rgba(255,255,255,.4);letter-spacing:0;font-family:'Inter',sans-serif}
+.plan-desc{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:28px;line-height:1.6}
+.plan-divider{height:1px;background:rgba(255,255,255,.06);margin-bottom:24px}
+.plan-feats{list-style:none;margin-bottom:28px;flex:1;display:flex;flex-direction:column;gap:10px}
+.plan-feats li{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.5)}
+.plan-feats li .chk{width:18px;height:18px;border-radius:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:#22c55e}
+.plan-feats li.highlighted{color:rgba(255,255,255,.8)}
+.plan-btn{display:block;text-align:center;padding:13px 24px;border-radius:12px;text-decoration:none;font-size:13.5px;font-weight:700;transition:all .2s;letter-spacing:-.01em}
+.plan-btn-default{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+.plan-btn-default:hover{background:rgba(255,255,255,.1);color:#fff}
+.plan-btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#000;box-shadow:0 0 0 1px rgba(201,168,76,.3)}
+.plan-btn-gold:hover{box-shadow:0 0 0 1px rgba(201,168,76,.5),0 8px 24px rgba(201,168,76,.25);transform:translateY(-1px)}
+.faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.faq-item{border-radius:var(--r1);overflow:hidden;border:1px solid var(--card-border);background:var(--card-bg)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;font-size:14px;font-weight:500;color:rgba(255,255,255,.8);transition:color .2s;user-select:none}
+.faq-q:hover{color:#fff}
+.faq-q .faq-icon{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(255,255,255,.4);transition:all .3s;flex-shrink:0}
+.faq-item.open .faq-icon{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.2);color:var(--gold);transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1),padding .3s;font-size:13.5px;color:rgba(255,255,255,.45);line-height:1.75;padding:0 24px}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:20px}
+.faq-border{height:1px;background:rgba(255,255,255,.05);margin:0 24px}
+.cta-wrap{background:linear-gradient(145deg,rgba(10,9,14,0.98),rgba(5,5,8,0.98));border:1px solid rgba(201,168,76,.15);border-radius:var(--r2);padding:96px 60px;text-align:center;position:relative;overflow:hidden}
+.cta-wrap::before{content:'';position:absolute;top:-60%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none}
+.cta-wrap h2{font-family:'Inter Tight',sans-serif;font-size:clamp(28px,3.5vw,44px);font-weight:800;letter-spacing:-.04em;margin-bottom:14px;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cta-wrap p{color:rgba(255,255,255,.45);margin-bottom:36px;font-size:15px}
+.cta-btn-group{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.cta-note{font-size:11.5px;color:rgba(255,255,255,.25);margin-top:20px}
+footer{border-top:1px solid rgba(255,255,255,.06);padding:64px 0 36px;position:relative;z-index:1}
+.footer-grid{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand p{font-size:13px;color:rgba(255,255,255,.3);line-height:1.8;max-width:260px;margin-top:16px}
+footer h5{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.3);margin-bottom:16px}
+footer a{display:block;color:rgba(255,255,255,.4);text-decoration:none;font-size:13px;padding:5px 0;transition:color .2s}
+footer a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid rgba(255,255,255,.05);font-size:12px;color:rgba(255,255,255,.2)}
+.footer-bottom-links{display:flex;gap:24px}
+.footer-bottom-links a{color:rgba(255,255,255,.2);font-size:12px}
+.footer-bottom-links a:hover{color:rgba(255,255,255,.5)}
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:1fr;gap:48px}
+  .hero-visual{display:none}
+  .bento-grid{grid-template-columns:1fr}
+  .bento-wide{grid-column:span 1}
+  .steps-grid{grid-template-columns:1fr}
+  .steps-grid::before{display:none}
+  .testimonials-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr;max-width:460px;margin:0 auto}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
+  .max-w{padding:0 24px}
+  nav{padding:12px 24px}
+  .hero{padding:120px 24px 80px}
+  .trust-inner{padding:0 24px;gap:24px}
+}
+.cursor-dot{width:6px;height:6px;border-radius:50%;background:#fff;position:fixed;pointer-events:none;z-index:99999;mix-blend-mode:difference;transform:translate(-50%,-50%)}
+.cursor-ring{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.3);position:fixed;pointer-events:none;z-index:99998;transition:transform .15s cubic-bezier(.16,1,.3,1),width .2s,height .2s,opacity .2s,border-color .2s;transform:translate(-50%,-50%)}
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.g-card.bento-cell::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);pointer-events:none}
+.g-card.bento-cell:hover::after{animation:shine .8s ease}
+</style>
+</head>
+<body>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<nav id="navbar">
+  <a href="#" class="logo-wrap">
+    <div class="logo-icon">E</div>
+    <span class="logo-text">ELTON OS</span>
+  </a>
+  <div class="nav-links">
+    <a href="#fonctionnalites">Fonctionnalités</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#temoignages">Témoignages</a>
+    <a href="#" class="nav-cta">Essai gratuit →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow reveal"><span class="eyebrow-dot"></span>Bêta ouverte — 14 jours d'essai gratuit</div>
+      <h1 class="reveal reveal-delay-1">
+        <span class="h1-line h1-gradient">L'OS qui</span>
+        <span class="h1-line h1-gold">décroche</span>
+        <span class="h1-line h1-gradient">des postes de<br>direction.</span>
+      </h1>
+      <p class="hero-sub reveal reveal-delay-2">ATS Scanner, CV Optimizer, LinkedIn Coach, Market Radar, CRM Recruteur, Interview Studio — le premier système d'IA pensé exclusivement pour les cadres dirigeants.</p>
+      <div class="hero-actions reveal reveal-delay-3">
+        <a href="#" class="btn-hero-primary">Commencer gratuitement <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="#fonctionnalites" class="btn-hero-secondary">Découvrir les modules</a>
+      </div>
+    </div>
+    <div class="hero-visual reveal reveal-delay-2">
+      <div class="float-card float-card-1">
+        <div class="fc-label">Score ATS</div>
+        <div class="fc-value green">87%</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-header">
+          <span class="hc-title">Dossier actif · LinkedIn</span>
+          <div class="hc-status"><span class="hc-status-dot"></span>IA en ligne</div>
+        </div>
+        <div class="hc-row">
+          <div class="hc-icon">🔍</div>
+          <div class="hc-row-text"><div class="hc-row-title">ATS Scanner</div><div class="hc-row-sub">Compatibilité analysée</div></div>
+          <span class="hc-badge badge-green">87%</span>
+        </div>
+        <div class="hc-row">
+          <div class="hc-icon">📝</div>
+          <div class="hc-row-text"><div class="hc-row-title">CV Optimizer</div><div class="hc-row-sub">CV adapté généré</div></div>
+          <span class="hc-badge badge-gold">Prêt</span>
+        </div>
+        <div class="hc-row">
+          <div class="hc-icon">✉️</div>
+          <div class="hc-row-text"><div class="hc-row-title">Lettre sur-mesure</div><div class="hc-row-sub">Générée en 8s</div></div>
+          <span class="hc-badge badge-blue">Nouveau</span>
+        </div>
+        <div class="hc-stats">
+          <div class="hc-stat"><div class="hc-stat-num">17</div><div class="hc-stat-lbl">ATS supportés</div></div>
+          <div class="hc-stat"><div class="hc-stat-num">92%</div><div class="hc-stat-lbl">Taux de succès</div></div>
+        </div>
+      </div>
+      <div class="float-card float-card-2">
+        <div class="fc-label">Entretiens décrochés</div>
+        <div class="fc-value gold">+3×</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item reveal"><span class="trust-icon">✦</span> 6 moteurs d'IA spécialisés</div>
+    <div class="trust-item reveal reveal-delay-1"><span class="trust-icon">✦</span> 17 systèmes ATS supportés</div>
+    <div class="trust-item reveal reveal-delay-2"><span class="trust-icon">✦</span> Local-first · Zéro cloud externe</div>
+    <div class="trust-item reveal reveal-delay-3"><span class="trust-icon">✦</span> Zéro auto-submit</div>
+    <div class="trust-item reveal reveal-delay-4"><span class="trust-icon">✦</span> 14 jours d'essai gratuit</div>
+  </div>
+</div>
+
+<section id="fonctionnalites">
+  <div class="max-w">
+    <div class="section-header">
+      <div class="section-tag reveal">✦ Fonctionnalités</div>
+      <h2 class="section-title reveal reveal-delay-1">Tout pour votre recherche<br>au même endroit.</h2>
+      <p class="section-sub reveal reveal-delay-2">6 modules complémentaires, conçus pour chaque étape — de l'analyse ATS à la préparation d'entretien.</p>
+    </div>
+    <div class="bento-grid">
+      <div class="g-card bento-cell bento-wide reveal">
+        <div class="feat-tag feat-tag-green">IA Core</div>
+        <div class="feat-icon">🔍</div>
+        <h3>ATS Scanner</h3>
+        <p>Score de compatibilité précis entre votre CV et l'offre cible. Mots-clés manquants, recommandations priorisées, analyse sémantique profonde.</p>
+        <div class="ats-visual">
+          <div class="ats-score-ring"><span class="ats-score-val">87</span></div>
+          <div class="ats-kw">
+            <span class="kw-hit">Management d'équipe</span><span class="kw-hit">P&L</span><span class="kw-hit">Go-to-market</span>
+            <span class="kw-miss">Agile</span><span class="kw-hit">Transformation</span><span class="kw-miss">SaaS</span>
+          </div>
+        </div>
+      </div>
+      <div class="g-card bento-cell reveal reveal-delay-1">
+        <div class="feat-tag feat-tag-blue">Premium</div>
+        <div class="feat-icon">📝</div>
+        <h3>CV Optimizer</h3>
+        <p>Analyse structurelle, impact des bullet points, adaptation sémantique — CV Maître et CV Adapté en un clic.</p>
+      </div>
+      <div class="g-card bento-cell reveal reveal-delay-2">
+        <div class="feat-tag feat-tag-blue">LinkedIn</div>
+        <div class="feat-icon">📈</div>
+        <h3>LinkedIn Optimizer</h3>
+        <p>Score SSI, optimisation About et expériences, ciblage recruteur. Visibilité ×3.</p>
+      </div>
+      <div class="g-card bento-cell reveal reveal-delay-3">
+        <div class="feat-tag feat-tag-gold">Radar</div>
+        <div class="feat-icon">📡</div>
+        <h3>Market Radar</h3>
+        <p>Cartographie du marché caché. Alertes personnalisées par secteur, rôle et zone géographique, en temps réel.</p>
+      </div>
+      <div class="g-card bento-cell reveal reveal-delay-1">
+        <div class="feat-tag feat-tag-purple">CRM</div>
+        <div class="feat-icon">👥</div>
+        <h3>CRM Recruteur</h3>
+        <p>Historique complet de chaque recruteur et chasseur. Pipeline Kanban, relances, notes contextuelles.</p>
+      </div>
+      <div class="g-card bento-cell reveal reveal-delay-2">
+        <div class="feat-tag feat-tag-rose">Studio</div>
+        <div class="feat-icon">🎤</div>
+        <h3>Interview Studio</h3>
+        <p>Simulations d'entretien ciblées sur l'offre. Questions STAR, coaching IA, debriefing personnalisé.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="max-w">
+    <div class="section-header">
+      <div class="section-tag reveal">✦ Prise en main</div>
+      <h2 class="section-title reveal reveal-delay-1">Opérationnel en<br>3 minutes chrono.</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="g-card step-card reveal">
+        <div class="step-num">01</div>
+        <h3>Importez votre profil</h3>
+        <p>CV PDF, LinkedIn ou formulaire. ELTON OS structure, analyse et crée votre CV Maître automatiquement.</p>
+      </div>
+      <div class="g-card step-card reveal reveal-delay-1">
+        <div class="step-num">02</div>
+        <h3>Définissez votre cible</h3>
+        <p>Postes visés, secteurs, rémunération, localisation — ELTON OS calibre sa stratégie sur votre ambition.</p>
+      </div>
+      <div class="g-card step-card reveal reveal-delay-2">
+        <div class="step-num">03</div>
+        <h3>Laissez l'IA travailler</h3>
+        <p>Scannez les offres, générez CV adapté et lettre sur-mesure, envoyez. Résultats mesurables dès la première semaine.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="temoignages">
+  <div class="max-w">
+    <div class="section-header">
+      <div class="section-tag reveal">✦ Témoignages</div>
+      <h2 class="section-title reveal reveal-delay-1">Rejoint par des centaines<br>de cadres dirigeants.</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="g-card test-card reveal">
+        <div class="test-stars">★★★★★</div>
+        <blockquote>« Le <em>CRM Recruteur est un game changer</em>. Je ne perds plus le fil de mes échanges avec les chasseurs. J'ai décroché 3 entretiens en 10 jours. »</blockquote>
+        <div class="test-footer"><div class="test-av">SM</div><div><div class="test-name">Sébastien M.</div><div class="test-role">VP Sales, Scale-up · Paris</div></div></div>
+      </div>
+      <div class="g-card test-card reveal reveal-delay-1">
+        <div class="test-stars">★★★★★</div>
+        <blockquote>« Avant j'utilisais 4 outils différents. Maintenant tout est dans ELTON OS. <em>Un gain de temps monumental</em> — et des résultats concrets. »</blockquote>
+        <div class="test-footer"><div class="test-av">CL</div><div><div class="test-name">Caroline L.</div><div class="test-role">Country Manager, Retail · Lyon</div></div></div>
+      </div>
+      <div class="g-card test-card reveal reveal-delay-2">
+        <div class="test-stars">★★★★★</div>
+        <blockquote>« L'ATS Scanner m'a ouvert les yeux : mes CV n'étaient pas optimisés. Résultat : <em>3× plus d'entretiens en 3 semaines</em>. Incroyable. »</blockquote>
+        <div class="test-footer"><div class="test-av">PB</div><div><div class="test-name">Pierre B.</div><div class="test-role">Directeur Commercial, Industrie</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tarifs">
+  <div class="max-w">
+    <div class="section-header">
+      <div class="section-tag reveal">✦ Tarifs</div>
+      <h2 class="section-title reveal reveal-delay-1">Investissez dans votre<br>prochaine opportunité.</h2>
+      <p class="section-sub reveal reveal-delay-2">Sans surprise. Sans engagement. Résiliez à tout moment depuis votre compte.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="g-card plan-card reveal">
+        <div class="plan-name">Gratuit</div>
+        <div class="plan-price">0€</div>
+        <div class="plan-desc">Pour découvrir ELTON OS sans risque.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-feats">
+          <li><span class="chk">✓</span> ATS Scanner (10/mois)</li>
+          <li><span class="chk">✓</span> CV Optimizer (5/mois)</li>
+          <li><span class="chk">✓</span> Pipeline Kanban</li>
+          <li><span class="chk">✓</span> Market Radar (lecture)</li>
+          <li><span class="chk">✓</span> 1 profil</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-default">Commencer gratuitement</a>
+      </div>
+      <div class="g-card plan-card featured reveal reveal-delay-1">
+        <div class="plan-pill">⚡ Le plus populaire</div>
+        <div class="plan-name">ELTON+</div>
+        <div class="plan-price">59€ <sub>/mois</sub></div>
+        <div class="plan-desc">L'arsenal complet du cadre dirigeant.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-feats">
+          <li class="highlighted"><span class="chk">✓</span> ATS Scanner illimité</li>
+          <li class="highlighted"><span class="chk">✓</span> CV Optimizer illimité</li>
+          <li class="highlighted"><span class="chk">✓</span> LinkedIn Optimizer</li>
+          <li class="highlighted"><span class="chk">✓</span> Interview Studio complet</li>
+          <li class="highlighted"><span class="chk">✓</span> CRM Recruteur avancé</li>
+          <li class="highlighted"><span class="chk">✓</span> Market Radar temps réel</li>
+          <li class="highlighted"><span class="chk">✓</span> Analyses IA illimitées</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-gold">Souscrire à ELTON+ →</a>
+      </div>
+      <div class="g-card plan-card reveal reveal-delay-2">
+        <div class="plan-name">Équipe</div>
+        <div class="plan-price">Sur <sub>devis</sub></div>
+        <div class="plan-desc">Pour les cabinets RH et équipes de recrutement.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-feats">
+          <li><span class="chk">✓</span> Tout ELTON+</li>
+          <li><span class="chk">✓</span> Comptes multiples</li>
+          <li><span class="chk">✓</span> Dashboard consolidé</li>
+          <li><span class="chk">✓</span> Accès API</li>
+          <li><span class="chk">✓</span> Support prioritaire dédié</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-default">Nous contacter</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="max-w">
+    <div class="section-header">
+      <div class="section-tag reveal">✦ FAQ</div>
+      <h2 class="section-title reveal reveal-delay-1">Questions fréquentes.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal"><div class="faq-q">ELTON OS postule-t-il automatiquement à ma place ?<span class="faq-icon">+</span></div><div class="faq-border"></div><div class="faq-a">Non, jamais. ELTON OS n'envoie aucune candidature sans votre action directe. Vous générez, vous relisez, vous envoyez. L'IA vous assiste, elle ne vous remplace pas. Contrôle humain total à chaque étape.</div></div>
+      <div class="faq-item reveal reveal-delay-1"><div class="faq-q">Mes données sont-elles en sécurité ?<span class="faq-icon">+</span></div><div class="faq-border"></div><div class="faq-a">Oui. Architecture local-first. Chiffrement AES-256 au repos. Les appels IA sont anonymisés. Aucune donnée sensible n'est revendue ou partagée avec des tiers.</div></div>
+      <div class="faq-item reveal reveal-delay-2"><div class="faq-q">Puis-je résilier à tout moment ?<span class="faq-icon">+</span></div><div class="faq-border"></div><div class="faq-a">Oui, depuis votre espace compte, sans justification et sans frais de résiliation. Vous conservez toutes vos données exportées au format standard.</div></div>
+      <div class="faq-item reveal reveal-delay-3"><div class="faq-q">Faut-il des compétences techniques pour utiliser ELTON OS ?<span class="faq-icon">+</span></div><div class="faq-border"></div><div class="faq-a">Aucune. Créez votre compte, importez votre CV ou profil LinkedIn, et commencez. L'interface est conçue pour les professionnels, pas pour les techniciens.</div></div>
+      <div class="faq-item reveal reveal-delay-4"><div class="faq-q">L'extension Chrome est-elle incluse ?<span class="faq-icon">+</span></div><div class="faq-border"></div><div class="faq-a">Oui. L'extension ELTON OS Importer est incluse dans tous les plans. Elle permet d'analyser et d'importer des offres depuis LinkedIn, Indeed, APEC, et 14 autres plateformes.</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:80px">
+  <div class="max-w">
+    <div class="cta-wrap reveal">
+      <h2>Prêt à reprendre le contrôle<br>de votre carrière ?</h2>
+      <p>14 jours d'essai gratuit. Sans carte bancaire. Sans engagement.</p>
+      <div class="cta-btn-group">
+        <a href="#" class="btn-hero-primary">Commencer gratuitement →</a>
+        <a href="#fonctionnalites" class="btn-hero-secondary">Voir les fonctionnalités</a>
+      </div>
+      <p class="cta-note">+300 cadres dirigeants nous ont déjà rejoints ce mois-ci.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="max-w">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo-wrap"><div class="logo-icon">E</div><span class="logo-text">ELTON OS</span></a>
+        <p>Le premier OS de carrière pensé pour les cadres dirigeants en recherche de poste. IA, rigueur, et contrôle humain total.</p>
+      </div>
+      <div><h5>Produit</h5><a href="#fonctionnalites">Fonctionnalités</a><a href="#tarifs">Tarifs</a><a href="#">Extension Chrome</a><a href="#">Roadmap</a></div>
+      <div><h5>Légal</h5><a href="#">Confidentialité</a><a href="#">CGU</a><a href="#">Mentions légales</a><a href="#">Cookies</a></div>
+      <div><h5>Contact</h5><a href="#">Support</a><a href="#">Blog</a><a href="#">LinkedIn</a><a href="#">Nous écrire</a></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 ELTON OS — Conçu pour les décideurs.</p>
+      <div class="footer-bottom-links"><a href="#">Confidentialité</a><a href="#">CGU</a><a href="#">Contact</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function animCursor(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animCursor)})();
+document.querySelectorAll('a,button,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(201,168,76,.5)'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(255,255,255,.3)'});
+});
+// PARTICLE MESH
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+class Particle{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*1.5+.5;this.alpha=Math.random()*.35+.05}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset()}}
+for(let i=0;i<80;i++)particles.push(new Particle());
+(function draw(){
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(201,168,76,${.05*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke()}}
+  particles.forEach(p=>{p.update();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(201,168,76,${p.alpha})`;ctx.fill()});
+  requestAnimationFrame(draw);
+})();
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+// NAV SCROLL
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>40));
+// FAQ
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.querySelector('.faq-q').addEventListener('click',()=>{const was=item.classList.contains('open');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));if(!was)item.classList.add('open')});
+});
+// TILT
+const hc=document.querySelector('.hero-card');
+if(hc){
+  hc.addEventListener('mousemove',e=>{const r=hc.getBoundingClientRect(),cx=(e.clientX-r.left)/r.width-.5,cy=(e.clientY-r.top)/r.height-.5;hc.style.transform=`perspective(800px) rotateY(${cx*8}deg) rotateX(${-cy*6}deg)`});
+  hc.addEventListener('mouseleave',()=>hc.style.transform='perspective(800px) rotateY(0) rotateX(0)');
+}
+</script>
+</body>
+</html>

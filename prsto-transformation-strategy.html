@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRSTO — Stratégie de Transformation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FAF6EF;
+    --surface: #FFFDF8;
+    --text: #0B1F18;
+    --text-muted: #50625A;
+    --gold: #E4B118;
+    --gold-dark: #A38010;
+    --green: #103826;
+    --green-light: #6A8F6D;
+    --border: rgba(16,56,38,0.08);
+    --radius: 16px;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── HERO ── */
+  .doc-hero {
+    background: linear-gradient(145deg, #103826, #082E1E);
+    color: #FFFDF8;
+    padding: 100px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(228,177,24,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .doc-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .doc-hero h1 span { color: var(--gold); }
+  .doc-hero p {
+    font-size: 1.05rem;
+    color: rgba(250,246,239,0.55);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .doc-hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(228,177,24,0.1);
+    border: 1px solid rgba(228,177,24,0.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 64px 0; }
+  section + section { border-top: 1px solid var(--border); }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16,56,38,0.06);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 600px;
+    margin-bottom: 32px;
+  }
+
+  /* ── COMPARISON CARDS ── */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .card-header .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .card-header h3 { margin: 0; }
+  .card-header .tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-left: auto;
+  }
+
+  .card ul { list-style: none; }
+  .card ul li {
+    padding: 6px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card ul li::before {
+    content: '→';
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 0.7rem; font-weight: 600; }
+  .pill-green { background: rgba(16,56,38,0.1); color: var(--green); }
+  .pill-gold { background: rgba(228,177,24,0.12); color: var(--gold-dark); }
+  .pill-gray { background: rgba(80,98,90,0.1); color: var(--text-muted); }
+  .pill-red { background: rgba(220,38,38,0.08); color: #b91c1c; }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  thead th {
+    background: rgba(16,56,38,0.04);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+  }
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(16,56,38,0.015); }
+
+  /* ── OPTIONS ── */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 768px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .option-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.2s;
+  }
+  .option-card:hover { border-color: rgba(228,177,24,0.3); }
+  .option-card.recommended {
+    border-color: var(--gold);
+    background: rgba(228,177,24,0.03);
+    box-shadow: 0 0 0 1px rgba(228,177,24,0.2);
+    position: relative;
+  }
+  .option-card.recommended::after {
+    content: 'RECOMMANDÉ';
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: var(--gold);
+    color: #082E1E;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 3px 14px;
+    border-radius: 100px;
+  }
+  .option-card h3 { font-family: 'Inter', sans-serif; font-size: 1.05rem; font-weight: 700; }
+  .option-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold-dark);
+    margin: 8px 0 4px;
+  }
+  .option-card .price {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--green);
+    line-height: 1.2;
+  }
+  .option-card .price small {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .option-card ul { margin: 12px 0 0; padding: 0; list-style: none; }
+  .option-card ul li {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .option-card ul li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .pro-con {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .pro, .con { padding: 10px 14px; border-radius: 10px; font-size: 0.78rem; }
+  .pro { background: rgba(16,56,38,0.06); }
+  .con { background: rgba(220,38,38,0.04); }
+  .pro strong, .con strong { display: block; margin-bottom: 2px; }
+  .pro strong { color: var(--green); }
+  .con strong { color: #b91c1c; }
+  .pro ul, .con ul { margin: 0; padding-left: 14px; }
+  .pro ul li, .con ul li { font-size: 0.78rem; padding: 1px 0; color: var(--text-muted); }
+  .pro ul li::before, .con ul li::before { display: none; }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 8px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .checklist li .check, .checklist li .cross {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .checklist li .check { background: rgba(16,56,38,0.1); color: var(--green); }
+  .checklist li .cross { background: rgba(220,38,38,0.08); color: #b91c1c; }
+
+  /* ── NAVIGATION ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 32px 0;
+  }
+  .toc h3 { font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; color: var(--text-muted); }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  @media (max-width: 640px) { .toc-grid { grid-template-columns: 1fr; } }
+  .toc a {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--gold-dark); }
+
+  /* ── MISCELLANEOUS ── */
+  .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .gap-2 { gap: 8px; }
+  .mt-4 { margin-top: 16px; }
+  .mb-4 { margin-bottom: 16px; }
+  .mb-6 { margin-bottom: 24px; }
+  .mb-8 { margin-bottom: 32px; }
+  .mb-12 { margin-bottom: 48px; }
+
+  .bento-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 768px) { .bento-3 { grid-template-columns: 1fr; } }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  .stat-card .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .two-col-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .two-col-list { grid-template-columns: 1fr; } }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── HERO ─── -->
+<div class="doc-hero">
+  <div class="badge">✦ Document de Stratégie</div>
+  <h1>PRSTO — De l'OS candidat<br>au <span>Réseau Recruteur</span></h1>
+  <p>Analyse complète de l'état actuel, 4 options stratégiques, impact page par page, et recommandation pour la transformation B2B.</p>
+</div>
+
+<div class="container">
+
+  <!-- ─── TOC ─── -->
+  <div class="toc">
+    <h3>Sommaire</h3>
+    <div class="toc-grid">
+      <a href="#etat-actuel">1. État actuel du site</a>
+      <a href="#options">2. Les 4 options stratégiques</a>
+      <a href="#reco">3. Recommandation détaillée</a>
+      <a href="#tableau-comparatif">4. Comparatif page par page</a>
+      <a href="#pricing">5. Structure de prix</a>
+      <a href="#implementation">6. Plan d'implémentation</a>
+    </div>
+  </div>
+
+  <!-- ─── 1. ÉTAT ACTUEL ─── -->
+  <section id="etat-actuel">
+    <div class="section-label">✦ Diagnostic</div>
+    <h2>1. État actuel du site</h2>
+    <p class="subtitle">PRSTO a <strong>deux landing pages distinctes</strong> avec deux positionnements différents. Problème : dilution du message, confusion utilisateur, friction dans le funnel.</p>
+
+    <div class="comparison-grid mb-8">
+      <div class="card">
+        <div class="card-header">
+          <div class="dot" style="background: #103826;"></div>
+          <h3>/prsto — Version Candidat</h3>
+          <span class="tag pill-green">B2C · Existant</span>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;"><strong>Message :</strong> "L'OS qui décroche des postes de direction"</p>
+        <ul>
+          <li>Hero : candidat cadre dirigeant en recherche active</li>
+          <li>Features : ATS Scanner, CV Optimizer, LinkedIn Optimizer, Market Radar, CRM Recruteur, Interview Studio</li>
+          <li>Pricing : 0€ / 9.90€ semaine → 149.90€/6mois</li>
+          <li>CTA : "Commencer gratuitement" (pour le candidat)</li>
+          <li>Offres one-shot : Executive Brief 29.90€, Panel 14.90€/session</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="dot" style="background: #E4B118;"></div>
+          <h3>/recruiters — Version Recruteur</h3>
+          <span class="tag pill-gold">B2B · Existant</span>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;"><strong>Message :</strong> "Le logiciel que vos candidats méritent"</p>
+        <ul>
+          <li>Hero : recruteur qui prépare ses candidats pour ses clients</li>
+          <li>Features : CV Formatter, Lettre Motivation, ATS Scanner, LinkedIn Optimizer, Market Radar, Brief Entretien</li>
+          <li>Pricing : Solo 99$/mois, Pro 199$/mois, Elite 349$/mois</li>
+          <li>CTA : "Découvrir l'offre Pro"</li>
+          <li>Workflow : Ajouter candidat → Coller offre → Générer dossier → Envoyer client</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stat-card mb-6" style="text-align:left;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;">
+        <strong>Problème central :</strong> Deux pages = deux positionnements = deux funnels = ressources diluées.
+        <br><span style="font-size:0.8rem;color:var(--text-muted);">Le recruteur arrive sur /prsto (candidat) et repart. Le candidat arrive sur /recruiters (recruteur) et repart.</span>
+      </div>
+      <span style="background:rgba(220,38,38,0.08);color:#b91c1c;padding:4px 14px;border-radius:100px;font-size:0.7rem;font-weight:700;white-space:nowrap;">⚠ Friction majeure</span>
+    </div>
+
+    <div class="bento-3 mb-4">
+      <div class="stat-card">
+        <div class="num">2</div>
+        <div class="label">Landing pages distinctes</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">9</div>
+        <div class="label">Composants uniques à fusionner</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">2x</div>
+        <div class="label">Messages de marque différents</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 2. LES 4 OPTIONS ─── -->
+  <section id="options">
+    <div class="section-label">✦ Stratégie</div>
+    <h2>2. Les 4 options stratégiques</h2>
+    <p class="subtitle">Chaque option a un impact différent sur le produit, le pricing, le branding, et le développement technique.</p>
+
+    <div class="options-grid">
+      <!-- A - Tout garder en l'état -->
+      <div class="option-card">
+        <h3>A. Statu quo</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin:4px 0 8px;">Conserver les deux pages indépendantes</p>
+        <div class="pro-con">
+          <div class="pro">
+            <strong>✅ Pour</strong>
+            <ul>
+              <li>Aucun travail de refonte</li>
+              <li>Chaque audience a sa page</li>
+              <li>Pas de risque de casse</li>
+            </ul>
+          </div>
+          <div class="con">
+            <strong>❌ Contre</strong>
+            <ul>
+              <li>Message de marque dilué</li>
+              <li>SEO divisé entre 2 pages</li>
+              <li>Funnel confus</li>
+              <li>2 efforts marketing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- B - PRSTO = Recruteur uniquement -->
+      <div class="option-card recommended">
+        <h3>B. PRSTO devient 100% Recruteur</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin:4px 0 8px;">Fermer /prsto candidat, tout basculer en B2B</p>
+        <div class="pro-con">
+          <div class="pro">
+            <strong>✅ Pour</strong>
+            <ul>
+              <li>Message unique & puissant</li>
+              <li>SEO concentré</li>
+              <li>MRR élevé (99-349$/mois)</li>
+              <li>Positionnement défendable</li>
+              <li>Moins de churn que B2C</li>
+            </ul>
+          </div>
+          <div class="con">
+            <strong>❌ Contre</strong>
+            <ul>
+              <li>Perd l'audience candidate</li>
+              <li>Marque à repositionner</li>
+              <li>Trafic organique perdu</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- C - Dual branding -->
+      <div class="option-card">
+        <h3>C. Dual branding</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin:4px 0 8px;">PRSTO Candidat + PRSTO Pro (sous-marques)</p>
+        <div class="pro-con">
+          <div class="pro">
+            <strong>✅ Pour</strong>
+            <ul>
+              <li>2 audiences couvertes</li>
+              <li>Marque forte des deux côtés</li>
+              <li>Cross-sell possible</li>
+            </ul>
+          </div>
+          <div class="con">
+            <strong>❌ Contre</strong>
+            <ul>
+              <li>Complexité produit ×2</li>
+              <li>Codebase plus lourde</li>
+              <li>2 funnels à nourrir</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- D - Marketplace -->
+      <div class="option-card">
+        <h3>D. Marketplace Recruteur → Candidat</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin:4px 0 8px;">Plateforme qui connecte recruteurs et candidats préparés</p>
+        <div class="pro-con">
+          <div class="pro">
+            <strong>✅ Pour</strong>
+            <ul>
+              <li>Effet réseau</li>
+              <li>Positionnement unique</li>
+              <li>Lock-in des deux côtés</li>
+            </ul>
+          </div>
+          <div class="con">
+            <strong>❌ Contre</strong>
+            <ul>
+              <li>Complexité énorme</li>
+              <li>Œuf/poule à résoudre</li>
+              <li>Modération nécessaire</li>
+              <li>Développement ×5</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 3. RECOMMANDATION ─── -->
+  <section id="reco">
+    <div class="section-label">✦ Décision</div>
+    <h2>3. Recommandation : Option B — PRSTO Réseau Recruteur</h2>
+    <p class="subtitle">Transformer PRSTO en un réseau B2B où les recruteurs utilisent les outils PRSTO pour préparer et placer leurs candidats.</p>
+
+    <div class="comparison-grid" style="margin-bottom:24px;">
+      <div class="card" style="border-color:rgba(220,38,38,0.2);">
+        <div class="card-header">
+          <div class="dot" style="background:#b91c1c;"></div>
+          <h3 style="color:#b91c1c;">AVANT · Candidat</h3>
+        </div>
+        <ul>
+          <li>Hero : "L'OS qui décroche des postes de direction"</li>
+          <li>Cible : cadres dirigeants en recherche</li>
+          <li>Prix : 9.90€/semaine → 149.90€/6mois</li>
+          <li>Message : "reprenez le contrôle de votre carrière"</li>
+          <li>Produit one-shot : Brief 29.90€, Panel 14.90€</li>
+          <li>Limite : marché TAM de cadres dirigeants</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(22,163,74,0.2);">
+        <div class="card-header">
+          <div class="dot" style="background:#16a34a;"></div>
+          <h3 style="color:#16a34a;">APRÈS · Réseau Recruteur</h3>
+        </div>
+        <ul>
+          <li>Hero : "Le réseau qui prépare et connecte les talents"</li>
+          <li>Cible : recruteurs, cabinets RH, agences de placement</li>
+          <li>Prix : 99$/mois → 349$/mois (MRR ×3 à ×10 vs B2C)</li>
+          <li>Message : "préparez, placez, développez"</li>
+          <li>Produit : abonnement SaaS récurrent</li>
+          <li>Avantage : ARR prévisible, churn plus bas, TAM plus large</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="mb-4" style="font-family:'Inter',sans-serif;font-size:1rem;">Argumentaire complet</h3>
+    <div class="two-col-list mb-8">
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">💰 Business Model</h4>
+        <ul>
+          <li>MRR x3 à x10 vs B2C (99-349$ vs 9.90-39.90€)</li>
+          <li>Churn B2B naturellement plus bas (moyenne 3-5%/mois vs 5-10% B2C)</li>
+          <li>Contrats annuels possibles (paiement upfront)</li>
+          <li>Upsell facile : Solo → Pro → Elite → Sur-mesure</li>
+          <li>ROI immédiat : 1 placement = outil rentable 20x</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">🎯 Positionnement</h4>
+        <ul>
+          <li>Marché plus large : cabinets RH, recruteurs indep, agences, services RH internes</li>
+          <li>"Moteur de préparation de candidats" — catégorie vierge</li>
+          <li>Aucun ATS ne fait ce que PRSTO fait</li>
+          <li>Différenciation forte vs CV Design, TopCV, etc.</li>
+          <li>Complémentaire des ATS (Manatal, Recruit CRM, Bullhorn)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">🚀 Produit</h4>
+        <ul>
+          <li>Workflow clair : 1 candidat + 1 offre = dossier complet en 8 min</li>
+          <li>Fonctionnalités déjà 90% prêtes (les outils candidats = outils recruteur)</li>
+          <li>Pas de nouveau code majeur : renommer + repositionner</li>
+          <li>Stats existantes (15-20h économisées, +40% placements, 92% ATS)</li>
+          <li>Comparatif déjà construit (PRSTO Candidat vs Recruteur vs ATS)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">⚡ Execution rapide</h4>
+        <ul>
+          <li>Header : changer lien "Professionnel →" en "Candidat →"</li>
+          <li>/prsto → devient la page recruteur (renommer Hero + Features + Pricing)</li>
+          <li>/recruiters → redirige vers /prsto ou devient page secondaire</li>
+          <li>Aucun refacto lourd : les composants existent déjà des deux côtés</li>
+          <li>Migration en 1-2 jours de développement</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 4. TABLEAU COMPARATIF PAGE PAR PAGE ─── -->
+  <section id="tableau-comparatif">
+    <div class="section-label">✦ Détail</div>
+    <h2>4. Comparatif page par page</h2>
+    <p class="subtitle">Ce qui change entre la version candidat actuelle et la version recruteur transformée, composant par composant.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:20%;">Section / Composant</th>
+          <th style="width:40%;">AVANT — Version Candidat</th>
+          <th style="width:40%;">APRÈS — Version Recruteur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Header</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">LandingHeader.tsx</span></td>
+          <td>
+            <span class="pill pill-gray">Nav</span> Fonctionnalités, Executive Brief, Tarifs, Témoignages<br>
+            <span class="pill pill-green">CTA</span> "Professionnel →" vers /recruiters<br>
+            <span class="pill pill-green">Bouton</span> "Essai gratuit →"
+          </td>
+          <td>
+            <span class="pill pill-gray">Nav</span> Fonctionnalités, Tarifs, Témoignages, FAQ<br>
+            <span class="pill pill-gold">CTA</span> "Vous êtes candidat ? →" (lien vers page candidat légère ou formulaire)<br>
+            <span class="pill pill-gold">Bouton</span> "Essai gratuit →" (même, mais recruteur)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Hero</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">HeroSection.tsx → RecruitersHero.tsx</span></td>
+          <td>
+            <strong>Titre :</strong> "L'OS qui décroche des postes de direction"<br>
+            <strong>Sous-titre :</strong> ATS Scanner, CV Optimizer, LinkedIn Coach...<br>
+            <strong>Pitch :</strong> pour le cadre dirigeant en recherche<br>
+            <strong>Floating cards :</strong> Score ATS 87%, Entretiens +3x
+          </td>
+          <td>
+            <strong>Titre :</strong> "Le réseau qui prépare et connecte les talents"<br>
+            <strong>Sous-titre :</strong> CV, lettre, ATS, LinkedIn, entretien — un seul outil<br>
+            <strong>Pitch :</strong> pour le recruteur qui prépare ses candidats<br>
+            <strong>Floating cards :</strong> Temps gagné -92%, Placements +40% (déjà existants)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Logo Cloud</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">LogoCloud.tsx</span></td>
+          <td>Logos partenaires / médias (si présent)</td>
+          <td>Logos cabinets RH, entreprises clientes, badges de confiance</td>
+        </tr>
+        <tr>
+          <td><strong>Trust Band</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">TrustBand.tsx</span></td>
+          <td>Signaux de confiance pour candidats</td>
+          <td>Signaux de confiance pour recruteurs : données chiffrées, témoignages pairs</td>
+        </tr>
+        <tr>
+          <td><strong>Stats</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">StatsSection.tsx → RecruitersStats.tsx</span></td>
+          <td>Statistiques génériques</td>
+          <td><strong>15-20h</strong> économisées/mois · <strong>8 min</strong> par candidat · <strong>+40%</strong> placements · <strong>92%</strong> taux ATS</td>
+        </tr>
+        <tr>
+          <td><strong>Features</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">FeatureGrid.tsx → RecruitersFeatures.tsx</span></td>
+          <td>
+            6 fonctionnalités candidates :<br>
+            · ATS Scanner (score compatibilité)<br>
+            · CV Optimizer (structure + bullet points)<br>
+            · LinkedIn Optimizer (score SSI)<br>
+            · Market Radar (marché caché)<br>
+            · CRM Recruteur (Pipeline Kanban)<br>
+            · Interview Studio (Panel IA)
+          </td>
+          <td>
+            6 fonctionnalités recruteur :<br>
+            · CV Formatter (adapté par offre client)<br>
+            · Lettre Motivation (au nom du cabinet)<br>
+            · ATS Scanner (vérification avant envoi)<br>
+            · LinkedIn Optimizer (visibilité candidat)<br>
+            · Market Radar (matching offres)<br>
+            · Brief Entretien (dossier complet)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Product Mockup</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">ProductMockup.tsx</span></td>
+          <td>Démo interactive du dashboard candidat</td>
+          <td>Démo interactive du dashboard recruteur (workflow 4 étapes)</td>
+        </tr>
+        <tr>
+          <td><strong>How It Works</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">HowItWorks.tsx → WorkflowSection.tsx</span></td>
+          <td>3 étapes candidat :<br>1. Importer profil<br>2. Définir cible<br>3. IA travaille</td>
+          <td>4 étapes recruteur :<br>1. Ajouter candidat<br>2. Coller offre client<br>3. Générer dossier<br>4. Envoyer au client</td>
+        </tr>
+        <tr>
+          <td><strong>Comparatif</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">ComparatifSection.tsx → ComparatifTable.tsx</span></td>
+          <td>PRSTO vs Alternatives (focus candidat)</td>
+          <td>PRSTO Candidat vs PRSTO Recruteur vs ATS existant (3 colonnes)</td>
+        </tr>
+        <tr>
+          <td><strong>Testimonials</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">TestimonialsSection.tsx → RecruitersTestimonials.tsx</span></td>
+          <td>Témoignages de cadres dirigeants</td>
+          <td>Témoignages de recruteurs : Alexandre Martin, Sophie Lefèvre, Karim Benali</td>
+        </tr>
+        <tr>
+          <td><strong>Pricing</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">PricingSection.tsx → RecruitersPricing.tsx</span></td>
+          <td>
+            <strong>Gratuit :</strong> 0€<br>
+            <strong>PRSTO+ :</strong> 9.90€/sem → 149.90€/6mois<br>
+            <strong>Équipe :</strong> sur devis<br>
+            <strong>One-shot :</strong> Executive Brief 29.90€, Panel 14.90€
+          </td>
+          <td>
+            <strong>Solo :</strong> $99/mois (5 candidats)<br>
+            <strong>Pro :</strong> $199/mois (25 candidats, 3 users)<br>
+            <strong>Elite :</strong> $349/mois (100 candidats, 10 users)<br>
+            <strong>Sur-mesure :</strong> candidats illimités
+          </td>
+        </tr>
+        <tr>
+          <td><strong>FAQ</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">FaqSection.tsx → RecruitersFaq.tsx</span></td>
+          <td>FAQ candidat : "Comment PRSTO analyse mon CV ?"</td>
+          <td>FAQ recruteur : "Est-ce que PRSTO remplace mon ATS ?", "Combien de temps par candidat ?"</td>
+        </tr>
+        <tr>
+          <td><strong>Final CTA</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">FinalCta.tsx → RecruitersCta.tsx</span></td>
+          <td>"Prêt à reprendre le contrôle de votre carrière ?"</td>
+          <td>"Prêt à préparer vos candidats en 8 minutes ?"</td>
+        </tr>
+        <tr>
+          <td><strong>Footer</strong><br><span style="font-size:0.7rem;color:var(--text-muted);">LandingFooter.tsx</span></td>
+          <td>Liens pour candidats, contact, mentions légales</td>
+          <td>Liens pour recruteurs, documentation API, contact commercial, mentions légales</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ─── 5. PRICING ─── -->
+  <section id="pricing">
+    <div class="section-label">✦ Business</div>
+    <h2>5. Structure de prix — avant vs après</h2>
+    <p class="subtitle">L'impact financier du repositionnement B2B est immédiat et significatif.</p>
+
+    <div class="comparison-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="dot" style="background:#b91c1c;"></div>
+          <h3 style="color:#b91c1c;">Modèle actuel (B2C)</h3>
+        </div>
+        <table style="font-size:0.82rem;">
+          <thead>
+            <tr><th>Plan</th><th>Prix</th><th>Période</th><th>MRR/client</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gratuit</td><td>0€</td><td>—</td><td>0€</td></tr>
+            <tr><td>PRSTO+</td><td>9.90€ → 149.90€</td><td>/sem → /6mois</td><td>~25€</td></tr>
+            <tr><td>Équipe</td><td>Sur devis</td><td>—</td><td>Variable</td></tr>
+            <tr><td>Executive Brief</td><td>29.90€</td><td>One-shot</td><td>—</td></tr>
+            <tr><td>Panel</td><td>14.90€</td><td>/session</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.8rem;margin-top:12px;color:var(--text-muted);"><strong>MRR moyen estimé :</strong> ~25€/client<br>
+        <strong>Churn estimé :</strong> 8-12%/mois (B2C typique)</p>
+      </div>
+
+      <div class="card" style="border-color:rgba(22,163,74,0.2);">
+        <div class="card-header">
+          <div class="dot" style="background:#16a34a;"></div>
+          <h3 style="color:#16a34a;">Modèle futur (B2B)</h3>
+        </div>
+        <table style="font-size:0.82rem;">
+          <thead>
+            <tr><th>Plan</th><th>Prix</th><th>Période</th><th>MRR/client</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Solo</td><td>$99</td><td>/mois</td><td>$99</td></tr>
+            <tr><td>Pro</td><td>$199</td><td>/mois</td><td>$199</td></tr>
+            <tr><td>Elite</td><td>$349</td><td>/mois</td><td>$349</td></tr>
+            <tr><td>Sur-mesure</td><td>Variable</td><td>/mois</td><td>500-2000$</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.8rem;margin-top:12px;color:var(--text-muted);"><strong>MRR moyen estimé :</strong> ~180$/client<br>
+        <strong>Churn estimé :</strong> 3-5%/mois (B2B SaaS typique)<br>
+        <strong>Ratio :</strong> ~7x plus de MRR/client qu'en B2C</p>
+      </div>
+    </div>
+
+    <div class="card mt-4" style="background:rgba(16,56,38,0.03);border-color:rgba(16,56,38,0.1);">
+      <h4 style="font-family:'Inter',sans-serif;font-size:0.9rem;">Scénario de projection (100 clients)</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+        <div style="text-align:center;padding:16px;background:#FFFDF8;border-radius:12px;border:1px solid var(--border);">
+          <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">B2C Actuel</div>
+          <div style="font-size:2rem;font-weight:900;color:#b91c1c;font-family:'Playfair Display',serif;">~2 500€</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">MRR mensuel</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:#FFFDF8;border-radius:12px;border:1px solid var(--border);">
+          <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">B2B Futur</div>
+          <div style="font-size:2rem;font-weight:900;color:#16a34a;font-family:'Playfair Display',serif;">~18 000$</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);">MRR mensuel</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 6. PLAN D'IMPLÉMENTATION ─── -->
+  <section id="implementation">
+    <div class="section-label">✦ Execution</div>
+    <h2>6. Plan d'implémentation</h2>
+    <p class="subtitle">Comment passer de l'état actuel à l'état cible, en conservant la qualité et sans réécriture lourde.</p>
+
+    <div class="two-col-list">
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">Phase 1 — Foundation (Jour 1-2)</h4>
+        <ul>
+          <li>Choisir le composant Hero définitif (fusionner HeroSection + RecruitersHero)</li>
+          <li>Uniformiser le header : remplacer "Professionnel →" par "Candidat →"</li>
+          <li>Rediriger /recruiters → /prsto (301 permanent)</li>
+          <li>Fusionner les sections Features (garder les 6 outils recruteur)</li>
+          <li>Fusionner les sections Pricing (garder la grille B2B 99-349$)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">Phase 2 — Contenu (Jour 2-3)</h4>
+        <ul>
+          <li>Réécrire les textes du Hero pour le positionnement recruteur</li>
+          <li>Adapter tous les micro-textes : CTA, labels, descriptions</li>
+          <li>Mettre à jour le comparatif : PRSTO vs ATS traditionnels</li>
+          <li>Remplacer les témoignages candidats → témoignages recruteurs</li>
+          <li>Mettre à jour la FAQ pour les questions recruteur</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">Phase 3 — Dashboard (Jour 3-4)</h4>
+        <ul>
+          <li>Vérifier que le dashboard /recruiter/dashboard fonctionne</li>
+          <li>Adapter le workflow : 4 étapes au lieu de 3</li>
+          <li>Tester le funnel complet : landing → essai → dashboard</li>
+          <li>Configurer les emails de bienvenue recruteur</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--green);">Phase 4 — Marketing (Jour 4-5)</h4>
+        <ul>
+          <li>Mettre à jour les meta tags SEO (title, description, OG)</li>
+          <li>Soumettre la nouvelle page à Google Search Console</li>
+          <li>Mettre à jour les ads / campagnes en cours</li>
+          <li>Préparer l'email annonce aux utilisateurs existants</li>
+          <li>Mettre à jour le branding si nécessaire</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mt-4" style="border-color:rgba(228,177,24,0.3);background:rgba(228,177,24,0.03);">
+      <div class="flex-between mb-4">
+        <h4 style="font-family:'Inter',sans-serif;font-size:0.9rem;">⚡ Ce qui ne change PAS</h4>
+      </div>
+      <div class="two-col-list">
+        <div>
+          <span class="pill pill-green" style="margin-bottom:8px;display:inline-block;">Identique ou presque</span>
+          <ul class="checklist">
+            <li><span class="check">✓</span> Le code existant des composants recruteur</li>
+            <li><span class="check">✓</span> Le dashboard recruteur (/recruiter/dashboard)</li>
+            <li><span class="check">✓</span> Les 6 fonctionnalités (mêmes outils, renommés)</li>
+            <li><span class="check">✓</span> Le système de paiement / stripe</li>
+            <li><span class="check">✓</span> Le design system (couleurs, typo, espacements)</li>
+          </ul>
+        </div>
+        <div>
+          <span class="pill pill-gold" style="margin-bottom:8px;display:inline-block;">Change</span>
+          <ul class="checklist">
+            <li><span class="check" style="background:rgba(228,177,24,0.12);color:var(--gold-dark);">→</span> Le Hero / message principal</li>
+            <li><span class="check" style="background:rgba(228,177,24,0.12);color:var(--gold-dark);">→</span> La navigation du header</li>
+            <li><span class="check" style="background:rgba(228,177,24,0.12);color:var(--gold-dark);">→</span> Le pricing (B2C → B2B)</li>
+            <li><span class="check" style="background:rgba(228,177,24,0.12);color:var(--gold-dark);">→</span> Les textes et témoignages</li>
+            <li><span class="check" style="background:rgba(228,177,24,0.12);color:var(--gold-dark);">→</span> Le SEO / meta tags</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── COMPOSANTS CIBLES ─── -->
+  <section>
+    <div class="section-label">✦ Technique</div>
+    <h2>Fichiers à modifier</h2>
+    <p class="subtitle">La transformation touche principalement le fichier page.tsx et quelques composants. Aucun refactoring lourd.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Fichier</th>
+          <th>Action</th>
+          <th>Priorité</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>app/(public)/prsto/page.tsx</code></td>
+          <td>Remplacer les imports candidat par les imports recruteur. Le squelette reste identique.</td>
+          <td><span class="pill pill-green">Haute</span></td>
+        </tr>
+        <tr>
+          <td><code>app/(public)/recruiters/page.tsx</code></td>
+          <td>Rediriger 301 vers /prsto. Supprimer le fichier après validation.</td>
+          <td><span class="pill pill-gold">Haute</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/LandingHeader.tsx</code></td>
+          <td>Changer le lien "Professionnel →" en "Candidat →"</td>
+          <td><span class="pill pill-green">Haute</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/HeroSection.tsx</code></td>
+          <td>Remplacer par RecruitersHero.tsx (ou fusionner)</td>
+          <td><span class="pill pill-green">Haute</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/FeatureGrid.tsx</code></td>
+          <td>Remplacer par RecruitersFeatures.tsx</td>
+          <td><span class="pill pill-green">Haute</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/PricingSection.tsx</code></td>
+          <td>Remplacer par RecruitersPricing.tsx</td>
+          <td><span class="pill pill-green">Haute</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/HowItWorks.tsx</code></td>
+          <td>Remplacer par WorkflowSection.tsx</td>
+          <td><span class="pill pill-gold">Moyenne</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/ComparatifSection.tsx</code></td>
+          <td>Remplacer par ComparatifTable.tsx</td>
+          <td><span class="pill pill-gold">Moyenne</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/StatsSection.tsx</code></td>
+          <td>Remplacer par RecruitersStats.tsx</td>
+          <td><span class="pill pill-gray">Basse</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/TestimonialsSection.tsx</code></td>
+          <td>Remplacer par RecruitersTestimonials.tsx</td>
+          <td><span class="pill pill-gray">Basse</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/FinalCta.tsx</code></td>
+          <td>Remplacer par RecruitersCta.tsx</td>
+          <td><span class="pill pill-gold">Moyenne</span></td>
+        </tr>
+        <tr>
+          <td><code>components/landing/FaqSection.tsx</code></td>
+          <td>Remplacer par RecruitersFaq.tsx</td>
+          <td><span class="pill pill-gray">Basse</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ─── CONCLUSION ─── -->
+  <section style="border-top:2px solid rgba(228,177,24,0.2);padding-bottom:80px;">
+    <div class="section-label">✦ Synthèse</div>
+    <h2>Conclusion</h2>
+
+    <div class="card" style="border-color:rgba(228,177,24,0.2);background:rgba(228,177,24,0.03);padding:32px;">
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <h3 style="font-family:'Inter',sans-serif;font-size:1rem;">Option B — Le Réseau Recruteur</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-top:4px;">La transformation de PRSTO en réseau B2B recruteur est la décision la plus rationnelle :</p>
+        </div>
+        <div style="background:var(--green);color:#FFFDF8;padding:12px 20px;border-radius:12px;text-align:center;">
+          <div style="font-size:1.8rem;font-weight:900;">7x</div>
+          <div style="font-size:0.7rem;">plus de MRR/client</div>
+        </div>
+      </div>
+      <ul class="checklist" style="margin-top:16px;">
+        <li><span class="check">✓</span> <strong>Business model :</strong> MRR ×3 à ×10 vs B2C, churn plus bas, upsell possible</li>
+        <li><span class="check">✓</span> <strong>Code existant :</strong> les composants recruteur sont déjà écrits et testés</li>
+        <li><span class="check">✓</span> <strong>Marché :</strong> TAM plus large (cabinets RH, recruteurs indep, agences, services RH)</li>
+        <li><span class="check">✓</span> <strong>Différenciation :</strong> "moteur de préparation de candidats" — catégorie vierge</li>
+        <li><span class="check">✓</span> <strong>Execution :</strong> migration en 2-3 jours, 12 fichiers à modifier</li>
+        <li><span class="check">✓</span> <strong>ROI :</strong> 1 placement = PRSTO rentable 20x pour le recruteur</li>
+        <li><span class="check">✓</span> <strong>Défendabilité :</strong> les ATS (Bullhorn, Manatal) ne font pas de préparation candidat</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  PRSTO — Document de Stratégie · Juin 2026 · Contact : hello@prsto.io
+</footer>
+
+</body>
+</html>

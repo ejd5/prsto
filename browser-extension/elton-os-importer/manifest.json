@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "PRSTO Importer Pro",
+  "version": "3.0.0",
+  "description": "Scannez des offres d'emploi, importez vos informations et optimisez vos candidatures en un clic.",
+  "author": "PRSTO",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "downloads",
+    "sidePanel"
+  ],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://www.apec.fr/*",
+    "https://*.greenhouse.io/*",
+    "https://*.lever.co/*",
+    "https://*.ashbyhq.com/*",
+    "https://*.smartrecruiters.com/*",
+    "https://*.workable.com/*",
+    "https://www.cadremploi.fr/*",
+    "https://www.hellowork.com/*",
+    "https://www.welcometothejungle.com/*",
+    "https://*.github.com/*",
+    "https://www.malt.fr/*",
+    "https://www.behance.net/*",
+    "https://dribbble.com/*"
+  ],
+  "action": {
+    "default_title": "PRSTO Importer — Analysez cette offre",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

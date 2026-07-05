@@ -1,0 +1,254 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: routes-smoke.spec.ts >> Smoke — routes principales >> GET /performance → 200 et rendu
+- Location: e2e/routes-smoke.spec.ts:25:9
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e5]:
+          - generic [ref=e8]: E
+        - generic [ref=e9]:
+          - generic [ref=e10]: ELTON OS
+          - generic [ref=e11]: BOARDROOM AI COPILOT
+      - navigation [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: AI Copilot
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: /
+            - img [ref=e16]
+            - generic [ref=e21]: Home
+          - link "AI Briefing" [ref=e22] [cursor=pointer]:
+            - /url: /analyse
+            - img [ref=e23]
+            - generic [ref=e26]: AI Briefing
+          - link "Signal Feed" [ref=e27] [cursor=pointer]:
+            - /url: /opportunites
+            - img [ref=e28]
+            - generic [ref=e34]: Signal Feed
+          - link "Market Watch" [ref=e35] [cursor=pointer]:
+            - /url: /market-radar
+            - img [ref=e36]
+            - generic [ref=e39]: Market Watch
+        - generic [ref=e40]:
+          - generic [ref=e41]: Intelligence & Tools
+          - link "Recruiter Intel" [ref=e42] [cursor=pointer]:
+            - /url: /dashboard/jobs/crm
+            - img [ref=e43]
+            - generic [ref=e48]: Recruiter Intel
+          - link "Interview Studio" [ref=e49] [cursor=pointer]:
+            - /url: /entretiens
+            - img [ref=e50]
+            - generic [ref=e53]: Interview Studio
+          - link "Documents AI" [ref=e54] [cursor=pointer]:
+            - /url: /documents
+            - img [ref=e55]
+            - generic [ref=e58]: Documents AI
+          - link "Strategy Lab" [ref=e59] [cursor=pointer]:
+            - /url: /analyse
+            - img [ref=e60]
+            - generic [ref=e62]: Strategy Lab
+          - link "Decision Support" [ref=e63] [cursor=pointer]:
+            - /url: /performance
+            - img [ref=e65]
+            - generic [ref=e67]: Decision Support
+        - generic [ref=e68]:
+          - generic [ref=e69]: Classic Modules
+          - link "Démarrage guidé" [ref=e70] [cursor=pointer]:
+            - /url: /demarrage
+            - img [ref=e71]
+            - generic [ref=e74]: Démarrage guidé
+          - link "Profil" [ref=e75] [cursor=pointer]:
+            - /url: /profil
+            - img [ref=e76]
+            - generic [ref=e79]: Profil
+          - link "CV Maître" [ref=e80] [cursor=pointer]:
+            - /url: /cv-maitre
+            - img [ref=e81]
+            - generic [ref=e84]: CV Maître
+          - link "Proof Vault" [ref=e85] [cursor=pointer]:
+            - /url: /proof-vault
+            - img [ref=e86]
+            - generic [ref=e88]: Proof Vault
+          - link "Sources" [ref=e89] [cursor=pointer]:
+            - /url: /sources
+            - img [ref=e90]
+            - generic [ref=e93]: Sources
+          - link "Pipeline" [ref=e94] [cursor=pointer]:
+            - /url: /dashboard/jobs/pipeline
+            - img [ref=e95]
+            - generic [ref=e97]: Pipeline
+        - generic [ref=e98]:
+          - generic [ref=e99]: System
+          - link "Paramètres" [ref=e100] [cursor=pointer]:
+            - /url: /parametres
+            - img [ref=e101]
+            - generic [ref=e104]: Paramètres
+          - link "Guide complet" [ref=e105] [cursor=pointer]:
+            - /url: /guide
+            - img [ref=e106]
+            - generic [ref=e108]: Guide complet
+      - generic [ref=e109]:
+        - generic [ref=e110]: EXECUTIVE PROFILE
+        - generic [ref=e111]:
+          - generic [ref=e112]: E
+          - generic [ref=e113]:
+            - generic [ref=e114]: Elton Duarte
+            - generic [ref=e115]: Executive
+        - generic [ref=e116]:
+          - text: ELTON BLACK TIER
+          - text: GLOBAL ACCESS
+        - generic [ref=e117]: ELTON OS v2.0
+    - generic [ref=e118]:
+      - banner [ref=e119]:
+        - generic [ref=e120]:
+          - generic [ref=e121]: Good morning, Alex.
+          - generic [ref=e122]: Your AI Boardroom Briefing is ready.
+        - generic [ref=e123]:
+          - img [ref=e124]
+          - generic [ref=e127]: Search anything...
+          - generic [ref=e128]: ⌘K
+        - generic [ref=e129]:
+          - button "3" [ref=e130]:
+            - img [ref=e131]
+            - generic [ref=e134]: "3"
+          - generic [ref=e135]: 04:50
+          - button "E ELTON BLACK" [ref=e136]:
+            - generic [ref=e137]: E
+            - generic [ref=e138]: ELTON BLACK
+            - img [ref=e139]
+      - main [ref=e142]:
+        - generic [ref=e143]:
+          - generic [ref=e145]:
+            - heading "Performance" [level=1] [ref=e146]
+            - paragraph [ref=e147]: Pilotage stratégique de votre recherche — données calculées localement, sans IA.
+          - generic [ref=e148]:
+            - button "Vue globale" [ref=e149]:
+              - img [ref=e150]
+              - text: Vue globale
+            - button "Sources" [ref=e153]:
+              - img [ref=e154]
+              - text: Sources
+            - button "Rôles" [ref=e157]:
+              - img [ref=e158]
+              - text: Rôles
+            - button "Pays" [ref=e163]:
+              - img [ref=e164]
+              - text: Pays
+            - button "Bloquées (0)" [ref=e167]:
+              - img [ref=e168]
+              - text: Bloquées (0)
+            - button "Aujourd'hui (0)" [ref=e172]:
+              - img [ref=e173]
+              - text: Aujourd'hui (0)
+            - button "Recommandations" [ref=e175]:
+              - img [ref=e176]
+              - text: Recommandations
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - generic [ref=e180]:
+                - generic [ref=e181]:
+                  - img [ref=e182]
+                  - generic [ref=e186]: Offres totales
+                - text: "0"
+              - generic [ref=e187]:
+                - generic [ref=e188]:
+                  - img [ref=e189]
+                  - generic [ref=e191]: Score moyen
+                - text: 0/100
+              - generic [ref=e192]:
+                - generic [ref=e193]:
+                  - img [ref=e194]
+                  - generic [ref=e197]: High priority
+                - text: "0"
+              - generic [ref=e198]:
+                - generic [ref=e199]:
+                  - img [ref=e200]
+                  - generic [ref=e204]: À éviter
+                - text: "0"
+              - generic [ref=e205]:
+                - generic [ref=e206]:
+                  - img [ref=e207]
+                  - generic [ref=e209]: Analysées
+                - text: "0"
+              - generic [ref=e210]:
+                - generic [ref=e211]:
+                  - img [ref=e212]
+                  - generic [ref=e215]: Documents générés
+                - text: "0"
+              - generic [ref=e216]:
+                - generic [ref=e217]:
+                  - img [ref=e218]
+                  - generic [ref=e221]: Docs approuvés
+                - text: "0"
+              - generic [ref=e222]:
+                - generic [ref=e223]:
+                  - img [ref=e224]
+                  - generic [ref=e227]: Prêtes à envoyer
+                - text: "0"
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - generic [ref=e230]:
+                  - img [ref=e231]
+                  - generic [ref=e234]: Envoyées
+                - text: "0"
+              - generic [ref=e235]:
+                - generic [ref=e236]:
+                  - img [ref=e237]
+                  - generic [ref=e240]: Taux réponse
+                - text: 0%
+              - generic [ref=e241]:
+                - generic [ref=e242]:
+                  - img [ref=e243]
+                  - generic [ref=e248]: Taux entretien
+                - text: 0%
+              - generic [ref=e249]:
+                - generic [ref=e250]:
+                  - img [ref=e251]
+                  - generic [ref=e254]: Relances à faire
+                - text: "0"
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - generic [ref=e257]:
+                  - img [ref=e258]
+                  - generic [ref=e263]: Entretiens
+                - text: "0"
+              - generic [ref=e264]:
+                - generic [ref=e265]:
+                  - img [ref=e266]
+                  - generic [ref=e269]: Offres reçues
+                - text: "0"
+              - generic [ref=e270]:
+                - generic [ref=e271]:
+                  - img [ref=e272]
+                  - generic [ref=e276]: Refus
+                - text: "0"
+              - generic [ref=e277]:
+                - generic [ref=e278]:
+                  - img [ref=e279]
+                  - generic [ref=e281]: En retard
+                - text: "0"
+            - generic [ref=e282]:
+              - heading "Résumé" [level=3] [ref=e283]
+              - paragraph [ref=e284]: 0 offres dans le radar • 0 analysées • 0 documents approuvés • 0 envoyées • 0 entretiens • 0 offres reçues.
+              - paragraph [ref=e285]: "Taux de réponse : 0% — Taux d'entretien : 0%."
+  - button "Open Next.js Dev Tools" [ref=e291] [cursor=pointer]:
+    - img [ref=e292]
+  - alert [ref=e295]
+```
