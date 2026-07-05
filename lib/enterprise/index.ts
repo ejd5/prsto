@@ -25,48 +25,66 @@ export const ORG_TYPES: Array<{ id: OrgType; label: string; description: string 
   { id: "outplacement", label: "Cabinet d'outplacement", description: "LHH, Page Executive, Michael Page" },
   { id: "association", label: "Association executives", description: "FrenchTech, INSEAD Alumni, etc." },
 ];
-
 export const ORG_PLANS: Array<{ id: OrgPlan; label: string; price: number; seats: number; features: string[] }> = [
   {
     id: "starter",
-    label: "Starter",
-    price: 499,
-    seats: 20,
+    label: "Starter (Coaches & Solo)",
+    price: 149,
+    seats: 5,
     features: [
-      "20 sièges inclus",
-      "White-label (logo + couleurs)",
-      "Subdomain personnalisé",
-      "1 coach admin",
-      "Support email",
+      "5 sièges candidats actifs inclus",
+      "Marque blanche complète (logo + couleurs)",
+      "Sous-domaine personnalisé dédié",
+      "1 compte administrateur",
+      "Scoring ATS de niveau executive",
+      "Générateur de CV premium (5 styles)",
+      "Simulateur d'entretien STAR (2h/mois)",
+      "Briefing Board automatisé (3 par mois)",
+      "Support standard par email sous 48h",
+      "Chiffrement des données de bout en bout",
+      "Conformité RGPD garantie",
+      "Accès à la communauté des recruteurs",
     ],
   },
   {
     id: "growth",
-    label: "Growth",
-    price: 1499,
-    seats: 100,
+    label: "Growth (Boutiques Search)",
+    price: 499,
+    seats: 30,
     features: [
-      "100 sièges inclus",
-      "Tout Starter +",
-      "Multi-admins",
-      "Analytics avancés",
-      "Custom domain (votre URL)",
-      "API access",
-      "Support prioritaire",
+      "30 sièges candidats actifs inclus",
+      "Tout Starter inclus",
+      "Jusqu'à 3 comptes administrateurs",
+      "Domaine personnalisé (votre propre URL)",
+      "Simulateur d'entretien STAR (10h/mois)",
+      "Briefing Board automatisé (illimité)",
+      "Statistiques d'utilisation des candidats",
+      "Emails système personnalisés de marque",
+      "Support prioritaire par email sous 24h",
+      "Export PDF de marque pour les rapports",
+      "Éditeur de templates d'assessment",
+      "Accès anticipé aux nouveaux modèles IA",
+      "Intégration Slack optionnelle",
     ],
   },
   {
     id: "enterprise",
-    label: "Enterprise",
-    price: 0, // Sur devis
-    seats: 999999,
+    label: "Scale (Grands Cabinets & Schools)",
+    price: 899,
+    seats: 150,
     features: [
-      "Sièges illimités",
-      "Tout Growth +",
-      "SSO Google/LinkedIn",
-      "Custom IA training",
-      "Dedicated account manager",
-      "SLA 99.9%",
+      "150 sièges candidats actifs inclus",
+      "Tout Growth inclus",
+      "Comptes administrateurs illimités",
+      "Simulateur d'entretien STAR (illimité)",
+      "SSO Google & LinkedIn activés",
+      "Accompagnement DNS personnalisé",
+      "Dashboard analytics avancé en temps réel",
+      "Support téléphonique & chat dédié",
+      "Rapports financiers de cooptation",
+      "Accords DPA signés sur mesure",
+      "SLA de disponibilité de 99.9%",
+      "Formations d'onboarding pour vos équipes",
     ],
   },
 ];
@@ -136,7 +154,7 @@ export async function createOrganization(params: {
 }): Promise<{ org: Awaited<ReturnType<typeof prisma.organization.create>>; membership: Awaited<ReturnType<typeof prisma.organizationMember.create>> }> {
   const slug = await ensureUniqueSlug(generateOrgSlug(params.name));
   const plan = params.plan || "growth";
-  const seatsLimit = plan === "starter" ? 20 : plan === "growth" ? 100 : 999999;
+  const seatsLimit = plan === "starter" ? 5 : plan === "growth" ? 30 : 150;
 
   const org = await prisma.organization.create({
     data: {
