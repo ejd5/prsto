@@ -39,7 +39,7 @@ export default function HeroSection() {
         </Reveal>
 
         <Reveal variant="up" delay={80}>
-          <h1 className="text-[clamp(2.25rem,5vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.04em] mb-5 font-serif" style={{ fontFamily: "Playfair Display, serif" }}>
+          <h1 className="text-[clamp(1.75rem,4vw,2.75rem)] font-extrabold leading-[1.05] tracking-[-0.04em] mb-5 font-serif" style={{ fontFamily: "Playfair Display, serif" }}>
             <span className="block text-[#0B1F18]" style={{ textShadow: "0 2px 12px rgba(255,255,255,0.6)" }}>
               Vous postez depuis 6 mois
             </span>
