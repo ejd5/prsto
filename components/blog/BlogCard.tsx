@@ -20,12 +20,20 @@ export default function BlogCard({ article }: { article: BlogArticle }) {
       href={`/prsto/blog/${article.slug}`}
       className="group block rounded-2xl overflow-hidden border border-[#E6DED2] bg-[#FFFDF8] transition-all duration-500 hover:shadow-[0_8px_30px_rgba(16,56,38,0.08),0_0_0_1px_rgba(228,177,24,0.15)] hover:-translate-y-0.5"
     >
-      <div
-        className={`h-48 bg-gradient-to-br ${categoryGradients[article.category]} relative overflow-hidden`}
-      >
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgM2wxMCAxNy4zSDIweiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvc3ZnPg==')] opacity-30" />
-        <div className="absolute bottom-4 left-4">
-          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/15 text-white backdrop-blur-sm border border-white/20">
+      <div className="h-48 relative overflow-hidden bg-[#103826]">
+        {article.image ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+            style={{ backgroundImage: `url(${article.image})` }}
+          />
+        ) : (
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${categoryGradients[article.category]}`}
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-65" />
+        <div className="absolute bottom-4 left-4 z-10">
+          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#103826]/75 text-[#FAF6EF] backdrop-blur-sm border border-[#E6DED2]/30">
             {article.category}
           </span>
         </div>

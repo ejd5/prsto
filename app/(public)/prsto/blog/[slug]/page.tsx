@@ -149,12 +149,18 @@ export default async function ArticlePage({
         </header>
 
         {/* Hero image */}
-        <div
-          className={`w-full h-56 md:h-72 lg:h-80 rounded-2xl bg-gradient-to-br ${gradient} relative overflow-hidden mb-10 md:mb-12`}
-        >
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDAgM2wyMCAzNEgyMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-30" />
-          <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8">
-            <div className="text-4xl md:text-5xl font-bold text-white/10 font-playfair">
+        <div className="w-full h-56 md:h-72 lg:h-80 rounded-2xl relative overflow-hidden mb-10 md:mb-12 bg-[#103826]">
+          {article.image ? (
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${article.image})` }}
+            />
+          ) : (
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-70" />
+          <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 z-10">
+            <div className="text-4xl md:text-5xl font-bold text-white/20 font-playfair">
               {article.category === "Marché & Tendances"
                 ? "MT"
                 : article.category === "CV & Personal Branding"
