@@ -40,6 +40,14 @@ export default function LandingHeader() {
               {link.label}
             </a>
           ))}
+          <Link href="/prsto/enterprise" className="text-[13.5px] font-semibold transition-colors flex items-center gap-1" style={{
+            color: "#A38010", textDecoration: "none",
+          }}>
+            Entreprise
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
           <Link href="/demarrage" className="px-5 py-2 rounded-xl text-[13.5px] font-semibold transition-all" style={{
             background: "#103826", border: "1px solid #103826",
             color: "#FFFDF8", textDecoration: "none",
@@ -69,6 +77,11 @@ export default function LandingHeader() {
               {link.label}
             </a>
           ))}
+          <Link href="/prsto/enterprise" className="block text-sm py-1.5 font-semibold" style={{
+            color: "#A38010", textDecoration: "none",
+          }} onClick={() => setOpen(false)}>
+            Entreprise →
+          </Link>
           <Link href="/demarrage" className="block text-center px-4 py-2.5 rounded-lg text-sm font-medium" style={{
             background: "#103826", border: "1px solid #103826",
             color: "#FFFDF8", textDecoration: "none",
