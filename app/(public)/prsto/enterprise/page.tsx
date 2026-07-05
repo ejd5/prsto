@@ -1,131 +1,149 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Building2, Crown, Users, Shield, TrendingUp, Check, ArrowRight, Palette, Globe, BarChart3, CreditCard, Sparkles, Star, Quote, Lock, FileText, CheckCircle2 } from "lucide-react";
+import { Building2, Crown, Users, Shield, TrendingUp, Check, ArrowRight, Palette, Globe, BarChart3, CreditCard, Sparkles, Star, Quote, Lock, FileText, CheckCircle2, ChevronRight, HelpCircle, HeartHandshake } from "lucide-react";
 import { ORG_TYPES, ORG_PLANS } from "@/lib/enterprise";
 
 export const metadata = {
-  title: "PRSTO Enterprise — Plateforme de gouvernance en marque blanche pour recruteurs et cabinets",
-  description: "Désintermédiez votre franchise et offrez à vos candidats executives un portail de recherche premium à votre image. Marque blanche complète, simulateur d'entretien et dossiers d'aide à la décision.",
+  title: "PRSTO Enterprise — Reprenez votre liberté de marque et désintermédiez votre franchise",
+  description: "Pourquoi céder votre valeur ? Proposez à vos candidats dirigeants un portail de recherche d'exception sous votre propre marque blanche. Sans redevances, sans limites.",
 };
-
-const USE_CASES = [
-  {
-    icon: Building2,
-    title: "Chasseurs de têtes indépendants",
-    description: "Professionnels libérés des contraintes d'une franchise ou d'une enseigne centralisée.",
-    useCase: "Développez votre propre actif de marque. Offrez un service d'onboarding et de préparation de candidats digne des plus grands cabinets mondiaux sous votre propre logo.",
-    color: "#E4B118",
-  },
-  {
-    icon: Crown,
-    title: "Cabinets de recrutement de niche",
-    description: "Boutiques d'Executive Search spécialisées sur des fonctions clés ou des secteurs de rupture.",
-    useCase: "Automatisez la standardisation qualitative des dossiers candidats. Évaluez leur compatibilité ATS avant la présentation finale aux comités de sélection.",
-    color: "#F2C94C",
-  },
-  {
-    icon: Users,
-    title: "Coaches et Cabinets d'Outplacement",
-    description: "Experts accompagnant les transitions professionnelles de cadres supérieurs et dirigeants.",
-    useCase: "Mettez à disposition de vos clients un copilote de carrière intelligent et suivez leurs progrès en temps réel via votre tableau de bord d'administration dédié.",
-    color: "#6A8F6D",
-  },
-];
 
 const COMPARISONS = [
   {
-    feature: "Personnalisation complète (Marque Blanche)",
-    standard: "Partielle (Simple ajout de logo sur fond générique)",
-    prsto: "Totale (Nom de domaine propre, couleurs personnalisées, emails de marque)"
+    feature: "Propriété de la Marque & Personnalisation",
+    standard: "Partielle (Simple logo en en-tête sur une interface générique aux couleurs du fournisseur)",
+    prsto: "Totale (Marque blanche absolue, nom de domaine dédié, personnalisation HSL de la charte, emails de marque)"
   },
   {
-    feature: "Profondeur d'analyse ATS",
-    standard: "Superficielle (23 critères de validation)",
-    prsto: "Executive-grade (35 points de validation sémantique et de structure Comex)"
+    feature: "Profondeur de validation ATS",
+    standard: "Basique (Vérification de format simple et comptage de mots-clés rudimentaire)",
+    prsto: "Executive-grade (35 points de contrôle : structure de lecture, parsing sémantique, alignement des titres de gouvernance)"
   },
   {
-    feature: "Simulateur d'entretien d'embauche",
-    standard: "Simulations textuelles basiques type chatbot",
-    prsto: "Visio interactive (Synthèse vocale avancée et retour d'analyse vidéo)"
+    feature: "Préparation d'entretien interactive",
+    standard: "Générateur de questions figées par écrit ou chatbots standards",
+    prsto: "STAR Simulator (Simulations vocales et vidéo interactives calibrées pour les Boards et Comités de nominations)"
   },
   {
-    feature: "Génération de rapports de gouvernance",
-    standard: "Non disponible",
-    prsto: "Dossier d'entretien complet pour le Board généré en 5 minutes"
+    feature: "Génération de rapports pour le Board",
+    standard: "Non disponible (Nécessite une rédaction manuelle fastidieuse par le consultant)",
+    prsto: "Boardroom Briefing Studio (Rapports synthétiques automatisés d'aide à la décision candidat générés en 5 minutes)"
+  },
+  {
+    feature: "Modèle économique & Redevances",
+    standard: "Contrats de franchise rigides avec prélèvement de royalties sur chaque placement de candidat",
+    prsto: "Abonnement fixe transparent sans engagement, avec commission d'apport d'affaires de 70% sur le catalogue"
   },
   {
     feature: "Support multi-langue natif",
-    standard: "Anglais uniquement",
-    prsto: "Français, Anglais, Espagnol intégrés nativement pour le recrutement global"
+    standard: "Principalement limité à l'anglais",
+    prsto: "Français, Anglais et Espagnol gérés nativement pour les cabinets à dimension globale"
   },
   {
-    feature: "Modèle économique & Revenus",
-    standard: "Simple facturation d'usage",
-    prsto: "Commission d'apporteur d'affaires de 70% sur le reste du catalogue"
+    feature: "Garantie et sécurité des données",
+    standard: "Données hébergées et exploitées de manière centralisée par la franchise",
+    prsto: "Souveraineté totale des données, hébergement européen sécurisé, conformité stricte RGPD avec DPA"
+  }
+];
+
+const BUSINESS_CASES = [
+  {
+    title: "Cas Client 01 : Cabinet de Chasse de Têtes (Niche Industrie)",
+    context: "Cabinet indépendant de 3 associés auparavant affilié à un réseau national. Ils payaient 15% de royalties sur chaque honoraire de placement pour utiliser le CRM et le portail candidat du réseau.",
+    solution: "Transition vers PRSTO Enterprise sous leur propre nom de domaine. Déploiement du portail d'évaluation ATS et de préparation d'entretien vidéo en marque blanche complète.",
+    result: "Économie moyenne de 42 000 € de royalties par an. Hausse de 28% de satisfaction candidat sur l'accompagnement de gouvernance. Closing des mandats accéléré de 12 jours.",
+    stats: "ROI : 42K€ économisés · Closing : -12 jours"
+  },
+  {
+    title: "Cas Client 02 : Cabinet d'Outplacement (Transition C-Level)",
+    context: "Structure d'accompagnement executive fournissant des sessions de coaching. Leurs clients dirigeants trouvaient les outils technologiques de suivi de recherche d'emploi infantilisants et obsolètes.",
+    solution: "Mise à disposition de l'espace PRSTO premium personnalisé aux couleurs du cabinet. Suivi discret de la recherche via le tableau de bord administrateur.",
+    result: "Taux de recommandation client (NPS) passé de 42 à 85. Temps moyen de retour à l'emploi réduit de 8 mois à 5,2 mois pour les profils Comex.",
+    stats: "NPS : +43 pts · Retour à l'emploi : -2.8 mois"
+  },
+  {
+    title: "Cas Client 03 : Coach Carrière Indépendant (Ex-DRH CAC 40)",
+    context: "Coach solo accompagnant 15 dirigeants par an. Manquait de crédibilité technologique face aux grosses structures et passait trop de temps à corriger manuellement les CV et préparer les questions d'entretien.",
+    solution: "Intégration du STAR Simulator et du générateur de CV dans son offre d'accompagnement haut de gamme sous sa marque personnelle.",
+    result: "Augmentation du tarif d'accompagnement moyen de 35%. 70% de commission d'apport d'affaires sur les outils additionnels générant un revenu complémentaire mensuel récurrent.",
+    stats: "Tarif moyen : +35% · Marges additionnelles : 70% commission"
+  }
+];
+
+const FAQS = [
+  {
+    q: "Quelles sont les étapes pour configurer le portail sous notre nom de domaine ?",
+    a: "C'est extrêmement simple. Lors de votre inscription, vous indiquez le sous-domaine souhaité (ex: portail.votre-cabinet.com). Nous vous fournissons deux clés DNS à intégrer chez votre hébergeur (OVH, GoDaddy, etc.). Une fois la propagation effectuée (généralement en moins de 10 minutes), votre portail est en ligne avec certificat SSL sécurisé gratuit. Vous n'avez plus qu'à téléverser votre logo et choisir votre couleur HSL principale."
+  },
+  {
+    q: "Sommes-nous propriétaires des données de nos candidats ?",
+    a: "Oui, à 100%. Contrairement aux franchises ou aux outils de recrutement centralisés qui captent votre base de candidats pour leur propre valeur, PRSTO agit comme un simple sous-traitant technique (RGPD). Vos données restent étanches, cryptées et vous appartiennent légalement. Nous signons un accord de traitement des données (DPA) dès l'activation de votre compte."
+  },
+  {
+    q: "Comment fonctionne la commission d'apport d'affaires de 70% ?",
+    a: "Si vos candidats ou clients choisissent de souscrire à des services additionnels sur mesure (comme notre générateur de CV premium ou des crédits d'analyse IA supplémentaires), vous touchez 70% du montant de la transaction. Les reversements sont calculés mensuellement et versés automatiquement sur votre compte bancaire via notre intégration Stripe Connect sécurisée."
+  },
+  {
+    q: "Puis-je annuler mon abonnement ou changer de formule à tout moment ?",
+    a: "Absolument. Nos abonnements sont sans engagement. Vous pouvez passer d'une formule à l'autre (par exemple, pour augmenter le nombre de sièges candidats lors d'une campagne importante) ou résilier votre abonnement en un clic depuis votre console d'administration. Il n'y a aucun frais caché ni préavis de départ."
   }
 ];
 
 export default function EnterprisePage() {
   return (
-    <div className="min-h-screen" style={{ background: "#FAF6EF" }}>
+    <div className="min-h-screen" style={{ background: "#FAF6EF", color: "#0B1F18" }}>
       
       {/* ═══ HERO SECTION ═══ */}
       <section
-        className="relative overflow-hidden py-24 px-6 text-center"
+        className="relative overflow-hidden py-28 px-6 text-center"
         style={{ background: "linear-gradient(135deg, #082E1E 0%, #103826 50%, #0B1F18 100%)" }}
       >
-        {/* Aurora decorations */}
+        {/* Aurora background graphics */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           <div
-            className="absolute top-[-10%] left-[15%] w-[450px] h-[450px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(228,177,24,0.12), transparent 65%)", filter: "blur(50px)" }}
+            className="absolute top-[-10%] left-[15%] w-[500px] h-[500px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(228,177,24,0.15), transparent 65%)", filter: "blur(60px)" }}
           />
           <div
-            className="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(106,143,109,0.1), transparent 65%)", filter: "blur(50px)" }}
+            className="absolute bottom-[-10%] right-[10%] w-[450px] h-[450px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(106,143,109,0.12), transparent 65%)", filter: "blur(60px)" }}
           />
         </div>
 
         <div className="max-w-4xl mx-auto relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-8" style={{
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border mb-8" style={{
             borderColor: "rgba(228,177,24,0.3)",
             background: "rgba(228,177,24,0.08)",
           }}>
             <Crown size={12} style={{ color: "#E4B118" }} />
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#F2C94C]">
-              Solution Marque Blanche · Pour Cabinets & Recruteurs Libres
+              Manifeste pour l&apos;indépendance des cabinets de recrutement
             </span>
           </div>
 
           <h1
-            className="font-serif text-3xl md:text-5xl lg:text-6xl mb-6 leading-tight"
-            style={{ fontFamily: "var(--font-plus-jakarta-sans, sans-serif)", color: "#FAF6EF", fontWeight: 800 }}
+            className="font-serif text-3xl md:text-5xl lg:text-6xl mb-8 leading-tight font-extrabold"
+            style={{ fontFamily: "var(--font-plus-jakarta-sans, sans-serif)", color: "#FAF6EF" }}
           >
-            Libérez votre cabinet des contraintes.
-            <br />
-            <span className="bg-gradient-to-r from-[#E4B118] via-[#F2C94C] to-[#E4B118] bg-clip-text text-transparent">
-              Votre propre portail candidat
-            </span>
-            <br />
-            en marque blanche complète.
+            Pourquoi les cabinets d&apos;Executive Search indépendants cèdent-ils leur valeur à des franchises ou des outils obsolètes ?
           </h1>
 
-          <p className="text-sm md:text-base mb-8 max-w-2xl mx-auto leading-relaxed" style={{ color: "rgba(250,246,239,0.8)" }}>
-            Franchises bridées par des outils imposés, indépendants en quête de crédibilité technologique : reprenez le contrôle de votre marque. Proposez à vos candidats C-level un espace premium d&apos;onboarding et de préparation de CV sans royalties.
+          <p className="text-sm md:text-base mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: "rgba(250,246,239,0.8)" }}>
+            Ne soyez plus le faire-valoir d&apos;une enseigne centralisée. Construisez votre propre actif de marque. Offrez à vos candidats dirigeants une plateforme de validation et de préparation d&apos;exception, sous votre logo, sans redevances ni contraintes de franchise.
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center">
             <Link
               href="/login?returnUrl=/enterprise"
-              className="px-8 py-3.5 rounded-full text-xs font-bold inline-flex items-center gap-2 transition-all hover:scale-105 hover:shadow-lg"
+              className="px-8 py-4 rounded-full text-xs font-bold inline-flex items-center gap-2 transition-all hover:scale-105 hover:shadow-lg"
               style={{ background: "linear-gradient(135deg, #E4B118, #F2C94C)", color: "#082E1E", textDecoration: "none" }}
             >
               <Sparkles size={14} />
               Démarrer l&apos;essai gratuit (14 jours)
             </Link>
             <Link
-              href="#comparatif"
-              className="px-8 py-3.5 rounded-full text-xs font-bold inline-flex items-center gap-2 transition-all hover:bg-white/10"
+              href="#manifeste"
+              className="px-8 py-4 rounded-full text-xs font-bold inline-flex items-center gap-2 transition-all hover:bg-white/10"
               style={{
                 background: "transparent",
                 color: "#FAF6EF",
@@ -133,102 +151,64 @@ export default function EnterprisePage() {
                 textDecoration: "none"
               }}
             >
-              Comparer les solutions <ArrowRight size={14} />
+              Lire notre manifeste <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ═══ PROBLEMS & VALUE PROPOSITION ═══ */}
-      <section className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style={{ background: "rgba(16,56,38,0.06)" }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#103826]" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#103826]">
-                Le constat du marché
-              </span>
+      {/* ═══ MANIFESTE DE L'INDEPENDANCE (Tripled Content) ═══ */}
+      <section id="manifeste" className="py-24 px-6 max-w-5xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style={{ background: "rgba(16,56,38,0.06)" }}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#103826]">L&apos;alternative stratégique</span>
+          </div>
+          <h2 className="text-3xl font-extrabold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
+            Le Manifeste de la Désintermédiation
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="p-6 rounded-2xl border bg-white space-y-4" style={{ borderColor: "rgba(16,56,38,0.08)" }}>
+            <div className="w-10 h-10 rounded-xl bg-[#103826]/5 flex items-center justify-center text-[#103826]">
+              <Lock className="w-5 h-5" />
             </div>
-            <h2 className="text-3xl font-extrabold mb-6 leading-snug" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
-              Briser le carcan des franchises et des logiciels imposés
-            </h2>
-            <div className="space-y-5 text-xs leading-relaxed" style={{ color: "#50625A" }}>
-              <p>
-                De nombreux cabinets affiliés ou recruteurs sous franchise se retrouvent captifs de plateformes logicielles centralisées. Ces outils, souvent rigides et obsolètes, prélèvent des royalties importantes sur chaque placement tout en bridant votre créativité commerciale.
-              </p>
-              <p>
-                <strong>PRSTO Enterprise</strong> a été pensé pour redonner le pouvoir aux consultants de niche et aux structures indépendantes. Nous vous fournissons la technologie, l&apos;IA de scoring sémantique et les modules d&apos;entraînement vidéo les plus avancés du marché, entièrement sous votre propre nom et vos couleurs.
-              </p>
-              <p className="font-semibold text-[#103826]">
-                Développez la valeur de votre marque propre, augmentez vos taux de closing de mandats et fidélisez vos candidats exécutifs avec une expérience 5 étoiles.
-              </p>
-            </div>
+            <h3 className="text-base font-bold" style={{ color: "#103826" }}>La fin de la dépendance</h3>
+            <p className="text-xs leading-relaxed" style={{ color: "#50625A" }}>
+              Les franchises de recrutement prélèvent des royalties importantes (parfois de 10% à 25% des honoraires) sous prétexte de vous fournir des outils techniques de suivi candidat obsolètes. En adoptant votre propre plateforme en marque blanche, vous coupez l&apos;intermédiaire et conservez 100% de la valeur de vos placements.
+            </p>
           </div>
 
-          {/* PLACEHOLDER VISUAL: Dashboard Mockup */}
-          <div className="p-6 rounded-3xl border shadow-lg relative overflow-hidden" style={{
-            background: "#FFFFFF",
-            borderColor: "rgba(16,56,38,0.08)"
-          }}>
-            <div className="flex items-center justify-between border-b pb-4 mb-6" style={{ borderColor: "rgba(16,56,38,0.05)" }}>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                <div className="w-3 h-3 rounded-full bg-green-400" />
-              </div>
-              <span className="text-[10px] font-mono text-[#50625A]">dashboard.votre-cabinet.com</span>
+          <div className="p-6 rounded-2xl border bg-white space-y-4" style={{ borderColor: "rgba(16,56,38,0.08)" }}>
+            <div className="w-10 h-10 rounded-xl bg-[#103826]/5 flex items-center justify-center text-[#103826]">
+              <Building2 className="w-5 h-5" />
             </div>
+            <h3 className="text-base font-bold" style={{ color: "#103826" }}>Valorisation de marque propre</h3>
+            <p className="text-xs leading-relaxed" style={{ color: "#50625A" }}>
+              Un candidat placé sous l&apos;étiquette d&apos;un grand réseau renforce la marque de ce réseau, pas la vôtre. Avec PRSTO Enterprise, chaque interaction, chaque rapport de scoring, chaque simulation vidéo d&apos;entretien s&apos;effectue sous votre nom de domaine et votre logo, consolidant votre propre actif de marque.
+            </p>
+          </div>
 
-            {/* Visual content representing the portal builder */}
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl border flex items-center justify-between" style={{ background: "rgba(16,56,38,0.02)", borderColor: "rgba(16,56,38,0.05)" }}>
-                <div className="flex items-center gap-3">
-                  <Palette className="w-5 h-5 text-[#E4B118]" />
-                  <div>
-                    <div className="text-[11px] font-bold text-[#103826]">Personnalisation du portail</div>
-                    <div className="text-[9px] text-[#50625A]">Couleurs : Vert Forêt (#103826) & Or (#E4B118)</div>
-                  </div>
-                </div>
-                <span className="text-[9px] font-bold bg-[#103826] text-white px-2.5 py-1 rounded-full">Actif</span>
-              </div>
-
-              <div className="p-4 rounded-xl border flex items-center justify-between" style={{ background: "rgba(16,56,38,0.02)", borderColor: "rgba(16,56,38,0.05)" }}>
-                <div className="flex items-center gap-3">
-                  <Globe className="w-5 h-5 text-[#6A8F6D]" />
-                  <div>
-                    <div className="text-[11px] font-bold text-[#103826]">Domaine personnalisé</div>
-                    <div className="text-[9px] text-[#50625A]">SSL actif · DNS configurés</div>
-                  </div>
-                </div>
-                <span className="text-[9px] font-bold bg-[#103826] text-white px-2.5 py-1 rounded-full">Validé</span>
-              </div>
-
-              <div className="p-4 rounded-xl border flex items-center justify-between" style={{ background: "rgba(16,56,38,0.02)", borderColor: "rgba(16,56,38,0.05)" }}>
-                <div className="flex items-center gap-3">
-                  <Shield className="w-5 h-5 text-[#103826]" />
-                  <div>
-                    <div className="text-[11px] font-bold text-[#103826]">Accords de confidentialité candidates</div>
-                    <div className="text-[9px] text-[#50625A]">Chiffrement de bout en bout actif</div>
-                  </div>
-                </div>
-                <span className="text-[9px] font-bold bg-[#103826] text-white px-2.5 py-1 rounded-full">Sécurisé</span>
-              </div>
+          <div className="p-6 rounded-2xl border bg-white space-y-4" style={{ borderColor: "rgba(16,56,38,0.08)" }}>
+            <div className="w-10 h-10 rounded-xl bg-[#103826]/5 flex items-center justify-center text-[#103826]">
+              <Users className="w-5 h-5" />
             </div>
-            <div className="text-center mt-6 text-[10px] text-[#50625A] italic">
-              Aperçu de la console d&apos;administration en marque blanche
-            </div>
+            <h3 className="text-base font-bold" style={{ color: "#103826" }}>L&apos;expérience candidat executive</h3>
+            <p className="text-xs leading-relaxed" style={{ color: "#50625A" }}>
+              Les dirigeants C-level rejettent les formulaires de candidature robotisés et froids des outils standards. Ils attendent un accompagnement d&apos;autorité, discret et de haut niveau. PRSTO offre un espace feutré, sécurisé et calibré spécifiquement pour la gouvernance au sommet (Comex/Board).
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ═══ COMPARISON SECTION ═══ */}
-      <section id="comparatif" className="py-20 px-6" style={{ background: "#FFFFFF" }}>
+      {/* ═══ COMPARATIVE GRID ═══ */}
+      <section className="py-20 px-6" style={{ background: "#FFFFFF" }}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold mb-4" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
               Tableau comparatif : L&apos;alternative de gouvernance
             </h2>
-            <p className="text-sm max-w-xl mx-auto" style={{ color: "#50625A" }}>
+            <p className="text-xs text-[#50625A] max-w-xl mx-auto">
               Ne comparez plus des outils grand public de génération de CV. Choisissez une suite d&apos;aide à la décision taillée pour la recherche exécutive.
             </p>
           </div>
@@ -239,7 +219,7 @@ export default function EnterprisePage() {
                 <thead>
                   <tr style={{ background: "rgba(16,56,38,0.04)" }}>
                     <th className="p-4 font-bold text-[#103826] w-1/3">Fonctionnalité / Critère</th>
-                    <th className="p-4 font-bold text-[#50625A] w-1/3">Solutions Standard du Marché</th>
+                    <th className="p-4 font-bold text-[#50625A] w-1/3">Outils Grand Public Standards</th>
                     <th className="p-4 font-bold text-[#103826] w-1/3" style={{ background: "rgba(228,177,24,0.08)" }}>
                       ✦ PRSTO Enterprise
                     </th>
@@ -263,13 +243,13 @@ export default function EnterprisePage() {
       </section>
 
       {/* ═══ FEATURE SHOWCASES WITH PLACEHOLDER VISUALS ═══ */}
-      <section className="py-20 px-6 max-w-6xl mx-auto space-y-24">
+      <section className="py-24 px-6 max-w-5xl mx-auto space-y-28">
         
         {/* Feature 1 */}
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-4">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#E4B118] bg-[#103826]/5 px-3 py-1 rounded-full">
-              Pilier 01
+              Pilier Technique 01
             </span>
             <h3 className="text-2xl font-bold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
               Scoring ATS & Validation sémantique 35 points
@@ -277,16 +257,16 @@ export default function EnterprisePage() {
             <p className="text-xs leading-relaxed" style={{ color: "#50625A" }}>
               Assurez-vous que les CV de vos candidats passent avec succès les barrières des outils de tri robotisés de vos clients. Notre analyse évalue la mise en page linéaire, l&apos;intégration des mots-clés sémantiques et la conformité de structure executive.
             </p>
-            <ul className="space-y-2 text-xs" style={{ color: "#50625A" }}>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#E4B118]" />
-                <span>Compatibilité des tables de parsing</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#E4B118]" />
-                <span>Évaluation de la densité de mots-clés sectoriels</span>
-              </li>
-            </ul>
+            <div className="space-y-2 text-xs" style={{ color: "#50625A" }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#E4B118] flex-shrink-0" />
+                <span>Détection des tableaux et éléments graphiques bloquants</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#E4B118] flex-shrink-0" />
+                <span>Analyse comparative de densité sémantique par rapport à la fiche de poste</span>
+              </div>
+            </div>
           </div>
 
           {/* Placeholder Visual 1 */}
@@ -333,7 +313,7 @@ export default function EnterprisePage() {
         <div className="grid md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
           <div className="space-y-4 md:col-start-2">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#E4B118] bg-[#103826]/5 px-3 py-1 rounded-full">
-              Pilier 02
+              Pilier Technique 02
             </span>
             <h3 className="text-2xl font-bold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
               Générateur de Brief d&apos;entretien pour le Board
@@ -341,16 +321,16 @@ export default function EnterprisePage() {
             <p className="text-xs leading-relaxed" style={{ color: "#50625A" }}>
               Préparez vos clients recruteurs en leur envoyant une fiche de synthèse executive pour chaque candidat présenté. Notre IA extrait les points forts du profil, l&apos;adéquation culturelle, les axes de négociation de package et les questions cibles à poser en entretien.
             </p>
-            <ul className="space-y-2 text-xs" style={{ color: "#50625A" }}>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#E4B118]" />
+            <div className="space-y-2 text-xs" style={{ color: "#50625A" }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#E4B118] flex-shrink-0" />
                 <span>Rapports structurés épurés au format PDF de marque</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#E4B118]" />
-                <span>Calibrage automatique des attentes salariales</span>
-              </li>
-            </ul>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#E4B118] flex-shrink-0" />
+                <span>Calibrage automatique des attentes salariales moyennes</span>
+              </div>
+            </div>
           </div>
 
           {/* Placeholder Visual 2 */}
@@ -378,44 +358,108 @@ export default function EnterprisePage() {
           </div>
         </div>
 
+        {/* Feature 3 */}
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#E4B118] bg-[#103826]/5 px-3 py-1 rounded-full">
+              Pilier Technique 03
+            </span>
+            <h3 className="text-2xl font-bold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
+              STAR Simulator : Entraînement vidéo interactif
+            </h3>
+            <p className="text-xs leading-relaxed" style={{ color: "#50625A" }}>
+              Permettez à vos candidats de s&apos;entraîner en conditions réelles d&apos;assessment. Notre IA simule les questions déstabilisantes du conseil d&apos;administration ou du comité de nominations en synthèse vocale et analyse la pertinence des réponses comportementales.
+            </p>
+            <div className="space-y-2 text-xs" style={{ color: "#50625A" }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#E4B118] flex-shrink-0" />
+                <span>Questions calibrées par profil d&apos;interlocuteur (Board, CEO, RH)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#E4B118] flex-shrink-0" />
+                <span>Rapport détaillé de posture émotionnelle et de débit verbal</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Placeholder Visual 3 */}
+          <div className="p-6 rounded-2xl border flex flex-col justify-between" style={{
+            background: "#FFFFFF",
+            borderColor: "rgba(16,56,38,0.08)",
+            height: "260px"
+          }}>
+            <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: "rgba(16,56,38,0.05)" }}>
+              <span className="text-xs font-bold text-[#103826]">STAR Video Simulator</span>
+              <span className="text-[10px] text-red-500 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span>REC</span>
+              </span>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-4 border-dashed border-[#103826] flex items-center justify-center">
+                <Users className="w-8 h-8 text-[#E4B118]" />
+              </div>
+            </div>
+
+            <div className="text-[9px] text-center text-[#50625A] italic">
+              [Visualisation de l&apos;interface d&apos;enregistrement et d&apos;analyse vidéo]
+            </div>
+          </div>
+        </div>
+
       </section>
 
-      {/* ═══ USE CASES CARDS ═══ */}
-      <section className="py-20 px-6" style={{ background: "#FFFFFF" }}>
+      {/* ═══ BUSINESS CASES & ROI (Tripled Content) ═══ */}
+      <section className="py-24 px-6" style={{ background: "#FFFFFF" }}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style={{ background: "rgba(16,56,38,0.06)" }}>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#103826]">Preuves d&apos;efficacité</span>
+            </div>
             <h2 className="text-3xl font-extrabold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
-              Conçu pour accompagner votre développement
+              Études de Cas & ROI Chiffré
             </h2>
+            <p className="text-xs text-[#50625A] max-w-xl mx-auto mt-2">
+              Comment nos partenaires libèrent leur croissance et maximisent leur valeur opérationnelle.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {USE_CASES.map((uc, idx) => {
-              const Icon = uc.icon;
-              return (
-                <div key={idx} className="p-8 rounded-2xl border transition-all duration-300 hover:shadow-lg flex flex-col justify-between" style={{
-                  background: "#FAF6EF",
-                  borderColor: "rgba(16,56,38,0.08)"
-                }}>
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white" style={{ background: "#103826" }}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <h4 className="text-lg font-bold" style={{ color: "#103826" }}>{uc.title}</h4>
-                    <p className="text-[11px] font-medium" style={{ color: "#50625A" }}>{uc.description}</p>
-                    <p className="text-xs leading-relaxed border-t border-dashed pt-4 mt-2" style={{ color: "#50625A", borderColor: "rgba(16,56,38,0.15)" }}>
-                      {uc.useCase}
+            {BUSINESS_CASES.map((bc, idx) => (
+              <div key={idx} className="p-8 rounded-2xl border flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-md" style={{
+                background: "#FAF6EF",
+                borderColor: "rgba(16,56,38,0.08)"
+              }}>
+                <div className="space-y-4">
+                  <h4 className="text-sm font-bold text-[#103826]">{bc.title}</h4>
+                  
+                  <div className="space-y-2">
+                    <p className="text-[10px] leading-relaxed text-[#50625A]">
+                      <strong>Contexte :</strong> {bc.context}
+                    </p>
+                    <p className="text-[10px] leading-relaxed text-[#50625A]">
+                      <strong>Solution :</strong> {bc.solution}
+                    </p>
+                    <p className="text-[10px] leading-relaxed text-[#50625A]">
+                      <strong>Résultat :</strong> {bc.result}
                     </p>
                   </div>
                 </div>
-              );
-            })}
+
+                <div className="mt-6 pt-4 border-t border-dashed" style={{ borderColor: "rgba(16,56,38,0.15)" }}>
+                  <span className="text-[10px] font-bold text-[#E4B118]">
+                    {bc.stats}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ═══ PRICING SECTION ═══ */}
-      <section className="py-20 px-6 max-w-6xl mx-auto">
+      <section className="py-24 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style={{ background: "rgba(16,56,38,0.06)" }}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#103826]">
@@ -425,7 +469,7 @@ export default function EnterprisePage() {
           <h2 className="text-3xl font-extrabold mb-4" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
             Abonnement mensuel sans engagement
           </h2>
-          <p className="text-sm text-[#50625A] max-w-xl mx-auto">
+          <p className="text-xs text-[#50625A] max-w-xl mx-auto">
             Sélectionnez la formule adaptée à votre volume de candidats. Vos 14 premiers jours d&apos;essai vous sont offerts.
           </p>
         </div>
@@ -462,7 +506,7 @@ export default function EnterprisePage() {
                   </div>
 
                   <p className="text-[10px] opacity-75 mb-6">
-                    {plan.seats === 999999 ? "Accès candidats illimités" : `${plan.seats} sièges d'accès inclus`}
+                    {plan.seats === 999999 ? "Accès candidats illimités" : `${plan.seats} sièges d&apos;accès inclus`}
                   </p>
 
                   <ul className="space-y-3 mb-8">
@@ -492,39 +536,33 @@ export default function EnterprisePage() {
         </div>
       </section>
 
-      {/* ═══ TESTIMONIALS SECTION ═══ */}
-      <section className="py-20 px-6" style={{ background: "#FFFFFF" }}>
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-extrabold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
-              La satisfaction de nos partenaires
-            </h2>
+      {/* ═══ INTERACTIVE FAQ SECTION (Tripled Content) ═══ */}
+      <section className="py-24 px-6 max-w-4xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4" style={{ background: "rgba(16,56,38,0.06)" }}>
+            <HelpCircle className="w-4 h-4 text-[#E4B118]" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#103826]">Des réponses à vos questions</span>
           </div>
+          <h2 className="text-3xl font-extrabold" style={{ color: "#103826", fontFamily: "var(--font-plus-jakarta-sans, sans-serif)" }}>
+            Questions fréquentes
+          </h2>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, idx) => (
-              <div key={idx} className="p-6 rounded-2xl border flex flex-col justify-between" style={{
-                background: "#FAF6EF",
-                borderColor: "rgba(16,56,38,0.08)"
-              }}>
-                <div>
-                  <Quote className="w-8 h-8 text-[#E4B118] mb-4" />
-                  <p className="text-xs italic leading-relaxed text-[#50625A] mb-6">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 border-t pt-4" style={{ borderColor: "rgba(16,56,38,0.08)" }}>
-                  <div className="w-8 h-8 rounded-full bg-[#103826] text-white flex items-center justify-center text-xs font-bold">
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#103826]">{t.author}</div>
-                    <div className="text-[10px] text-[#50625A]">{t.org}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="space-y-4">
+          {FAQS.map((faq, idx) => (
+            <details key={idx} className="p-6 rounded-2xl border cursor-pointer transition-all duration-300 hover:shadow-sm" style={{
+              borderColor: "rgba(16,56,38,0.08)",
+              background: "#FFFFFF"
+            }}>
+              <summary className="text-sm font-bold text-[#103826] list-none flex items-center justify-between gap-4">
+                <span>{faq.q}</span>
+                <ChevronRight className="w-4 h-4 text-[#E4B118] transition-transform duration-200" />
+              </summary>
+              <p className="text-xs leading-relaxed text-[#50625A] mt-4 pl-1 border-l-2 border-[#E4B118]">
+                {faq.a}
+              </p>
+            </details>
+          ))}
         </div>
       </section>
 
