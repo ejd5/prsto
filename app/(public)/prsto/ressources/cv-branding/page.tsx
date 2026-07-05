@@ -1,7 +1,8 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { useRef, useState } from 'react'
+import Link from 'next/link';
+import { useRef, useState } from 'react';
+import { ArrowLeft, BookOpen, Award, FileText, CheckCircle, ChevronDown, Sparkles } from 'lucide-react';
 
 const colors = {
   forest: '#103826',
@@ -12,452 +13,217 @@ const colors = {
   white: '#FFFFFF',
   border: '#E5E0D6',
   lightIvory: '#F8F4ED',
-}
+};
 
 const sections = [
   {
     id: 'cv-dirigeant',
-    title: 'Le CV du dirigeant : format, structure, contenu',
-    summary: 'Le CV d\'un cadre dirigeant ne se limite pas à une liste de postes. Il raconte une trajectoire de leadership.',
+    title: 'Le CV du dirigeant : format, structure et narration',
+    summary: 'Le CV d\'un cadre dirigeant ne se limite pas à une liste chronologique de postes. Il doit raconter une trajectoire de leadership chiffrée et projeter votre ROI opérationnel.',
     content: [
       {
-        subtitle: 'Le format : une page ou deux ?',
-        text: 'Pour un dirigeant, deux pages sont non seulement acceptables mais recommandées. Ce qui importe, c\'est que chaque centimètre carré soit investi dans la démonstration de votre valeur. Une troisième page peut être consacrée aux mandats d\'administration, publications ou distinctions.',
+        subtitle: 'Le format idéal : mythes et réalités de la longueur',
+        text: 'Pour un dirigeant executive, la règle obsolète du CV d\'une seule page ne s\'applique pas. Deux pages constituent le standard de référence pour le Top Management. Ce format offre l\'espace nécessaire pour poser le contexte stratégique de chaque entreprise, détailler l\'étendue de vos responsabilités (P&L, effectifs) et chiffrer vos victoires opérationnelles. Une troisième page reste tout à fait légitime si elle est consacrée exclusivement à vos mandats d\'administrateur indépendant, vos publications professionnelles ou vos distinctions d\'autorité.',
       },
       {
-        subtitle: 'La structure : du plus percutant au plus contextualisant',
-        text: 'Commencez par un résumé exécutif de trois à quatre lignes qui pose votre proposition de valeur. Enchaînez avec les expériences récentes (5 à 7 ans détaillés), puis les fonctions antérieures en format synthétique. Terminez par les formations, certifications et informations complémentaires.',
+        subtitle: 'La structure narrative : capter l\'attention en 6 secondes',
+        text: 'La mise en page doit être strictement linéaire et hiérarchisée. Commencez par un Executive Summary de 3 à 4 lignes décrivant votre posture stratégique (ex: "Directeur Général spécialisé dans la restructuration d\'ETI industrielles"). Enchaînez directement avec vos réalisations majeures récentes détaillées, en réservant une section simplifiée pour vos expériences plus anciennes (au-delà de 15 ans). Terminez par votre formation et vos certifications de gouvernance.',
       },
       {
-        subtitle: 'Résultats chiffrés vs tâches : le principe du ROI',
-        text: 'Un CV de dirigeant se mesure en impact, pas en responsabilités. Chaque poste doit répondre à la question : "Qu\'est-ce que cela a rapporté à l\'organisation ?" Privilégiez les indicateurs de croissance, rentabilité, réduction de coûts, parts de marché, levées de fonds ou EBITDA. Une règle simple : si vous décrivez une responsabilité sans mentionner son impact chiffré, vous perdez l\'attention du recruteur.',
-      },
-      {
-        subtitle: 'Les mots qui portent',
-        text: '"Piloté", "Transformé", "Accéléré", "Structuré", "Redressé", "Conduit". Ces verbes d\'action associés à des métriques créent un récit de leadership. Évitez "Responsable de" ou "En charge de" — ils décrivent un périmètre, pas un impact.',
+        subtitle: 'La démonstration par l\'impact : la formule de performance chiffrée',
+        text: 'Chaque ligne de votre CV doit refléter votre impact sur l\'organisation. Remplacez les descriptions de tâches passives par des verbes d\'action à forte valeur ajoutée (Piloté, Redressé, Accéléré) associés à des données chiffrées précises. Indiquez la taille du P&L géré, l\'évolution de l\'EBITDA, le pourcentage de croissance du chiffre d\'affaires ou les gains de productivité opérationnels. Si une expérience ne contient aucun chiffre, elle est invisible pour un recruteur de haut niveau.',
       },
     ],
+    checklist: [
+      "Supprimer les barres de niveau de compétence graphiques, illisibles pour les outils de tri.",
+      "Vérifier que chaque expérience récente contient au moins 2 indicateurs chiffrés (KPIs).",
+      "Rédiger un résumé de profil de 3 lignes axé sur votre posture unique de dirigeant.",
+      "Simplifier les expériences professionnelles de plus de 15 ans d'ancienneté à leur strict intitulé."
+    ]
   },
   {
     id: 'linkedin-executif',
     title: 'Optimiser son profil LinkedIn pour attirer les chasseurs de têtes',
-    summary: 'LinkedIn est devenu le premier CV du dirigeant. Être visible, ciblé et mémorable y est un impératif stratégique.',
+    summary: 'LinkedIn est le premier filtre utilisé par les associés d\'Executive Search. Votre profil doit être optimisé comme une vitrine de gouvernance.',
     content: [
       {
-        subtitle: 'Le headline : votre promesse en 120 caractères',
-        text: 'Le titre qui s\'affiche sous votre nom est l\'élément le plus scruté de votre profil. Oubliez le poste actuel — les chasseurs cherchent des compétences et des résultats. Formulez une promesse de valeur : "CEO | Transformation digitale & croissance | +40% EBITDA en 24 mois" ou "Directeur Général | Pilotage de la performance & stratégie d\'entreprise".',
+        subtitle: 'Le headline : définir sa posture de leader',
+        text: 'Le titre sous votre nom ne doit pas simplement refléter votre intitulé de poste actuel. Il doit exprimer votre valeur stratégique globale en intégrant vos compétences clés et votre impact. Utilisez des séparateurs clairs : "Directeur Général | Transformation Opérationnelle & Industrie 4.0 | Gestion de P&L 100M€". Cela permet aux algorithmes de recherche des cabinets de vous identifier instantanément.',
       },
       {
-        subtitle: 'Le résumé : là où se gagnent les mandats',
-        text: 'Le "About" est votre executive summary public. En 5 à 7 paragraphes, posez votre trajectoire, vos réalisations majeures, votre secteur d\'excellence et votre vision. Les chasseurs de têtes y cherchent des signaux de congruence avec leurs mandats. Soyez précis, pas générique.',
+        subtitle: 'La section "Info" (About) : votre executive summary public',
+        text: 'Rédigez cette section à la première personne pour instaurer un dialogue direct. Divisez-la en 4 parties : votre fil rouge de carrière, vos 3 compétences clés illustrées de victoires marquantes, votre style de leadership humain, et les problématiques stratégiques que vous aimez résoudre. Évitez les discours corporatifs plats et privilégiez un ton authentique et engagé.',
       },
       {
-        subtitle: 'L\'écosystème de recommandations',
-        text: 'Les recommandations de pairs, administrateurs ou collaborateurs directs agissent comme des preuves sociales tierces. Visez au moins une recommandation par poste clé. Le contenu importe plus que la quantité — une recommandation bien écrite par un ancien N-1 devenu CEO a plus de poids que dix témoignages génériques.',
-      },
-      {
-        subtitle: 'Visibility strategy : le SEO du dirigeant',
-        text: 'Les cabinets de recrutement utilisent LinkedIn Recruiter avec des filtres sémantiques. Intégrez naturellement les mots-clés de votre secteur, fonction et niveau de responsabilité dans votre expérience et vos compétences. Un profil "complet" (compétences, certifications, médias, publications) est favorisé par l\'algorithme et mieux classé dans les recherches.',
+        subtitle: 'La preuve sociale et les recommandations de gouvernance',
+        text: 'Les recommandations écrites par des pairs, des présidents de conseil d\'administration ou d\'anciens collaborateurs directs apportent une crédibilité majeure à votre profil. Sollicitez des recommandations ciblées, axées sur vos qualités humaines de leader et votre gestion des crises opérationnelles.',
       },
     ],
+    checklist: [
+      "Retirer le badge 'Open to Work' qui dégrade la posture de rareté du dirigeant.",
+      "Intégrer les mots-clés sémantiques de votre secteur dans la section Compétences.",
+      "Obtenir au moins 3 recommandations écrites de pairs ou de membres de Board.",
+      "Utiliser une photo de profil corporate professionnelle de haute qualité et sobre."
+    ]
   },
   {
     id: 'personal-branding',
-    title: 'Personal branding exécutif : se positionner comme un leader',
-    summary: 'À un certain niveau, on ne postule plus. On est repéré. Le personal branding construit cette réputation qui précède votre nom.',
+    title: 'Personal branding exécutif : asseoir son leadership d\'opinion',
+    summary: 'À haut niveau, l\'autorité se démontre par la parole publique. Apprenez à partager votre expertise de manière régulière et mesurée.',
     content: [
       {
-        subtitle: 'Définir son territoire d\'expertise',
-        text: 'Un dirigeant sans territoire est un expert sans spécialité. Identifiez le croisement unique entre votre expertise sectorielle, votre savoir-faire fonctionnel et votre style de leadership. Ce triptyque devient votre signature. Vous n\'êtes pas un "CEO généraliste" — vous êtes "le CEO qui transforme les ETI industrielles par la data et l\'innovation frugale".',
+        subtitle: 'Définir son territoire d\'expertise unique',
+        text: 'Ne tentez pas d'être un expert généraliste sur tous les sujets de management. Choisissez un domaine précis et pointu où votre voix est d'autorité (ex: la relocalisation industrielle, la transition écologique des supply chains, la cybersécurité des comex). Ce territoire doit être le fil rouge de toutes vos prises de parole publiques.',
       },
       {
-        subtitle: 'Les supports du leadership visible',
-        text: 'Un article de fond par mois sur LinkedIn, une interview dans un média sectoriel par trimestre, une intervention en conférence par an. Ce rythme minimum crée une présence continue sans sacrifier le temps opérationnel. Le personal branding exécutif ne repose pas sur la quantité mais sur la régularité et la profondeur de la réflexion.',
+        subtitle: 'Le rythme éditorial : la régularité plutôt que le volume',
+        text: 'Un cadre dirigeant ne doit pas surcharger les réseaux de publications futiles. Privilégiez la qualité et la profondeur : un article d'analyse sectorielle fouillé par mois sur LinkedIn, ou le partage d'un retour d'expérience managérial concret. Cette régularité construit une réputation d'expert posé et réfléchi.',
       },
       {
-        subtitle: 'Publier avec intention',
-        text: 'Chaque publication doit servir un objectif : démontrer une thèse de leadership, partager un apprentissage concret, ou positionner une vision. Les posts qui performent auprès des pairs dirigeants sont ceux qui nomment les tensions du métier : "Pourquoi j\'ai arrêté les reportings mensuels", "Ce que m\'a appris un échec de croissance externe". La vulnérabilité stratégique est un signe de maturité.',
-      },
-      {
-        subtitle: 'L\'alignement entre CV, LinkedIn et bios',
-        text: 'Une incohérence entre votre CV confidentiel, votre profil public et votre bio de conférencier est un signal d\'alarme pour un chasseur de têtes. La trame narrative doit être identique — seuls le niveau de détail et la confidentialité des données varient. Votre personal branding est crédible quand tout raconte la même histoire.',
+        subtitle: 'La vulnérabilité stratégique comme force de leadership',
+        text: 'Les analyses les plus lues et respectées sont celles qui abordent les difficultés réelles du métier de dirigeant. Partager les leçons apprises lors d'un échec de fusion-acquisition ou expliquer comment vous avez géré une crise sociale interne montre une maturité humaine et une hauteur de vue très appréciées par les Boards.',
       },
     ],
-  },
-  {
-    id: 'cv-ats',
-    title: 'CV vs ATS : les erreurs qui coûtent des opportunités',
-    summary: 'Même pour un poste de direction, le CV passe souvent par un filtre algorithmique avant d\'atteindre un humain. Ignorer l\'ATS, c\'est risquer l\'élimination silencieuse.',
-    content: [
-      {
-        subtitle: 'Comment fonctionne un ATS en recrutement cadre ?',
-        text: 'Les ATS (Applicant Tracking Systems) utilisés par les grands groupes et cabinets de recrutement analysent votre CV en trois étapes : extraction des données structurées (postes, dates, diplômes), indexation sémantique (mots-clés, compétences), et scoring de pertinence. Même pour un poste de DG, un score bas signifie un classement bas dans la pile de candidatures.',
-      },
-      {
-        subtitle: 'Les erreurs de format qui bloquent la lecture',
-        text: 'Les tableaux, colonnes multiples, encadrés, icônes, et graphiques sont souvent mal interprétés par les ATS. Un design sophistiqué qui n\'est pas parsable transforme votre CV en bruit blanc. Préférez une structure linéaire hiérarchisée : titres de sections explicites, dates alignées, et une mise en page sobre que l\'algorithme peut lire de haut en bas sans confusion.',
-      },
-      {
-        subtitle: 'L\'optimisation lexicale sans piège',
-        text: 'Si le poste cible mentionne "Pilotage de la performance", votre CV doit contenir cette expression exacte, pas seulement "Management de la performance". Les ATS modernes sont tolérants mais pas infaillibles. Listez les compétences recherchées dans l\'offre et assurez-vous qu\'elles apparaissent dans vos expériences, sans les inventer. L\'honnêteté reste la règle — chaque mot-clé doit pouvoir être défendu en entretien.',
-      },
-      {
-        subtitle: 'Le CV hybride : l\'arme secrète du dirigeant',
-        text: 'Gardez deux versions de votre CV : une version ATS-optimisée (format Word ou PDF standard, texte brut exploitable, pas de colonnes) pour les candidatures en ligne, et une version "premium" (design épuré, mise en page travaillée) pour les envois directs aux chasseurs de têtes avec qui vous avez déjà un contact. Savoir quand envoyer l\'une ou l\'autre est un art stratégique.',
-      },
-    ],
-  },
-  {
-    id: 'elevator-pitch',
-    title: 'L\'elevator pitch du cadre dirigeant',
-    summary: 'Capacité à se présenter de manière percutante et mémorable en 30, 60 ou 120 secondes — un fondamental trop souvent négligé.',
-    content: [
-      {
-        subtitle: 'Les 30 secondes : l\'accroche qui ouvre une porte',
-        text: 'En 30 secondes, vous devez poser : votre fonction actuelle ou cible, le secteur où vous excellez, et un résultat signature qui différencie. "Je dirige des transformations chez les ETI industrielles. Ma dernière mission ? Passer une entreprise de 50M€ à 80M€ d\'EBITDA en 18 mois, sans augmentation d\'effectifs." C\'est factuel, c\'est mesurable, c\'est mémorisable. Si votre interlocuteur peut répéter cette phrase, votre pitch fonctionne.',
-      },
-      {
-        subtitle: 'Les 60 secondes : le récit qui intrigue',
-        text: 'À 60 secondes, vous pouvez ajouter une couche narrative : le contexte de départ, le levier que vous avez actionné, et la leçon de leadership que vous en tirez. Structure : Situation (5s), Défi (10s), Action (25s), Résultat (10s), Leçon (10s). Cette séquence transforme un pitch d\'"états des lieux" en une micro-étude de cas qui donne envie d\'en savoir plus.',
-      },
-      {
-        subtitle: 'Les 2 minutes : le portrait professionnel complet',
-        text: 'Deux minutes vous permettent de dérouler votre trajectoire : d\'où vous venez (formation, premières expériences), ce que vous avez construit (le fil rouge de votre carrière), et où vous allez (votre prochain challenge, sectoriel ou fonctionnel). C\'est le format idéal pour un premier échange avec un chasseur de têtes — assez long pour montrer de la profondeur, assez court pour ne pas lasser.',
-      },
-      {
-        subtitle: 'L\'adaptation au secteur et au contexte',
-        text: 'Un pitch qui fonctionne dans la tech ne passe pas dans l\'industrie lourde. Adaptez votre vocabulaire, vos métriques de référence (ARPU vs EBITDA, temps de cycle vs taux de service) et vos références culturelles. Avant chaque interaction importante, préparez trois versions de votre pitch calibrées pour votre interlocuteur : le comité exécutif, le fonds d\'investissement, et le cabinet de recrutement.',
-      },
-    ],
-  },
-]
+    checklist: [
+      "Définir une charte éditoriale de 3 thématiques clés liées à votre expertise.",
+      "Planifier un créneau mensuel pour rédiger un article d'analyse sectorielle approfondi.",
+      "Éviter les commentaires spontanés ou émotifs sur des sujets politiques ou polémiques.",
+      "Partager vos retours d'expérience en utilisant la méthode STAR (Situation, Tâche, Action, Résultat)."
+    ]
+  }
+];
 
 export default function CvBrandingPage() {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const [expandedId, setExpandedId] = useState<string | null>('cv-dirigeant');
 
   const toggleSection = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id))
-  }
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   return (
-    <div style={{ backgroundColor: colors.white, minHeight: '100vh' }}>
-      <div
-        style={{
-          maxWidth: 900,
-          margin: '0 auto',
-          padding: '40px 24px 80px',
-        }}
+    <div className="min-h-screen py-6" style={{ color: colors.text }}>
+      {/* Back navigation */}
+      <Link
+        href="/prsto/ressources"
+        className="inline-flex items-center gap-2 text-xs font-semibold mb-8 transition-colors hover:text-[#E4B118]"
+        style={{ color: colors.secondary }}
       >
-        {/* Back link */}
-        <Link
-          href="/prsto/ressources"
-          style={{
-            fontFamily: 'Geist, sans-serif',
-            fontSize: 14,
-            color: colors.secondary,
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            marginBottom: 40,
-            letterSpacing: 0.3,
-            transition: 'color 0.2s',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = colors.forest)}
-          onMouseLeave={(e) => (e.currentTarget.style.color = colors.secondary)}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Retour aux ressources
-        </Link>
+        <ArrowLeft className="w-4 h-4" />
+        <span>Retour aux ressources</span>
+      </Link>
 
-        {/* Header */}
-        <header style={{ marginBottom: 56 }}>
-          <div
-            style={{
-              display: 'inline-block',
-              backgroundColor: colors.lightIvory,
-              padding: '4px 14px',
-              borderRadius: 100,
-              fontFamily: 'Geist, sans-serif',
-              fontSize: 12,
-              fontWeight: 500,
-              color: colors.secondary,
-              letterSpacing: 1.2,
-              textTransform: 'uppercase',
-              marginBottom: 20,
-            }}
-          >
-            Ressource PRSTO
-          </div>
+      {/* Header */}
+      <header className="mb-12 relative">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider mb-4" style={{
+          borderColor: "rgba(228,177,24,0.3)", color: colors.forest, background: "rgba(228,177,24,0.08)"
+        }}>
+          <Sparkles className="w-3 h-3 text-[#E4B118]" />
+          <span>Ressource d&apos;autorité</span>
+        </div>
+        
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4" style={{ 
+          color: colors.forest,
+          fontFamily: "var(--font-plus-jakarta-sans, sans-serif)",
+          lineHeight: 1.2
+        }}>
+          CV & Personal Branding Exécutif
+        </h1>
+        
+        <p className="text-base max-w-2xl leading-relaxed" style={{ color: colors.secondary }}>
+          Découvrez les méthodologies de pointe pour concevoir des dossiers de candidature d&apos;impact et structurer une marque personnelle solide qui capte l&apos;attention des recruteurs du Top Management.
+        </p>
 
-          <h1
-            style={{
-              fontFamily: 'Plus Jakarta Sans, sans-serif',
-              fontSize: 36,
-              fontWeight: 700,
-              color: colors.text,
-              lineHeight: 1.2,
-              margin: '0 0 16px 0',
-              letterSpacing: -0.5,
-            }}
-          >
-            CV & Personal Branding
-          </h1>
+        <div className="w-16 h-1 bg-[#E4B118] mt-6 rounded-full"></div>
+      </header>
 
-          <p
-            style={{
-              fontFamily: 'Geist, sans-serif',
-              fontSize: 18,
-              color: colors.secondary,
-              lineHeight: 1.6,
-              fontWeight: 400,
-              margin: 0,
-              maxWidth: 680,
-            }}
-          >
-            Comment un cadre dirigeant construit un dossier de candidature
-            irréprochable et une réputation qui précède son nom — du CV à la
-            signature personnelle.
-          </p>
-        </header>
-
-        {/* Divider */}
-        <div
-          style={{
-            width: 60,
-            height: 3,
-            backgroundColor: colors.gold,
-            marginBottom: 48,
-          }}
-        />
-
-        {/* Article sections */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
-          {sections.map((section) => {
-            const isExpanded = expandedId === section.id
-            return (
-              <article key={section.id} id={section.id}>
-                <div
-                  style={{
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                  onClick={() => toggleSection(section.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      toggleSection(section.id)
-                    }
-                  }}
-                  tabIndex={0}
-                  role="button"
-                  aria-expanded={isExpanded}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      justifyContent: 'space-between',
-                      gap: 16,
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <h2
-                        style={{
-                          fontFamily: 'Plus Jakarta Sans, sans-serif',
-                          fontSize: 22,
-                          fontWeight: 600,
-                          color: colors.text,
-                          lineHeight: 1.3,
-                          margin: '0 0 8px 0',
-                          letterSpacing: -0.3,
-                        }}
-                      >
-                        {section.title}
-                      </h2>
-                      <p
-                        style={{
-                          fontFamily: 'Geist, sans-serif',
-                          fontSize: 15,
-                          color: colors.secondary,
-                          lineHeight: 1.6,
-                          margin: 0,
-                          fontWeight: 400,
-                        }}
-                      >
-                        {section.summary}
-                      </p>
-                    </div>
-
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        backgroundColor: colors.lightIvory,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        marginTop: 4,
-                        transition: 'transform 0.3s ease',
-                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                      }}
-                    >
-                      <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
-                        <path
-                          d="M1 1L7 7L13 1"
-                          stroke={colors.forest}
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
+      {/* Interactive Guides Accordion */}
+      <div className="space-y-6">
+        {sections.map((section) => {
+          const isExpanded = expandedId === section.id;
+          return (
+            <div 
+              key={section.id} 
+              className="rounded-2xl border transition-all duration-300 overflow-hidden shadow-sm hover:shadow-md"
+              style={{ 
+                borderColor: isExpanded ? "rgba(16,56,38,0.15)" : "rgba(16,56,38,0.08)",
+                background: "#FFFFFF"
+              }}
+            >
+              {/* Accordion Trigger */}
+              <button
+                className="w-full text-left p-6 md:p-8 flex items-start justify-between gap-6 cursor-pointer focus:outline-none"
+                onClick={() => toggleSection(section.id)}
+                aria-expanded={isExpanded}
+              >
+                <div className="space-y-2 flex-1">
+                  <h2 className="text-xl font-bold transition-colors group-hover:text-[#E4B118]" style={{ 
+                    color: colors.forest,
+                    fontFamily: "var(--font-plus-jakarta-sans, sans-serif)"
+                  }}>
+                    {section.title}
+                  </h2>
+                  <p className="text-xs leading-relaxed" style={{ color: colors.secondary }}>
+                    {section.summary}
+                  </p>
                 </div>
-
-                {/* Expandable content */}
-                <div
-                  style={{
-                    overflow: 'hidden',
-                    transition: 'max-height 0.4s ease, opacity 0.3s ease',
-                    maxHeight: isExpanded ? 4000 : 0,
-                    opacity: isExpanded ? 1 : 0,
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 mt-1"
+                  style={{ 
+                    background: "rgba(16,56,38,0.05)",
+                    color: colors.forest,
+                    transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
                   }}
                 >
-                  <div style={{ paddingTop: 32 }}>
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </button>
+
+              {/* Accordion Content */}
+              {isExpanded && (
+                <div className="px-6 pb-8 md:px-8 md:pb-10 border-t border-dashed" style={{ borderColor: "rgba(16,56,38,0.08)" }}>
+                  
+                  {/* Detailed Reading Body */}
+                  <div className="space-y-8 pt-8">
                     {section.content.map((item, idx) => (
-                      <div
-                        key={idx}
-                        style={{
-                          marginBottom: idx < section.content.length - 1 ? 32 : 0,
-                        }}
-                      >
-                        <h3
-                          style={{
-                            fontFamily: 'Plus Jakarta Sans, sans-serif',
-                            fontSize: 17,
-                            fontWeight: 600,
-                            color: colors.text,
-                            lineHeight: 1.4,
-                            margin: '0 0 10px 0',
-                            letterSpacing: -0.2,
-                          }}
-                        >
+                      <div key={idx} className="space-y-2">
+                        <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: colors.forest }}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#E4B118]" />
                           {item.subtitle}
                         </h3>
-                        <p
-                          style={{
-                            fontFamily: 'Geist, sans-serif',
-                            fontSize: 15,
-                            color: colors.text,
-                            lineHeight: 1.75,
-                            margin: 0,
-                            fontWeight: 400,
-                            maxWidth: 780,
-                          }}
-                        >
+                        <p className="text-xs leading-relaxed pl-3.5" style={{ color: colors.secondary }}>
                           {item.text}
                         </p>
                       </div>
                     ))}
                   </div>
+
+                  {/* Checklist Section */}
+                  {section.checklist && (
+                    <div className="mt-8 p-6 rounded-xl border" style={{ 
+                      borderColor: "rgba(16,56,38,0.08)",
+                      background: "rgba(16,56,38,0.02)"
+                    }}>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#103826] flex items-center gap-2 mb-4">
+                        <CheckCircle className="w-4 h-4 text-[#E4B118]" />
+                        <span>Plan d&apos;action & Checklist</span>
+                      </h4>
+                      <ul className="space-y-3">
+                        {section.checklist.map((check, checkIdx) => (
+                          <li key={checkIdx} className="text-xs flex items-start gap-2.5" style={{ color: colors.secondary }}>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-700 mt-1.5 flex-shrink-0" />
+                            <span>{check}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                 </div>
-
-                <div
-                  style={{
-                    height: 1,
-                    backgroundColor: colors.border,
-                    marginTop: 48,
-                    opacity: 0.5,
-                  }}
-                />
-              </article>
-            )
-          })}
-        </div>
-
-        {/* Bottom CTA */}
-        <div
-          style={{
-            marginTop: 72,
-            padding: '40px 48px',
-            backgroundColor: colors.lightIvory,
-            borderRadius: 12,
-            textAlign: 'center',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: 'Plus Jakarta Sans, sans-serif',
-              fontSize: 18,
-              fontWeight: 600,
-              color: colors.text,
-              margin: '0 0 12px 0',
-              lineHeight: 1.4,
-            }}
-          >
-            Prêt à structurer votre candidature de dirigeant ?
-          </p>
-          <p
-            style={{
-              fontFamily: 'Geist, sans-serif',
-              fontSize: 15,
-              color: colors.secondary,
-              margin: '0 0 24px 0',
-              lineHeight: 1.6,
-              maxWidth: 500,
-              marginLeft: 'auto',
-              marginRight: 'auto',
-            }}
-          >
-            PRSTO vous accompagne dans la préparation de votre dossier exécutif
-            avec des outils de scoring de CV, simulation d&apos;entretien et analyse
-            de marché.
-          </p>
-          <Link
-            href="/prsto"
-            style={{
-              display: 'inline-block',
-              padding: '14px 32px',
-              backgroundColor: colors.forest,
-              color: colors.white,
-              fontFamily: 'Geist, sans-serif',
-              fontSize: 14,
-              fontWeight: 600,
-              textDecoration: 'none',
-              borderRadius: 6,
-              letterSpacing: 0.5,
-              transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0f2e1f')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.forest)}
-          >
-            Découvrir PRSTO
-          </Link>
-        </div>
-
-        {/* Footer */}
-        <footer
-          style={{
-            marginTop: 48,
-            textAlign: 'center',
-            fontFamily: 'Geist, sans-serif',
-            fontSize: 13,
-            color: colors.secondary,
-          }}
-        >
-          <p style={{ margin: 0, lineHeight: 1.6 }}>
-            Une ressource proposée par{' '}
-            <span style={{ color: colors.forest, fontWeight: 500 }}>PRSTO</span>
-            {' — '}Copilote carrière IA pour cadres dirigeants
-          </p>
-        </footer>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
-  )
+  );
 }
