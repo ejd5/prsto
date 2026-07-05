@@ -53,9 +53,28 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       lastName = parts.slice(1).join(" ") || parts[0] || "";
     }
   } catch { /* non-bloquant */ }
-
   const baseFilename = buildApplicationDocumentFilename(firstName, lastName, draft.job?.company || "", draft.job?.title || "", "CV");
   const filename = isMasterMode ? baseFilename.replace(/\.pdf$/i, "_Maitre.pdf") : baseFilename;
+
+  const isDocx = url.searchParams.get("format") === "docx";
+  const anonymize = url.searchParams.get("anonymize") === "true";
+
+  if (isDocx) {
+    try {
+      const cvData = await extractPremiumCvData(id, isMasterMode);
+      const { generateCvDocx } = await import("@/lib/jobs/cv-docx-generator");
+      const docxBytes = await generateCvDocx(cvData, anonymize);
+      
+      const docxFilename = filename.replace(/\.pdf$/i, ".docx");
+      
+      const response = new NextResponse(docxBytes, { status: 200 });
+      response.headers.set("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      response.headers.set("Content-Disposition", `attachment; filename="${encodeURIComponent(docxFilename)}"`);
+      return withExtensionCors(response, request);
+    } catch (e) {
+      return withExtensionCors(NextResponse.json({ error: "Échec de la génération du Word." }, { status: 500 }), request);
+    }
+  }
 
   let pdfBytes: Uint8Array;
   let templateUsed = resolvedTemplate;
