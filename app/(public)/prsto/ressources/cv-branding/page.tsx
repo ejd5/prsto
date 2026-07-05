@@ -72,16 +72,16 @@ const sections = [
     summary: 'À haut niveau, l\'autorité se démontre par la parole publique. Apprenez à partager votre expertise de manière régulière et mesurée.',
     content: [
       {
-        subtitle: 'Définir son territoire d\'expertise unique',
-        text: 'Ne tentez pas d'être un expert généraliste sur tous les sujets de management. Choisissez un domaine précis et pointu où votre voix est d'autorité (ex: la relocalisation industrielle, la transition écologique des supply chains, la cybersécurité des comex). Ce territoire doit être le fil rouge de toutes vos prises de parole publiques.',
+        subtitle: "Définir son territoire d'expertise unique",
+        text: "Ne tentez pas d'être un expert généraliste sur tous les sujets de management. Choisissez un domaine précis et pointu où votre voix est d'autorité (ex: la relocalisation industrielle, la transition écologique des supply chains, la cybersécurité des comex). Ce territoire doit être le fil rouge de toutes vos prises de parole publiques.",
       },
       {
-        subtitle: 'Le rythme éditorial : la régularité plutôt que le volume',
-        text: 'Un cadre dirigeant ne doit pas surcharger les réseaux de publications futiles. Privilégiez la qualité et la profondeur : un article d'analyse sectorielle fouillé par mois sur LinkedIn, ou le partage d'un retour d'expérience managérial concret. Cette régularité construit une réputation d'expert posé et réfléchi.',
+        subtitle: "Le rythme éditorial : la régularité plutôt que le volume",
+        text: "Un cadre dirigeant ne doit pas surcharger les réseaux de publications futiles. Privilégiez la qualité et la profondeur : un article d'analyse sectorielle fouillé par mois sur LinkedIn, ou le partage d'un retour d'expérience managérial concret. Cette régularité construit une réputation d'expert posé et réfléchi.",
       },
       {
-        subtitle: 'La vulnérabilité stratégique comme force de leadership',
-        text: 'Les analyses les plus lues et respectées sont celles qui abordent les difficultés réelles du métier de dirigeant. Partager les leçons apprises lors d'un échec de fusion-acquisition ou expliquer comment vous avez géré une crise sociale interne montre une maturité humaine et une hauteur de vue très appréciées par les Boards.',
+        subtitle: "La vulnérabilité stratégique comme force de leadership",
+        text: "Les analyses les plus lues et respectées sont celles qui abordent les difficultés réelles du métier de dirigeant. Partager les leçons apprises lors d'un échec de fusion-acquisition ou expliquer comment vous avez géré une crise sociale interne montre une maturité humaine et une hauteur de vue très appréciées par les Boards.",
       },
     ],
     checklist: [
