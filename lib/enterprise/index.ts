@@ -25,6 +25,7 @@ export const ORG_TYPES: Array<{ id: OrgType; label: string; description: string 
   { id: "outplacement", label: "Cabinet d'outplacement", description: "LHH, Page Executive, Michael Page" },
   { id: "association", label: "Association executives", description: "FrenchTech, INSEAD Alumni, etc." },
 ];
+
 export const ORG_PLANS: Array<{ id: OrgPlan; label: string; price: number; seats: number; features: string[] }> = [
   {
     id: "starter",
@@ -37,6 +38,7 @@ export const ORG_PLANS: Array<{ id: OrgPlan; label: string; price: number; seats
       "Sous-domaine personnalisé dédié",
       "1 compte administrateur",
       "Scoring ATS de niveau executive",
+      "Ciblage & surbrillance des mots-clés de l'offre en temps réel",
       "Générateur de CV premium (5 styles)",
       "Simulateur d'entretien STAR (2h/mois)",
       "Briefing Board automatisé (3 par mois)",
@@ -56,6 +58,7 @@ export const ORG_PLANS: Array<{ id: OrgPlan; label: string; price: number; seats
       "Tout Starter inclus",
       "Jusqu'à 3 comptes administrateurs",
       "Domaine personnalisé (votre propre URL)",
+      "Export DOCX de marque (nettoyage de coordonnées en 1 clic)",
       "Simulateur d'entretien STAR (10h/mois)",
       "Briefing Board automatisé (illimité)",
       "Statistiques d'utilisation des candidats",
@@ -88,7 +91,6 @@ export const ORG_PLANS: Array<{ id: OrgPlan; label: string; price: number; seats
     ],
   },
 ];
-
 // ─── Slug generation ───────────────────────────────────────
 export function generateOrgSlug(name: string): string {
   return name
